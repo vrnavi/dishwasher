@@ -80,6 +80,10 @@ class Basic(Cog):
             target = ctx.author
         await ctx.send(content=target.display_avatar.url)
 
+    @commands.command(aliases=["bigtimerush"])
+    async def btr(self, ctx: commands.Context):
+        await ctx.send(files=[discord.File("assets/bigtimerush.mp3")])
+
     @commands.command()
     async def install(self, ctx):
         """[U] Teaches you how to install a Dishwasher."""
