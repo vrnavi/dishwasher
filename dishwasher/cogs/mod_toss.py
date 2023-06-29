@@ -733,7 +733,7 @@ class ModToss(Cog):
             )
             try:
                 await member.guild.fetch_ban(member)
-            except NotFound:
+            except discord.NotFound:
                 out = f"🚪 **{member.global_name}** [{member}] left while tossed."
                 if staff_channel:
                     await staff_channel.send(out)
