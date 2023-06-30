@@ -53,7 +53,7 @@ class Cotd(Cog):
             if i["hex"] == "#%02x%02x%02x".upper() % cotd_role.color.to_rgb():
                 inlist = True
                 color = i["hex"]
-                cotdlist = f"{cotdlist}\n**{i['name']}** *{i['hex']}*"
+                cotdlist += f"\n**{i['name']}** *{i['hex']}*"
         if inlist == False:
             await ctx.send(content="The CoTD role's color is not in the color list!")
         embed = discord.Embed(
@@ -123,8 +123,24 @@ class Cotd(Cog):
         if not get_config(ctx.guild.id, "cotd", "enable"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         color = await self.roll_colors(ctx.guild)
+        cotdlist = ""
+        for i in self.colors:
+            if color["hex"] == "#%02x%02x%02x".upper() % cotd_role.color.to_rgb():
+                cotdlist += f"\n**{i['name']}** *{i['hex']}*"
+        embed = discord.Embed(
+            title=f"🌈 The new CoTD is...",
+            description=f"{cotdlist}",
+            color=discord.Colour.from_str(color),
+            timestamp=datetime.datetime.now(),
+        )
+        embed.set_footer(
+            text=f"{self.bot.user.name}'s Color of The Day",
+            icon_url=self.bot.user.display_avatar.url,
+        )
+        embed.set_image(url=f"https://singlecolorimage.com/get/{color[1:]}/128x128")
         await ctx.reply(
-            content=f"The CoTD has been changed to **{color['name']}** *{color['hex']}*."
+            content=f"The CoTD has been changed to **{color['name']}** *{color['hex']}*.",
+            embed=embed,
         )
 
     @tasks.loop(time=[datetime.time(hour=x) for x in range(0, 24)])
