@@ -161,7 +161,7 @@ class Surveyr(Cog):
                     survey["type"],
                 )
                 content = msg.content.split("\n")
-                content[2] = f"**Staff: ** " + username_system(ctx.author)
+                content[2] = f"**Staff:** " + username_system(ctx.author)
                 content[3] = f"**Reason:** {reason}"
                 await msg.edit(content="\n".join(content))
             except KeyError:
