@@ -130,8 +130,8 @@ class Cotd(Cog):
                 cotdlist += f"\n**{i['name']}** *{i['hex']}*"
         embed = discord.Embed(
             title=f"🌈 The new CoTD is...",
-            description=f"{cotdlist}",
-            color=discord.Colour.from_str(color),
+            description=cotdlist,
+            color=discord.Colour.from_str(color["hex"]),
             timestamp=datetime.datetime.now(),
         )
         embed.set_footer(
