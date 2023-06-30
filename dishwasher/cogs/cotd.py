@@ -138,7 +138,9 @@ class Cotd(Cog):
             text=f"{self.bot.user.name}'s Color of The Day",
             icon_url=self.bot.user.display_avatar.url,
         )
-        embed.set_image(url=f"https://singlecolorimage.com/get/{color[1:]}/128x128")
+        embed.set_image(
+            url=f"https://singlecolorimage.com/get/{color['hex'][1:]}/128x128"
+        )
         await ctx.reply(
             content=f"The CoTD has been changed to **{color['name']}** *{color['hex']}*.",
             embed=embed,
