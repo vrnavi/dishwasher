@@ -22,7 +22,9 @@ def pacify_name(name):
 
 def username_system(user):
     part1 = (
-        pacify_name(user.global_name) + f" [{user}]" if user.global_name else f"{user}"
+        pacify_name(user.global_name) + f" [{pacify_name(str(user))}]"
+        if user.global_name
+        else f"{pacify_name(str(user))}"
     )
     part2 = " (" + str(user.id) + ")"
     return part1 + part2

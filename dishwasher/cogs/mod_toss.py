@@ -32,9 +32,9 @@ class ModToss(Cog):
 
     def username_system(user):
         return (
-            "**" + pacify_name(user.global_name) + f"** [{user}]"
+            "**" + pacify_name(user.global_name) + f"** [{pacify_name(str(user))}]"
             if user.global_name
-            else f"**{user}**"
+            else f"**{pacify_name(str(user))}**"
         )
 
     # Thank you to https://stackoverflow.com/a/29489919 for this function.

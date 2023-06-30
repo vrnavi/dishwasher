@@ -283,6 +283,42 @@ class Logs2(Cog):
         await mlog.send(embed=embed)
 
     @Cog.listener()
+    async def on_user_update(self, user_before, user_after):
+        await self.bot.wait_until_ready()
+
+        for guild in self.bot.guilds:
+            ulog = get_config(user_after.guild.id, "logs", "ulog_thread")
+            member = guild.get_member(user_after.id)
+            if not ulog or not member:
+                continue
+            ulog = await self.bot.fetch_channel(ulog)
+
+            embed = stock_embed(self.bot)
+            embed.color = member.color
+            embed.title = "ℹ️ Member Update"
+            embed.description = f"{member.mention} ({member.id})"
+            author_embed(embed, member)
+
+            # Usernames
+            if str(user_before) != str(user_after):
+                embed.add_field(
+                    name="📝 Username Change",
+                    value=f"❌ {user_before}\n⬇️\n⭕ {user_after}",
+                    inline=False,
+                )
+
+            # Display Names
+            if user_before.global_name != user_after.global_name:
+                embed.add_field(
+                    name="🪪 Display Name Change",
+                    value=f"❌ {user_before.global_name}\n⬇️\n⭕ {user_after.global_name}",
+                    inline=False,
+                )
+
+            if embed.fields:
+                await ulog.send(embed=embed)
+
+    @Cog.listener()
     async def on_member_update(self, member_before, member_after):
         await self.bot.wait_until_ready()
         ulog = get_config(member_after.guild.id, "logs", "ulog_thread")
@@ -314,22 +350,6 @@ class Logs2(Cog):
             embed.add_field(
                 name="🎨 Role Change",
                 value="\n".join(reversed(roles)),
-                inline=False,
-            )
-
-        # Usernames
-        if str(member_before) != str(member_after):
-            embed.add_field(
-                name="📝 Username Change",
-                value=f"❌ {member_before}\n⬇️\n⭕ {member_after}",
-                inline=False,
-            )
-
-        # Display Names
-        if member_before.global_name != member_after.global_name:
-            embed.add_field(
-                name="🪪 Display Name Change",
-                value=f"❌ {member_before.global_name}\n⬇️\n⭕ {member_after.global_name}",
                 inline=False,
             )
 
