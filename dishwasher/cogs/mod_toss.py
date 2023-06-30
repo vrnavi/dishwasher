@@ -27,6 +27,16 @@ class ModToss(Cog):
         self.spamcounter = {}
         self.nocfgmsg = "Tossing isn't enabled for this server."
 
+    def pacify_name(name):
+        return discord.utils.escape_markdown(name.replace("@", "@ "))
+
+    def username_system(user):
+        return (
+            "**" + pacify_name(user.global_name) + f"** [{user}]"
+            if user.global_name
+            else f"**{user}**"
+        )
+
     # Thank you to https://stackoverflow.com/a/29489919 for this function.
     def principal_period(self, s):
         i = (s + s).find(s, 1, -1)
@@ -158,7 +168,7 @@ class ModToss(Cog):
                 else:
                     userlist = "\n".join(
                         [
-                            f"> {'**' + user.global_name + '** [' if user.global_name else '**'}{user}{']' if user.global_name else '**'}"
+                            f"> {self.username_system(user)}"
                             for user in [
                                 await self.bot.fetch_user(u)
                                 for u in [
@@ -212,10 +222,7 @@ class ModToss(Cog):
             elif us.id == self.bot.application_id:
                 output += "\n" + random_bot_msg(ctx.author.name)
             elif str(us.id) + ".json" in alreadytossed and toss_role in us.roles:
-                output += (
-                    "\n"
-                    + f"{'**' + us.global_name + '** [' if us.global_name else '**'}{us}{']' if us.global_name else '**'} is already tossed."
-                )
+                output += "\n" + f"{self.username_system(us)} is already tossed."
             else:
                 continue
             user_id_list.remove(us)
@@ -263,7 +270,7 @@ class ModToss(Cog):
 
                 if staff_channel:
                     await ctx.guild.get_channel(staff_channel).send(
-                        f"{'**' + us.global_name + '** [' if us.global_name else '**'}{us}{']' if us.global_name else '**'} has been tossed in `#{ctx.channel.name}` by {'**' + ctx.author.global_name + '** [' if ctx.author.global_name else '**'}{ctx.author}{']' if ctx.author.global_name else '**'}. {us.mention}\n"
+                        f"{self.username_system(us)} has been tossed in `#{ctx.channel.name}` by {self.username_system(ctx.author)}. {us.mention}\n"
                         f"**ID:** {us.id}\n"
                         f"**Created:** <t:{int(us.created_at.timestamp())}:R> on <t:{int(us.created_at.timestamp())}:f>\n"
                         f"**Joined:** <t:{int(us.joined_at.timestamp())}:R> on <t:{int(us.joined_at.timestamp())}:f>\n"
@@ -285,7 +292,7 @@ class ModToss(Cog):
                 invalid_ids.append(us.name)
 
         output += "\n" + "\n".join(
-            [f"{username_system(us)} has been tossed." for us in user_id_list]
+            [f"{self.username_system(us)} has been tossed." for us in user_id_list]
         )
 
         if invalid_ids:
@@ -305,7 +312,7 @@ class ModToss(Cog):
 
         if not addition:
             await toss_channel.send(
-                f"{toss_pings}\nYou were tossed by {ctx.author.global_name if ctx.author.global_name else ctx.author.name}.\n"
+                f"{toss_pings}\nYou were tossed by {self.pacify_name(ctx.author.global_name) if ctx.author.global_name else self.pacify_name(ctx.author.name)}.\n"
                 '*For your reference, a "toss" is where a Staff member wishes to speak with you, one on one.*\n'
                 "**Do NOT leave the server, or you will be instantly banned.**"
             )
@@ -402,10 +409,7 @@ class ModToss(Cog):
                 )
                 and toss_role not in us.roles
             ):
-                output += (
-                    "\n"
-                    + f"{'**' + us.global_name + '** [' if us.global_name else '**'}{us}{']' if us.global_name else '**'} is not already tossed."
-                )
+                output += "\n" + f"{self.username_system(us)} is not already tossed."
             else:
                 continue
             user_id_list.remove(us)
@@ -455,11 +459,11 @@ class ModToss(Cog):
             restored = " ".join([f"`{rx.name}`" for rx in roles])
             output += (
                 "\n"
-                + f"{'**' + us.global_name + '** [' if us.global_name else '**'}{us}{']' if us.global_name else '**'} has been untossed.\n**Roles Restored:** {restored}"
+                + f"{self.username_system(us)} has been untossed.\n**Roles Restored:** {restored}"
             )
             if staff_channel:
                 await ctx.guild.get_channel(staff_channel).send(
-                    f"{'**' + us.global_name + '** [' if us.global_name else '**'}{us}{']' if us.global_name else '**'} has been untossed in {ctx.channel.mention} by {ctx.author.global_name}.\n**Roles Restored:** {restored}"
+                    f"{self.username_system(us)} has been untossed in {ctx.channel.mention} by {self.username_system(ctx.author)}.\n**Roles Restored:** {restored}"
                 )
 
         if invalid_ids:
@@ -517,7 +521,7 @@ class ModToss(Cog):
             out += f"{ctx.message.created_at.strftime('%Y-%m-%d %H:%M')} {self.bot.user.name}: {reply}"
             out += "\nThis toss session had the following users:"
             for u in users:
-                out += f"\n- {'**' + u.global_name + '** [' if u.global_name else '**'}{u}{']' if u.global_name else '**'} ({u.id})"
+                out += f"\n- {self.username_system(u)} ({u.id})"
 
             if get_config(ctx.guild.id, "archive", "enable"):
                 credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -648,7 +652,7 @@ class ModToss(Cog):
                 if staff_channel:
                     await staff_channel.send(
                         f"{staff_role.mention}\n"
-                        f"{'**' + message.author.global_name + '** [' if message.author.global_name else '**'}{message.author}{']' if message.author.global_name else '**'} has been tossed for hitting 5 spam messages.\n"
+                        f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages.\n"
                         f"**ID:** {message.author.id}\n"
                         f"**Created:** <t:{int(message.author.created_at.timestamp())}:R> on <t:{int(message.author.created_at.timestamp())}:f>\n"
                         f"**Joined:** <t:{int(message.author.joined_at.timestamp())}:R> on <t:{int(message.author.joined_at.timestamp())}:f>\n"
@@ -698,7 +702,7 @@ class ModToss(Cog):
         )
         if staff_channel:
             await staff_channel.send(
-                content=f"🔁 **{member.global_name}** [{member}] ({member.id}) rejoined while tossed. Continuing in {toss_channel.mention}..."
+                content=f"🔁 {self.username_system(member)} ({member.id}) rejoined while tossed. Continuing in {toss_channel.mention}..."
             )
         return
 
@@ -734,13 +738,13 @@ class ModToss(Cog):
             try:
                 await member.guild.fetch_ban(member)
             except NotFound:
-                out = f"🚪 **{member.global_name}** [{member}] left while tossed."
+                out = f"🚪 {self.username_system(member)} left while tossed."
                 if staff_channel:
                     await staff_channel.send(out)
                 if session:
                     await session.send(out)
             else:
-                out = f"🔨 **{member.global_name}** [{member}] got banned while tossed."
+                out = f"🔨 {self.username_system(member)} got banned while tossed."
                 if staff_channel:
                     await staff_channel.send(out)
                 if session:

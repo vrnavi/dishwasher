@@ -1,6 +1,7 @@
 import json
 import os
 import datetime
+from discord.utils import escape_markdown
 from helpers.sv_config import get_config
 
 surveyr_event_types = {
@@ -15,8 +16,14 @@ surveyr_event_types = {
 server_data = "data/servers"
 
 
+def pacify_name(name):
+    return escape_markdown(name.replace("@", "@ "))
+
+
 def username_system(user):
-    part1 = user.global_name + f" [{user}]" if user.global_name else f"{user}"
+    part1 = (
+        pacify_name(user.global_name) + f" [{user}]" if user.global_name else f"{user}"
+    )
     part2 = " (" + str(user.id) + ")"
     return part1 + part2
 
