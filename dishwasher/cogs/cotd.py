@@ -123,6 +123,7 @@ class Cotd(Cog):
         if not get_config(ctx.guild.id, "cotd", "enable"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         color = await self.roll_colors(ctx.guild)
+        cotd_role = ctx.guild.get_role(get_config(ctx.guild.id, "cotd", "cotd_role"))
         cotdlist = ""
         for i in self.colors:
             if color["hex"] == "#%02x%02x%02x".upper() % cotd_role.color.to_rgb():
