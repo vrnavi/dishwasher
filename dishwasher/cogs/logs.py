@@ -287,7 +287,7 @@ class Logs2(Cog):
         await self.bot.wait_until_ready()
 
         for guild in self.bot.guilds:
-            ulog = get_config(user_after.guild.id, "logs", "ulog_thread")
+            ulog = get_config(guild.id, "logs", "ulog_thread")
             member = guild.get_member(user_after.id)
             if not ulog or not member:
                 continue
