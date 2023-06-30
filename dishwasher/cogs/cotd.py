@@ -137,8 +137,8 @@ class Cotd(Cog):
             url=f"https://singlecolorimage.com/get/{color['hex'][1:]}/128x128"
         )
         await ctx.reply(
-            content=f"The CoTD has been changed to **{color['name']}** *{color['hex']}*.",
             embed=embed,
+            mention_author=False,
         )
 
     @tasks.loop(time=[datetime.time(hour=x) for x in range(0, 24)])
