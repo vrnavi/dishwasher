@@ -3,6 +3,7 @@ import config
 import discord
 import os
 import io
+import asyncio
 import matplotlib
 import matplotlib.pyplot as plt
 import typing
@@ -54,7 +55,7 @@ class Basic(Cog):
         """[U] Kills someone."""
         await ctx.send(f"{the_text} got stuck in the Dishwasher.")
 
-    @commands.command()
+    @commands.command(aliases=["timer"])
     async def eggtimer(self, ctx, minutes: int = 5):
         """[S] Posts a timer."""
         if minutes >= 60:
@@ -79,6 +80,10 @@ class Basic(Cog):
         else:
             target = ctx.author
         await ctx.send(content=target.display_avatar.url)
+
+    @commands.command(aliases=["bigtimerush"])
+    async def btr(self, ctx: commands.Context):
+        await ctx.send(files=[discord.File("assets/bigtimerush.mp3")])
 
     @commands.command()
     async def install(self, ctx):

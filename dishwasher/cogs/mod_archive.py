@@ -61,6 +61,7 @@ class ModArchive(Cog):
 
             if args:
                 users = await get_members(self.bot, ctx.message, args)
+                users = users[0]
                 if users[0]:
                     user = f"{users[0].name} {users[0].id}"
                 else:
