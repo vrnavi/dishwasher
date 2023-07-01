@@ -27,10 +27,10 @@ class ModToss(Cog):
         self.spamcounter = {}
         self.nocfgmsg = "Tossing isn't enabled for this server."
 
-    def pacify_name(name):
+    def pacify_name(self, name):
         return discord.utils.escape_markdown(name.replace("@", "@ "))
 
-    def username_system(user):
+    def username_system(self, user):
         return (
             "**" + pacify_name(user.global_name) + f"** [{pacify_name(str(user))}]"
             if user.global_name
