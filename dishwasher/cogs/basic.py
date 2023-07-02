@@ -398,7 +398,7 @@ class Basic(Cog):
                     name="💭 Status:", value=f"{emoji}{name}{details}", inline=False
                 )
             roles = []
-            if target.roles:
+            if len(target.roles) > 1:
                 for index, role in enumerate(target.roles):
                     if role.name == "@everyone":
                         continue
