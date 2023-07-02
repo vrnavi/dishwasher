@@ -654,7 +654,7 @@ class ModToss(Cog):
                 if staff_channel:
                     await staff_channel.send(
                         f"{staff_role.mention}\n"
-                        f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages.\n"
+                        f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages. {message.jump_url}\n"
                         f"**ID:** {message.author.id}\n"
                         f"**Created:** <t:{int(message.author.created_at.timestamp())}:R> on <t:{int(message.author.created_at.timestamp())}:f>\n"
                         f"**Joined:** <t:{int(message.author.joined_at.timestamp())}:R> on <t:{int(message.author.joined_at.timestamp())}:f>\n"
