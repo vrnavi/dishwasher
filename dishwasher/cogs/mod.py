@@ -501,6 +501,18 @@ class Mod(Cog):
 
     @commands.guild_only()
     @commands.check(check_if_staff)
+    @commands.command(aliases=["count"])
+    async def msgcount(self, ctx, messageid: int):
+        """[S] Counts a given number of messages."""
+        history = [message.id async for message in channel.history(limit=200)]
+        if messageid in history:
+            return await ctx.reply(content=f"**Raw**: {history.index(messageid)}", mention_author=False)
+        else:
+            return await ctx.reply(content="That message isn't in this channel.", mention_author=False)
+        
+
+    @commands.guild_only()
+    @commands.check(check_if_staff)
     @commands.group(invoke_without_command=True, aliases=["clear"])
     async def purge(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """[S] Clears a given number of messages."""
