@@ -504,12 +504,15 @@ class Mod(Cog):
     @commands.command(aliases=["count"])
     async def msgcount(self, ctx, messageid: int):
         """[S] Counts a given number of messages."""
-        history = [message.id async for message in channel.history(limit=200)]
+        history = [message.id async for message in message.channel.history(limit=200)]
         if messageid in history:
-            return await ctx.reply(content=f"**Raw**: {history.index(messageid)}", mention_author=False)
+            return await ctx.reply(
+                content=f"**Raw**: {history.index(messageid)}", mention_author=False
+            )
         else:
-            return await ctx.reply(content="That message isn't in this channel.", mention_author=False)
-        
+            return await ctx.reply(
+                content="That message isn't in this channel.", mention_author=False
+            )
 
     @commands.guild_only()
     @commands.check(check_if_staff)
