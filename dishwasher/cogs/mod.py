@@ -504,7 +504,7 @@ class Mod(Cog):
     @commands.command(aliases=["count"])
     async def msgcount(self, ctx, messageid: int):
         """[S] Counts a given number of messages."""
-        history = [message.id async for message in message.channel.history(limit=200)]
+        history = [message.id async for message in ctx.channel.history(limit=200)]
         if messageid in history:
             return await ctx.reply(
                 content=f"**Raw**: {history.index(messageid)}", mention_author=False
