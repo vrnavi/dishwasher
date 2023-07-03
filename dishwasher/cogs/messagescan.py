@@ -232,7 +232,7 @@ class Messagescan(Cog):
                 if rcvmessage.clean_content:
                     limit = 500
                     if (
-                        rcvmessage.clean_content <= limit
+                        len(rcvmessage.clean_content) <= limit
                         or message.content.split(m)[0][-1:] == '"'
                         and message.content.split(m)[1][:1] == '"'
                     ):
