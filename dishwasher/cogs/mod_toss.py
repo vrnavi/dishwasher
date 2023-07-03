@@ -508,7 +508,7 @@ class ModToss(Cog):
             users = None
             try:
                 users = [
-                    ctx.guild.get_member(uid)
+                    await self.bot.fetch_user(uid)
                     for uid in self.bot.tosscache[ctx.guild.id][ctx.channel.name]
                 ]
                 user = f"{users[0].name} {users[0].id}"
@@ -720,7 +720,7 @@ class ModToss(Cog):
                     for c in os.listdir(
                         f"{self.bot.server_data}/{member.guild.id}/toss/{p}"
                     ):
-                        if member.id == c[:-5]:
+                        if member.id == int(c[:-5]):
                             self.bot.tosscache[member.guild.id][p].append(member.id)
                             os.replace(
                                 f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}",
@@ -728,7 +728,7 @@ class ModToss(Cog):
                             )
                             for channel in member.guild.channels:
                                 if channel.name == p:
-                                    session = p
+                                    session = channel
                             break
                     if session:
                         break

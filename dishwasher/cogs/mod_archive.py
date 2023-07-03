@@ -44,7 +44,7 @@ class ModArchive(Cog):
         folder = get_config(ctx.guild.id, "archive", "drive_folder")
 
         try:
-            await message.channel.typing()
+            await ctx.channel.typing()
         except:
             pass
 
@@ -55,17 +55,28 @@ class ModArchive(Cog):
 
             user = f"unspecified (logged by {ctx.author})"
             users = None
-            if not args:
-                users = self.bot.tosscache[ctx.guild.id][ctx.channel.name]
-                user = f"{users[0].name} {users[0].id}"
-
             if args:
-                users = await get_members(self.bot, ctx.message, args)
-                users = users[0]
-                if users[0]:
-                    user = f"{users[0].name} {users[0].id}"
-                else:
-                    user = args
+                try:
+                    users = [
+                        await self.bot.fetch_user(uid) for uid in int(args.split())
+                    ]
+                except:
+                    return await ctx.reply(
+                        content="Fetching the users failed. Either a user ID doesn't exist, or you specified them incorrectly..",
+                        mention_author=False,
+                    )
+            if not args:
+                try:
+                    users = [
+                        await self.bot.fetch_user(uid)
+                        for uid in self.bot.tosscache[ctx.guild.id][ctx.channel.name]
+                    ]
+                except:
+                    return await ctx.reply(
+                        content="The toss cache is empty. Please specify user IDs to archive instead.",
+                        mention_author=False,
+                    )
+            user = f"{users[0].name} {users[0].id}"
 
             fn = ctx.message.created_at.strftime("%Y-%m-%d") + " " + str(user)
 
