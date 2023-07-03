@@ -239,8 +239,8 @@ class Messagescan(Cog):
                         embed.description = f">>> {rcvmessage.clean_content}"
                     else:
                         embed.description = (
-                            f">>> {rcvmessage.clean_content}[:limit]\n"
-                            + f'Message is over {limit} long. Use `"LINK"` to show full message..'
+                            f">>> {rcvmessage.clean_content[:limit]}...\n\n"
+                            + f'**Message is over {limit} long.**\nUse `"LINK"` to show full message..'
                         )
                 embed.set_footer(
                     text=f"Quoted by {message.author}",
