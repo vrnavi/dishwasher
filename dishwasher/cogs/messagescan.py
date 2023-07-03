@@ -230,7 +230,18 @@ class Messagescan(Cog):
                     timestamp=rcvmessage.created_at,
                 )
                 if rcvmessage.clean_content:
-                    embed.description = f">>> {rcvmessage.clean_content}"
+                    limit = 500
+                    if (
+                        rcvmessage.clean_content <= limit
+                        or message.content.split(m)[0][-1:] == '"'
+                        and message.content.split(m)[1][:1] == '"'
+                    ):
+                        embed.description = f">>> {rcvmessage.clean_content}"
+                    else:
+                        embed.description = (
+                            f">>> {rcvmessage.clean_content}[:limit]\n"
+                            + f'Message is over {limit} long. Use `"LINK"` to show full message..'
+                        )
                 embed.set_footer(
                     text=f"Quoted by {message.author}",
                     icon_url=message.author.display_avatar.url,
