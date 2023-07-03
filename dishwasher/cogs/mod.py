@@ -507,7 +507,7 @@ class Mod(Cog):
         history = [message.id async for message in ctx.channel.history(limit=200)]
         if messageid in history:
             return await ctx.reply(
-                content=f"**Raw**: {history.index(messageid)}", mention_author=False
+                content=f"**Raw**: {history.index(messageid)}\n**Now**: {history.index(messageid) + 2}\n**With Purge**: {history.index(messageid) + 3}", mention_author=False
             )
         else:
             return await ctx.reply(
