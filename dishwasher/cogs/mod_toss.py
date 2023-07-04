@@ -439,7 +439,7 @@ class ModToss(Cog):
                 roles = [ctx.guild.get_role(r) for r in roles]
                 for r in roles:
                     if not r or not r.is_assignable():
-                        roles.remove(temp_role)
+                        roles.remove(r)
                 await us.add_roles(
                     *roles,
                     reason=f"Untossed by {ctx.author} ({ctx.author.id})",
@@ -715,25 +715,23 @@ class ModToss(Cog):
             return
         if self.is_rolebanned(member):
             session = None
-            try:
-                for p in os.listdir(f"{self.bot.server_data}/{member.guild.id}/toss"):
-                    for c in os.listdir(
-                        f"{self.bot.server_data}/{member.guild.id}/toss/{p}"
-                    ):
-                        if member.id == int(c[:-5]):
-                            self.bot.tosscache[member.guild.id][p].append(member.id)
-                            os.replace(
-                                f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}",
-                                f"{self.bot.server_data}/{after.guild.id}/toss/left_while_tossed/{c}",
-                            )
-                            for channel in member.guild.channels:
-                                if channel.name == p:
-                                    session = channel
-                            break
-                    if session:
+            for p in os.listdir(f"{self.bot.server_data}/{member.guild.id}/toss"):
+                for c in os.listdir(
+                    f"{self.bot.server_data}/{member.guild.id}/toss/{p}"
+                ):
+                    if member.id == c[:-5]:
+                        self.bot.tosscache[member.guild.id][p].append(member.id)
+                        os.replace(
+                            f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}",
+                            f"{self.bot.server_data}/{after.guild.id}/toss/left_while_tossed/{c}",
+                        )
+                        for channel in member.guild.channels:
+                            if channel.name == p:
+                                session = channel
+                                break
                         break
-            except:
-                return
+                if session:
+                    break
             staff_channel = member.guild.get_channel(
                 get_config(member.guild.id, "staff", "staff_channel")
             )
@@ -741,16 +739,12 @@ class ModToss(Cog):
                 await member.guild.fetch_ban(member)
             except discord.NotFound:
                 out = f"🚪 {self.username_system(member)} left while tossed."
-                if staff_channel:
-                    await staff_channel.send(out)
-                if session:
-                    await session.send(out)
             else:
                 out = f"🔨 {self.username_system(member)} got banned while tossed."
-                if staff_channel:
-                    await staff_channel.send(out)
-                if session:
-                    await session.send(out)
+            if staff_channel:
+                await staff_channel.send(out)
+            if session:
+                await session.send(out)
 
     @Cog.listener()
     async def on_member_update(self, before, after):
