@@ -151,18 +151,11 @@ class Logs2(Cog):
         if not ulog and not mlog:
             return
 
-        cutoff_ts = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
-            seconds=5
-        )
-
-        alog = [
-            entry
-            async for entry in member.guild.audit_logs(
-                limit=1, action=discord.AuditLogAction.ban
-            )
-        ]
-        if alog and alog[0].created_at >= cutoff_ts and alog[0].target.id == member.id:
+        try:
+            await member.guild.fetch_ban(member)
             return
+        except discord.NotFound:
+            pass
 
         alog = [
             entry
