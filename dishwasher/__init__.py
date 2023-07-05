@@ -25,7 +25,7 @@ log.addHandler(stdout_handler)
 
 
 def get_prefix(bot, message):
-    prefixes = config.prefixes
+    prefixes = [prefix.lower() for prefix in config.prefixes]
     userprefixes = get_userprefix(message.author.id)
     if userprefixes is not None:
         return commands.when_mentioned_or(*prefixes + userprefixes)(bot, message)
