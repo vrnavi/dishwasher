@@ -25,7 +25,12 @@ log.addHandler(stdout_handler)
 
 
 def get_prefix(bot, message):
-    prefixes = [prefix.lower() for prefix in config.prefixes]
+    # yes i know this is mangy but people wont stop complaining about not being able to use "Pls" for some reason
+    prefixes = (
+        [prefix.lower() for prefix in config.prefixes]
+        + [prefix.upper() for prefix in config.prefixes]
+        + [prefix.title() for prefix in config.prefixes]
+    )
     userprefixes = get_userprefix(message.author.id)
     if userprefixes is not None:
         return commands.when_mentioned_or(*prefixes + userprefixes)(bot, message)
