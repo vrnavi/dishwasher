@@ -334,6 +334,9 @@ class Logs2(Cog):
             for role in member_after.guild.roles:
                 if role == member_after.guild.default_role:
                     continue
+                if not member_after.guild.get_role(role):
+                    # Role was deleted.
+                    return
                 if role in member_before.roles and role in member_after.roles:
                     roles.append(role.mention)
                 elif role in member_before.roles and role not in member_after.roles:
