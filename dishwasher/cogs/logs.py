@@ -164,6 +164,9 @@ class Logs2(Cog):
             )
         ]
         if alog and alog[0].target.id == member.id:
+            cutoff_ts = datetime.datetime.now(
+                datetime.timezone.utc
+            ) - datetime.timedelta(seconds=5)
             if not alog[0].created_at <= cutoff_ts:
                 if alog[0].user.id != self.bot.user.id:
                     userlog(
