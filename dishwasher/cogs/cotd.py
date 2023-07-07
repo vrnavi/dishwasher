@@ -150,9 +150,9 @@ class Cotd(Cog):
         if void_color == "000000" or void_color == "ffffff":
             void_color = str(hex(int(void_color, 16) - 1))[2:]
         await void_role.edit(
-            name=f'Void Phosphor - {void_color}',
+            name=f"Void Phosphor - {void_color}",
             color=discord.Colour.from_str(void_color),
-            reason=f'???: #{void_color}',
+            reason=f"???: #{void_color}",
         )
 
     @tasks.loop(time=[datetime.time(hour=x) for x in range(0, 24)])
@@ -165,9 +165,9 @@ class Cotd(Cog):
                 if void_color == "000000" or void_color == "ffffff":
                     void_color = str(hex(int(void_color, 16) - 1))[2:]
                 await void_role.edit(
-                    name=f'Void Phosphor - #{void_color}',
-                    color=discord.Colour.from_str(void_color),
-                    reason=f'???: #{void_color}',
+                    name=f"Void Phosphor - #{void_color}",
+                    color=discord.Colour.from_str("#" + void_color),
+                    reason=f"???: #{void_color}",
                 )
             if get_config(g.id, "cotd", "enable"):
                 if g.id not in self.voteskip:
