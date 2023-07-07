@@ -150,7 +150,7 @@ class Cotd(Cog):
         if void_color == "000000" or void_color == "ffffff":
             void_color = str(hex(int(void_color, 16) - 1))[2:]
         await void_role.edit(
-            name=f"Void Phosphor - {void_color}",
+            name=f"Void Phosphor - {void_color.upper()}",
             color=discord.Colour.from_str("#" + void_color),
             reason=f"???: #{void_color}",
         )
@@ -165,7 +165,7 @@ class Cotd(Cog):
                 if void_color == "000000" or void_color == "ffffff":
                     void_color = str(hex(int(void_color, 16) - 1))[2:]
                 await void_role.edit(
-                    name=f"Void Phosphor - #{void_color}",
+                    name=f"Void Phosphor - #{void_color.upper()}",
                     color=discord.Colour.from_str("#" + void_color),
                     reason=f"???: #{void_color}",
                 )
