@@ -159,7 +159,10 @@ class Cotd(Cog):
     async def colortimer(self):
         await self.bot.wait_until_ready()
         for g in self.bot.guilds:
-            if g.id == 256926147827335170:
+            if (
+                g.id == 256926147827335170
+                and int(datetime.datetime.now().strftime("%H%M")) == 0000
+            ):
                 void_role = g.get_role(1126763114562605056)
                 void_color = random.choice("0123456789abcdef") * 6
                 if void_color == "000000" or void_color == "ffffff":
