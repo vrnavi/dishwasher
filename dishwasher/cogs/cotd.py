@@ -141,37 +141,10 @@ class Cotd(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
-    @commands.check(check_if_bot_manager)
-    @commands.command()
-    async def voidroll(self, ctx):
-        void_role = ctx.guild.get_role(1126763114562605056)
-        void_color = random.choice("0123456789abcdef") * 6
-        if void_color == "000000" or void_color == "ffffff":
-            void_color = str(hex(int(void_color, 16) - 1))[2:]
-        await void_role.edit(
-            name=f"Void Phosphor - {void_color.upper()}",
-            color=discord.Colour.from_str("#" + void_color),
-            reason=f"???: #{void_color}",
-        )
-
     @tasks.loop(time=[datetime.time(hour=x) for x in range(0, 24)])
     async def colortimer(self):
         await self.bot.wait_until_ready()
         for g in self.bot.guilds:
-            if (
-                g.id == 256926147827335170
-                and int(datetime.datetime.now().strftime("%H%M")) == 0000
-            ):
-                void_role = g.get_role(1126763114562605056)
-                void_color = random.choice("0123456789abcdef") * 6
-                if void_color == "000000" or void_color == "ffffff":
-                    void_color = str(hex(int(void_color, 16) - 1))[2:]
-                await void_role.edit(
-                    name=f"Void Phosphor - #{void_color.upper()}",
-                    color=discord.Colour.from_str("#" + void_color),
-                    reason=f"???: #{void_color}",
-                )
             if get_config(g.id, "cotd", "enable"):
                 if g.id not in self.voteskip:
                     self.voteskip[g.id] = []
