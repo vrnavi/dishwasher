@@ -151,7 +151,7 @@ class Cotd(Cog):
             void_color = str(hex(int(void_color, 16) - 1))[2:]
         await void_role.edit(
             name=f"Void Phosphor - {void_color}",
-            color=discord.Colour.from_str(void_color),
+            color=discord.Colour.from_str("#" + void_color),
             reason=f"???: #{void_color}",
         )
 
