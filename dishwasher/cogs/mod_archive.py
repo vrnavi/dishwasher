@@ -58,7 +58,8 @@ class ModArchive(Cog):
             if args:
                 try:
                     users = [
-                        await self.bot.fetch_user(uid) for uid in int(args.split())
+                        await self.bot.fetch_user(uid)
+                        for uid in [int(arg) for arg in args.split()]
                     ]
                 except:
                     return await ctx.reply(
