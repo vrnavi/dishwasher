@@ -200,6 +200,12 @@ class Messagescan(Cog):
                     msglinks.remove(link)
                 except:
                     twitterlinks.remove(link)
+            elif parts[0].count("<") % 2 and parts[1].count(">") % 2:
+                # Assume message has embed disabled.
+                try:
+                    msglinks.remove(link)
+                except:
+                    twitterlinks.remove(link)
 
         tlinks = None
         embeds = None
