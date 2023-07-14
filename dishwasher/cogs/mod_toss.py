@@ -719,7 +719,7 @@ class ModToss(Cog):
                 for c in os.listdir(
                     f"{self.bot.server_data}/{member.guild.id}/toss/{p}"
                 ):
-                    if member.id == c[:-5]:
+                    if str(member.id) == c[:-5]:
                         self.bot.tosscache[member.guild.id][p].append(member.id)
                         os.replace(
                             f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}",
