@@ -721,9 +721,9 @@ class ModToss(Cog):
                 ):
                     if str(member.id) == c[:-5]:
                         if member.guild.id not in self.bot.tosscache:
-                            self.bot.tosscache[ctx.guild.id] = {}
+                            self.bot.tosscache[member.guild.id] = {}
                         if p not in self.bot.tosscache[member.guild.id]:
-                            self.bot.tosscache[ctx.guild.id][p] = []
+                            self.bot.tosscache[member.guild.id][p] = []
                         self.bot.tosscache[member.guild.id][p].append(member.id)
                         os.replace(
                             f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}",
