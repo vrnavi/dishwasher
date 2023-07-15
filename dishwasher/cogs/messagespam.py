@@ -84,6 +84,10 @@ class Messagespam(Cog):
         if len(self.channelspam[message.guild.id]["senders"]) == 5:
             await message.channel.purge(limit=5)
             await message.channel.send("Detected and purged message spam.")
+            self.channelspam[message.guild.id] = {
+                "original_message": message.content,
+                "senders": [message.author.id],
+            }
 
 
 async def setup(bot: Bot):
