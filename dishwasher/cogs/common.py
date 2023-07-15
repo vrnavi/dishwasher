@@ -132,7 +132,7 @@ class Common(Cog):
         for id, invite in invites.items():
             real_invite = next((x for x in real_invites if x.id == id), None)
 
-            if real_invite is None:
+            if not real_invite:
                 # Invite does not exist anymore. Was either revoked manually
                 # or the final use was used up
                 probable_invites_used.append(invite)
