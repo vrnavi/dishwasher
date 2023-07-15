@@ -62,6 +62,8 @@ class NameCheck(Cog):
             name = "᲼" + name
 
         # Validate
+        if len(name) > 32:
+            name = name[:29] + "..."
         if name != member.display_name:
             await member.edit(nick=name, reason="Automatic Namecheck")
 
@@ -83,6 +85,8 @@ class NameCheck(Cog):
             name = "᲼" + name
 
         # Validate
+        if len(name) > 32:
+            name = name[:29] + "..."
         if name != member_after.display_name:
             await member_after.edit(nick=name, reason="Automatic Namecheck")
 
