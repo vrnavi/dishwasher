@@ -56,7 +56,7 @@ class Messagespam(Cog):
 
         if message.guild.id not in self.channelspam:
             self.channelspam[message.guild.id] = {}
-        if message.channel.id not in self.channelspam:
+        if message.channel.id not in self.channelspam[message.guild.id]:
             self.channelspam[message.guild.id] = {
                 "original_message": message.content,
                 "senders": [message.author.id],
