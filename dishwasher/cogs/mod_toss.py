@@ -661,6 +661,10 @@ class ModToss(Cog):
                         f"**Previous Roles:**{prev_roles}{bad_roles_msg}\n\n"
                         f"{toss_channel.mention}"
                     )
+                await message.reply(
+                    content=f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages.",
+                    mention_author=False,
+                )
                 return
         else:
             self.spamcounter[message.author.id]["original_message"] = message
@@ -741,10 +745,9 @@ class ModToss(Cog):
             )
             try:
                 await member.guild.fetch_ban(member)
+                out = f"🔨 {self.username_system(member)} got banned while tossed."
             except discord.NotFound:
                 out = f"🚪 {self.username_system(member)} left while tossed."
-            else:
-                out = f"🔨 {self.username_system(member)} got banned while tossed."
             if staff_channel:
                 await staff_channel.send(out)
             if session:
