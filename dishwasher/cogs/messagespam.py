@@ -57,7 +57,7 @@ class Messagespam(Cog):
         if message.guild.id not in self.channelspam:
             self.channelspam[message.guild.id] = {}
         if message.channel.id not in self.channelspam[message.guild.id]:
-            self.channelspam[message.guild.id] = {
+            self.channelspam[message.guild.id][message.channel.id] = {
                 "original_message": message.content,
                 "senders": [message.author.id],
             }
@@ -66,25 +66,34 @@ class Messagespam(Cog):
         if (
             message.content
             and message.content
-            == self.channelspam[message.guild.id]["original_message"]
+            == self.channelspam[message.guild.id][message.channel.id][
+                "original_message"
+            ]
             or not message.content
             and message.stickers
             and message.stickers[0].url
-            == self.channelspam[message.guild.id]["original_message"]
+            == self.channelspam[message.guild.id][message.channel.id][
+                "original_message"
+            ]
         ):
-            if message.author.id in self.channelspam[message.guild.id]["senders"]:
+            if (
+                message.author.id
+                in self.channelspam[message.guild.id][message.channel.id]["senders"]
+            ):
                 return
-            self.channelspam[message.guild.id]["senders"].append(message.author.id)
+            self.channelspam[message.guild.id][message.channel.id]["senders"].append(
+                message.author.id
+            )
         else:
-            self.channelspam[message.guild.id] = {
+            self.channelspam[message.guild.id][message.channel.id] = {
                 "original_message": message.content,
                 "senders": [message.author.id],
             }
 
-        if len(self.channelspam[message.guild.id]["senders"]) == 5:
+        if len(self.channelspam[message.guild.id][message.channel.id]["senders"]) == 5:
             await message.channel.purge(limit=5)
             await message.channel.send("Detected and purged message spam.")
-            self.channelspam[message.guild.id] = {
+            self.channelspam[message.guild.id][message.channel.id] = {
                 "original_message": message.content,
                 "senders": [message.author.id],
             }
