@@ -64,37 +64,32 @@ class Messagespam(Cog):
             }
             return
 
-        if all(
-            (
-                message.content,
-                message.content
-                == self.channelspam[message.guild.id][message.channel.id][
-                    "original_message"
-                ],
-            )
-        ) or all(
-            (
-                not message.content,
-                message.stickers,
-                message.stickers[0].url
-                == self.channelspam[message.guild.id][message.channel.id][
-                    "original_message"
-                ],
-            )
+        if (
+            message.content
+            and message.content
+            != self.channelspam[message.guild.id][message.channel.id][
+                "original_message"
+            ]
+            or message.stickers
+            and message.stickers[0].url
+            != self.channelspam[message.guild.id][message.channel.id][
+                "original_message"
+            ]
         ):
-            if (
-                message.author.id
-                in self.channelspam[message.guild.id][message.channel.id]["senders"]
-            ):
-                return
-            self.channelspam[message.guild.id][message.channel.id]["senders"].append(
-                message.author.id
-            )
-        else:
             self.channelspam[message.guild.id][message.channel.id] = {
                 "original_message": message.content,
                 "senders": [message.author.id],
             }
+            return
+
+        if (
+            message.author.id
+            in self.channelspam[message.guild.id][message.channel.id]["senders"]
+        ):
+            return
+        self.channelspam[message.guild.id][message.channel.id]["senders"].append(
+            message.author.id
+        )
 
         if len(self.channelspam[message.guild.id][message.channel.id]["senders"]) >= 5:
             await message.channel.purge(
