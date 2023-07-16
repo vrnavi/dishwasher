@@ -13,7 +13,6 @@ from helpers.sv_config import (
     set_config,
     stock_configs,
     friendly_names,
-    example_configs,
 )
 
 

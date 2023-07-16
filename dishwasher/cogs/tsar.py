@@ -192,6 +192,12 @@ class TSAR(Cog):
                 configs = set_config(
                     ctx.guild.id, "tsar", "roles", configs["tsar"]["roles"]
                 )
+                return await configmsg.edit(
+                    content="TSAR list nuked.",
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
             else:
                 return await configmsg.edit(
                     content="Aborted.",
