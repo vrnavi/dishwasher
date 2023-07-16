@@ -20,25 +20,31 @@ class TSAR(Cog):
     def cog_unload(self):
         self.toilet.cancel()
 
-    @Cog.listener()
-    async def on_member_join(self, member):
-        await self.bot.wait_until_ready()
+    def new_track(member):
         usertracks, uid = fill_usertrack(member.guild.id, member.id)
         if "jointime" not in usertracks[uid] or not usertracks[uid]["jointime"]:
             usertracks[uid]["jointime"] = int(member.joined_at.timestamp())
         set_usertrack(member.guild.id, json.dumps(usertracks))
 
     @Cog.listener()
+    async def on_member_join(self, member):
+        await self.bot.wait_until_ready()
+        if member.bot:
+            return
+        new_track(member)
+
+    @Cog.listener()
     async def on_member_remove(self, member):
         await self.bot.wait_until_ready()
-        usertracks, uid = fill_usertrack(member.guild.id, member.id)
-        if "jointime" not in usertracks[uid] or not usertracks[uid]["jointime"]:
-            usertracks[uid]["jointime"] = int(member.joined_at.timestamp())
-        set_usertrack(g, json.dumps(usertracks))
+        if member.bot:
+            return
+        new_track(member)
 
     @Cog.listener()
     async def on_message(self, message):
         await self.bot.wait_until_ready()
+        if message.author.bot or not message.guild:
+            return
         if message.guild.id not in self.interactivecache:
             self.interactivecache[message.guild.id] = []
         if message.author.id not in self.interactivecache[message.guild.id]:
