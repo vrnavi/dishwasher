@@ -37,7 +37,6 @@ stock_configs = {
     "tsar": {
         "enable": False,
         "roles": {},
-        "roles_example": "- add roleid=0 dayrequirement=0 cannothaveroles=0,0,0... musthaveroles=0,0,0...\n- del roleid=0\n- clear",
     },
     "autoapp": {
         "enable": False,
@@ -64,6 +63,9 @@ stock_configs = {
         "burstreacts_enable": False,
         "autoreadable_enable": False,
     },
+}
+example_configs = {
+    "roles_example": "- add roleid=0 dayrequirement=0 cannothaveroles=0,0,0... musthaveroles=0,0,0...\n- del roleid=0\n- clear"
 }
 friendly_names = {
     "enable": "Feature Enabled",
