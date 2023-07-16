@@ -46,7 +46,6 @@ class prefixes(Cog):
     async def add(self, ctx, *, arg: str):
         """[U] Adds a new prefix."""
         userdata, uid = fill_userdata(ctx.author.id)
-        print(userdata)
         if not len(userdata[uid]["prefixes"]) >= config.maxprefixes:
             userdata[uid]["prefixes"].append(f"{arg} ")
             set_userdata(json.dumps(userdata))
