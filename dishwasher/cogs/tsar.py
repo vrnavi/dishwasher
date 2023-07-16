@@ -47,7 +47,7 @@ class TSAR(Cog):
                 inline=False,
             )
         else:
-            for name, tsar in configs["tsar"]["roles"].items():
+            for name, tsar in list(configs["tsar"]["roles"].items()):
                 embed.add_field(
                     name=name,
                     value=f"**Role:** {ctx.guild.get_role(int(tsar['roleid'])).mention}\n"
