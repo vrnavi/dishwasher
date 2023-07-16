@@ -107,22 +107,22 @@ class TSAR(Cog):
                     mention_author=False,
                 )
             namemsg = await ctx.send(content="**Making new TSAR.**\nName of this TSAR?")
-            nameresp = waitformsg()
+            nameresp = await waitformsg()
             await namemsg.edit(
                 content=f"TSAR Name: `{nameresp.content}`", delete_after=5
             )
             IDmsg = await ctx.send(content="ID of the role to give?")
-            IDresp = waitformsg()
+            IDresp = await waitformsg()
             await IDmsg.edit(content=f"Role ID: `{IDresp.content}`", delete_after=5)
             mindaysmsg = await ctx.send(content="Minimum days?")
-            mindaysresp = waitformsg()
+            mindaysresp = await waitformsg()
             await mindaysmsg.edit(
                 content=f"Minimum days: `{mindaysresp.content}`", delete_after=5
             )
             blacklistedrolesmsg = await ctx.send(
                 content="Roles forbidden? (IDs separated by spaces, or none for none)"
             )
-            blacklistedrolesresp = waitformsg()
+            blacklistedrolesresp = await waitformsg()
             await blacklistedrolesmsg.edit(
                 content=f"Forbidden roles: `{blacklistedrolesresp.content}`",
                 delete_after=5,
@@ -130,7 +130,7 @@ class TSAR(Cog):
             requiredrolesmsg = await ctx.send(
                 content="Roles required? (IDs separated by spaces, or none for none)"
             )
-            requiredrolesresp = waitformsg()
+            requiredrolesresp = await waitformsg()
             await requiredrolesmsg.edit(
                 content=f"Required roles: `{requiredrolesresp.content}`", delete_after=5
             )
@@ -155,7 +155,7 @@ class TSAR(Cog):
             )
         elif str(reaction) == "❌":
             namemsg = await ctx.send(content="**Removing a TSAR.**\nName of this TSAR?")
-            nameresp = waitformsg()
+            nameresp = await waitformsg()
             await namemsg.delete()
             del configs["tsar"]["roles"][nameresp.content]
             configs = set_config(
@@ -169,7 +169,7 @@ class TSAR(Cog):
             )
         elif str(reaction) == "💣":
             confirmmsg = await ctx.send(content="Nuke the **ENTIRE** TSAR list?")
-            confirmresp = waitformsg()
+            confirmresp = await waitformsg()
             await confirmmsg.delete()
             if confirmresp.lower() == "yes":
                 configs["tsar"]["roles"] = {}
