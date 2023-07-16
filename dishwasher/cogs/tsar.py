@@ -187,7 +187,7 @@ class TSAR(Cog):
             confirmmsg = await ctx.send(content="Nuke the **ENTIRE** TSAR list?")
             confirmresp = await waitformsg()
             await confirmmsg.delete()
-            if confirmresp.lower() == "yes":
+            if confirmresp.content.lower() == "yes":
                 configs["tsar"]["roles"] = {}
                 configs = set_config(
                     ctx.guild.id, "tsar", "roles", configs["tsar"]["roles"]
