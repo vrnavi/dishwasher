@@ -38,15 +38,22 @@ class TSAR(Cog):
         embed.title = "⚙️ TSAR Configuration Editor"
         embed.color = ctx.author.color
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
-        for name, tsar in configs["tsar"]["roles"].items():
+        if not configs["tsar"]["roles"]:
             embed.add_field(
-                name=name,
-                value=f"**Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
-                + f"**Minimum Days:** `{tsar['mindays']}`\n"
-                + f"**Forbidden Roles:** {' '.join(ctx.guild.get_role(s).mention for s in tsar['blacklisted']) if tsar['blacklisted'] else 'None'}\n"
-                + f"**Required Roles:** {' '.join(ctx.guild.get_role(s).mention for s in tsar['required']) if tsar['required'] else 'None'}",
+                name="Currently empty!",
+                value="Click the sparkle icon to get started.",
                 inline=False,
             )
+        else:
+            for name, tsar in configs["tsar"]["roles"].items():
+                embed.add_field(
+                    name=name,
+                    value=f"**Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
+                    + f"**Minimum Days:** `{tsar['mindays']}`\n"
+                    + f"**Forbidden Roles:** {' '.join(ctx.guild.get_role(s).mention for s in tsar['blacklisted']) if tsar['blacklisted'] else 'None'}\n"
+                    + f"**Required Roles:** {' '.join(ctx.guild.get_role(s).mention for s in tsar['required']) if tsar['required'] else 'None'}",
+                    inline=False,
+                )
         configmsg = await ctx.reply(embed=embed, mention_author=False)
         for e in navigation_reactions:
             await configmsg.add_reaction(e)
