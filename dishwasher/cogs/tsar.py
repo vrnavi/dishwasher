@@ -75,7 +75,7 @@ class TSAR(Cog):
                 content="Operation timed out.",
                 embed=None,
                 delete_after=5,
-                allowed_mentions=allowed_mentions,
+                allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
 
         async def waitformsg():
@@ -89,7 +89,7 @@ class TSAR(Cog):
                     content="Operation timed out.",
                     embed=None,
                     delete_after=5,
-                    allowed_mentions=allowed_mentions,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
                 )
             return message
 
@@ -98,7 +98,7 @@ class TSAR(Cog):
                 content="Operation cancelled.",
                 embed=None,
                 delete_after=5,
-                allowed_mentions=allowed_mentions,
+                allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         elif str(reaction) == "✨":
             if len(configs["tsar"]["roles"]) == 20:
@@ -151,7 +151,7 @@ class TSAR(Cog):
                 content="TSAR list updated.",
                 embed=None,
                 delete_after=5,
-                allowed_mentions=allowed_mentions,
+                allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         elif str(reaction) == "❌":
             namemsg = await ctx.send(content="**Removing a TSAR.**\nName of this TSAR?")
@@ -165,7 +165,7 @@ class TSAR(Cog):
                 content="TSAR list updated.",
                 embed=None,
                 delete_after=5,
-                allowed_mentions=allowed_mentions,
+                allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         elif str(reaction) == "💣":
             confirmmsg = await ctx.send(content="Nuke the **ENTIRE** TSAR list?")
@@ -181,7 +181,7 @@ class TSAR(Cog):
                     content="Aborted.",
                     embed=None,
                     delete_after=5,
-                    allowed_mentions=allowed_mentions,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
                 )
 
     @Cog.listener()
