@@ -35,7 +35,6 @@ stock_configs = {
         "log_roles": [],
     },
     "tsar": {
-        "enable": False,
         "roles": {},
     },
     "autoapp": {
@@ -63,9 +62,6 @@ stock_configs = {
         "burstreacts_enable": False,
         "autoreadable_enable": False,
     },
-}
-example_configs = {
-    "roles_example": "- add roleid=0 dayrequirement=0 cannothaveroles=0,0,0... musthaveroles=0,0,0...\n- del roleid=0\n- clear"
 }
 friendly_names = {
     "enable": "Feature Enabled",
@@ -156,29 +152,15 @@ def set_config(sid, part, key, value):
             if value.split()[0] == "add":
                 value = pre_cfg + value.split()[1:]
             elif value.split()[0] == "del":
-                pre_cfg.remove(v)
+                for v in value.split()[1:]:
+                    pre_cfg.remove(v)
                 value = pre_cfg
         else:
             value = []
     elif settingtype == "bool":
         value = True if str(value).title() == "True" else False
     elif settingtype == "dict":
-        pre_cfg = configs[category][setting]
-        if value.split()[0] == "add":
-            if value.split()[1].split("=")[1] not in pre_cfg:
-                pre_cfg[value.split()[1].split("=")[1]] = {}
-            for v in value.split()[2:]:
-                pre_cfg[value.split()[1].split("=")[1]][v.split("=")[0]] = (
-                    v.split("=")[1].split(",")
-                    if "," in v.split("=")[1]
-                    else v.split("=")[1]
-                )
-            value = pre_cfg
-        elif value.split()[0] == "del":
-            del pre_cfg[value.split("=")[1]]
-            value = pre_cfg
-        elif value.split()[0] == "clear":
-            pre_cfg = {}
+        pass
 
     if part not in configs:
         configs[part] = {}

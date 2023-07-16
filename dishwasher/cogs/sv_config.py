@@ -98,7 +98,7 @@ class sv_config(Cog):
                         delete_after=5,
                         allowed_mentions=allowed_mentions,
                     )
-                if str(reaction) == "⬅️":
+                elif str(reaction) == "⬅️":
                     if hindex != 1:
                         hindex -= 1
                     vindex = 0
@@ -135,23 +135,22 @@ class sv_config(Cog):
                 elif settingtype == "int":
                     editingmsg += "n integer. Set this by replying with a number."
                 elif settingtype == "list":
-                    editingmsg += " list. Set this by replying with a list of whatevers, separated by spaces."
+                    editingmsg += " list. Set this by replying with a list of whatevers, separated by spaces.\nYou can also prefix the list with `add` or `del` to add or remove specific items."
                 elif settingtype == "bool":
                     editingmsg += (
                         " boolean. Set this by replying with `true` or `false`."
                     )
                 elif settingtype == "dict":
-                    editingmsg += (
-                        f" dictionary. You must follow the below example.\n"
-                        + str(example_configs[key + "_example"])
-                    )
+                    editingmsg += f" dictionary, and requires in-depth configuration. You must configure this from a different command, `{page[0].lower()}`."
+                    pagemode = "play"
+                    continue
                 if value:
                     editingmsg += '\nYou can also reply with "none" to remove the current value, or "stop" to cancel the operation.'
                 configsuppmsg = await ctx.send(content=editingmsg)
 
                 try:
                     message = await self.bot.wait_for(
-                        "message", timeout=30.0, check=messagecheck
+                        "message", timeout=300.0, check=messagecheck
                     )
                 except asyncio.TimeoutError:
                     await configsuppmsg.delete()
