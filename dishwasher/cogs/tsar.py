@@ -69,7 +69,7 @@ class TSAR(Cog):
                 allowed_mentions=allowed_mentions,
             )
 
-        def waitformsg():
+        async def waitformsg():
             try:
                 message = await self.bot.wait_for(
                     "message", timeout=300.0, check=messagecheck
