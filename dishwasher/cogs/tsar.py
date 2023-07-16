@@ -2,6 +2,7 @@ import config
 import datetime
 import discord
 import json
+import asyncio
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff, check_if_bot_manager
@@ -53,8 +54,22 @@ class TSAR(Cog):
                     name=name,
                     value=f"**Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
                     + f"**Minimum Days:** `{tsar['mindays']}`\n"
-                    # + f"**Forbidden Roles:** {', '.join([ctx.guild.get_role(int(s)).mention for s in tsar['blacklisted']]) if tsar['blacklisted'] else 'None'}\n"
-                    + f"**Required Roles:** {', '.join([ctx.guild.get_role(int(s)).mention for s in tsar['required']]) if tsar['required'] else 'None'}",
+                    + f"**Forbidden Roles:** "
+                    + ", ".join(
+                        [
+                            ctx.guild.get_role(int(s)).mention
+                            for s in tsar["blacklisted"]
+                        ]
+                    )
+                    if tsar["blacklisted"]
+                    else "None"
+                    + "\n"
+                    + f"**Required Roles: **"
+                    + ", ".join(
+                        [ctx.guild.get_role(int(s)).mention for s in tsar["required"]]
+                    )
+                    if tsar["required"]
+                    else "None" + "\n",
                     inline=False,
                 )
         configmsg = await ctx.reply(embed=embed, mention_author=False)
