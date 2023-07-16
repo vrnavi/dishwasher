@@ -20,7 +20,7 @@ class TSAR(Cog):
     def cog_unload(self):
         self.toilet.cancel()
 
-    def new_track(member):
+    def new_track(self, member):
         usertracks, uid = fill_usertrack(member.guild.id, member.id)
         if "jointime" not in usertracks[uid] or not usertracks[uid]["jointime"]:
             usertracks[uid]["jointime"] = int(member.joined_at.timestamp())
@@ -31,14 +31,14 @@ class TSAR(Cog):
         await self.bot.wait_until_ready()
         if member.bot:
             return
-        new_track(member)
+        self.new_track(member)
 
     @Cog.listener()
     async def on_member_remove(self, member):
         await self.bot.wait_until_ready()
         if member.bot:
             return
-        new_track(member)
+        self.new_track(member)
 
     @Cog.listener()
     async def on_message(self, message):

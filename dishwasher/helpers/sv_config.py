@@ -16,14 +16,6 @@ stock_configs = {
         "appeal_url": "",
         "tracker_channel": 0,
     },
-    "autoapp": {
-        "enable": False,
-        "autoapp_channel": 0,
-        "autoapp_id": 0,
-        "autoapp_staledays": 0,
-        "autoapp_name": "",
-        "autoapp_msg": "",
-    },
     "toss": {
         "enable": False,
         "toss_role": 0,
@@ -35,18 +27,25 @@ stock_configs = {
         "drive_folder": "",
         "unroleban_expiry": 0,
     },
-    "antiraid": {
-        "enable": False,
-        "announce_channels": [],
-        "mention_threshold": 0,
-        "join_threshold": 0,
-    },
     "surveyr": {
         "enable": False,
         "survey_channel": 0,
         "start_case": 0,
         "log_types": [],
         "log_roles": [],
+    },
+    "tsar": {
+        "enable": False,
+        "roles": {},
+        "roles_example": "- add roleid=0 dayrequirement=0 cannothaveroles=0,0,0... musthaveroles=0,0,0...\n- del roleid=0\n- clear",
+    },
+    "autoapp": {
+        "enable": False,
+        "autoapp_channel": 0,
+        "autoapp_id": 0,
+        "autoapp_staledays": 0,
+        "autoapp_name": "",
+        "autoapp_msg": "",
     },
     "cotd": {
         "enable": False,
@@ -161,6 +160,23 @@ def set_config(sid, part, key, value):
             value = []
     elif settingtype == "bool":
         value = True if str(value).title() == "True" else False
+    elif settingtype == "dict":
+        pre_cfg = configs[category][setting]
+        if value.split()[0] == "add":
+            if value.split()[1].split("=")[1] not in pre_cfg:
+                pre_cfg[value.split()[1].split("=")[1]] = {}
+            for v in value.split()[2:]:
+                pre_cfg[value.split()[1].split("=")[1]][v.split("=")[0]] = (
+                    v.split("=")[1].split(",")
+                    if "," in v.split("=")[1]
+                    else v.split("=")[1]
+                )
+            value = pre_cfg
+        elif value.split()[0] == "del":
+            del pre_cfg[value.split("=")[1]]
+            value = pre_cfg
+        elif value.split()[0] == "clear":
+            pre_cfg = {}
 
     if part not in configs:
         configs[part] = {}

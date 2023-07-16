@@ -56,6 +56,8 @@ class sv_config(Cog):
             embed.description = f"Page `{hindex}` of `{hlimit}` for server {guild}.\nTweak a setting with `{config.prefixes[0]}configs set {page[0]} <setting> <value>`."
             lines = ""
             for i, (k, v) in enumerate(page[1].items()):
+                if "_example" in k:
+                    continue
                 friendly = f"**{friendly_names[k]}**\n" if k in friendly_names else ""
                 if pagemode == "rec" and vindex == i + 1:
                     setting = f"> **`{k}`**"
@@ -138,6 +140,11 @@ class sv_config(Cog):
                 elif settingtype == "bool":
                     editingmsg += (
                         " boolean. Set this by replying with `true` or `false`."
+                    )
+                elif settingtype == "dict":
+                    editingmsg += (
+                        f" dictionary. You must follow the below example.\n"
+                        + str(configs[page[0]][key + "_example"])
                     )
                 if value:
                     editingmsg += '\nYou can also reply with "none" to remove the current value, or "stop" to cancel the operation.'
