@@ -52,9 +52,9 @@ class TSAR(Cog):
                 embed.add_field(
                     name=name,
                     value=f"**Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
-                    + f"**Minimum Days:** `{tsar['mindays']}`\n"
-                    + f"**Forbidden Roles:** {', '.join([ctx.guild.get_role(int(s)).mention for s in tsar['blacklisted']]) if tsar['blacklisted'] else 'None'}\n"
-                    + f"**Required Roles:** {', '.join([ctx.guild.get_role(int(s)).mention for s in tsar['required']]) if tsar['required'] else 'None'}",
+                    # + f"**Minimum Days:** `{tsar['mindays']}`\n"
+                    # + f"**Forbidden Roles:** {', '.join([ctx.guild.get_role(int(s)).mention for s in tsar['blacklisted']]) if tsar['blacklisted'] else 'None'}\n"
+                    # + f"**Required Roles:** {', '.join([ctx.guild.get_role(int(s)).mention for s in tsar['required']]) if tsar['required'] else 'None'}",
                     inline=False,
                 )
         configmsg = await ctx.reply(embed=embed, mention_author=False)
