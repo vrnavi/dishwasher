@@ -5,6 +5,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff, check_if_bot_manager
 from helpers.usertrack import get_usertrack, fill_usertrack, set_usertrack
+from helpers.sv_config import fill_config, set_config
 
 
 class TSAR(Cog):
