@@ -15,7 +15,7 @@ def make_usertrack(serverid):
 
 def get_usertrack(serverid):
     if not os.path.exists(f"{server_data}/{serverid}/usertrack.json"):
-        usertracks = make_usertracks(serverid)
+        usertracks = make_usertrack(serverid)
     with open(f"{server_data}/{serverid}/usertrack.json", "r") as f:
         return json.load(f)
 

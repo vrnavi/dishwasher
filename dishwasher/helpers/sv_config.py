@@ -147,7 +147,7 @@ def set_config(sid, part, key, value):
         else:
             value = 0
     elif settingtype == "list":
-        pre_cfg = configs[category][setting]
+        pre_cfg = configs[part][key]
         if value:
             if value.split()[0] == "add":
                 value = pre_cfg + value.split()[1:]
