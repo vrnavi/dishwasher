@@ -610,25 +610,33 @@ class ModToss(Cog):
             in message.author.roles
         ):
             return
+
         staff_channel = message.guild.get_channel(
             get_config(message.guild.id, "staff", "staff_channel")
         )
         staff_role = message.guild.get_role(
             get_config(message.guild.id, "staff", "staff_role")
         )
+
         if message.author.id not in self.spamcounter:
             self.spamcounter[message.author.id] = {}
         if "original_message" not in self.spamcounter[message.author.id]:
             self.spamcounter[message.author.id]["original_message"] = message
             return
+
         cutoff_ts = self.spamcounter[message.author.id][
             "original_message"
         ].created_at + timedelta(seconds=10)
+
         if (
-            message.content
-            == self.spamcounter[message.author.id]["original_message"].content
-            or self.principal_period(message.content)
-            == self.spamcounter[message.author.id]["original_message"].content
+            any(
+                (
+                    message.content
+                    == self.spamcounter[message.author.id]["original_message"].content,
+                    self.principal_period(message.content)
+                    == self.spamcounter[message.author.id]["original_message"].content,
+                )
+            )
             and message.created_at < cutoff_ts
         ):
             if "spamcounter" not in self.spamcounter[message.author.id]:
