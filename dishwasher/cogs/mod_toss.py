@@ -738,8 +738,8 @@ class ModToss(Cog):
                             self.bot.tosscache[member.guild.id][p] = []
                         self.bot.tosscache[member.guild.id][p].append(member.id)
                         os.replace(
-                            f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}",
-                            f"{self.bot.server_data}/{after.guild.id}/toss/left_while_tossed/{c}",
+                            f"{self.bot.server_data}/{member.guild.id}/toss/{p}/{c}",
+                            f"{self.bot.server_data}/{member.guild.id}/toss/left_while_tossed/{c}",
                         )
                         for channel in member.guild.channels:
                             if channel.name == p:
