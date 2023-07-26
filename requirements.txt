@@ -1,4 +1,4 @@
-aiohttp==3.8.4
+aiohttp==3.8.5
 deepl==1.14.0
 discord.py==2.2.3
 gidgethub==5.2.1
