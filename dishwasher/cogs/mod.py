@@ -10,6 +10,7 @@ from helpers.checks import check_if_staff, check_if_bot_manager
 from helpers.userlogs import userlog
 from helpers.placeholders import random_self_msg, random_bot_msg
 from helpers.sv_config import get_config
+from helpers.embeds import stock_embed, author_embed, mod_embed
 import io
 
 
@@ -87,27 +88,13 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Colour.from_str("#FFFF00"),
-            title="👢 Kick",
-            description=f"{target.mention} was kicked by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{self.bot.escape_message(target)}",
-            icon_url=f"{target.display_avatar.url}",
-        )
-        embed.add_field(
-            name=f"👤 User",
-            value=f"**{safe_name}**\n{target.mention} ({target.id})",
-            inline=True,
-        )
-        embed.add_field(
-            name=f"🛠️ Staff",
-            value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-            inline=True,
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Colour.from_str("#FFFF00")
+        embed.title = "👢 Kick"
+        embed.description = f"{target.mention} was kicked by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+        author_embed(embed, target)
+        mod_embed(embed, target, ctx.author)
+
         if reason:
             embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
         else:
@@ -116,6 +103,7 @@ class Mod(Cog):
                 value=f"**No reason was set!**\nPlease use `{config.prefixes[0]}kick <user> [reason]` in the future.\Kick reasons are sent to the user.",
                 inline=False,
             )
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -151,8 +139,14 @@ class Mod(Cog):
         if ctx.guild.get_member(target.id) is not None:
             dm_message = f"**You were banned** from `{ctx.guild.name}`."
             if reason:
-                dm_message += f'\n*The given reason is:* "{reason}".'
-            dm_message += "\n\nThis ban does not expire, but you may appeal it here:\nhttps://os.whistler.page/appeal"
+                dm_message += (
+                    f'\n*The given reason is:* "{reason}".\n\nThis ban does not expire'
+                )
+            dm_message += (
+                f", but you may appeal it here:\n{get_config(ctx.guild.id, 'staff', 'appeal_url')}"
+                if get_config(ctx.guild.id, "staff", "appeal_url")
+                else "."
+            )
             try:
                 await target.send(dm_message)
             except discord.errors.Forbidden:
@@ -173,27 +167,13 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Colour.from_str("#FF0000"),
-            title="⛔ Ban",
-            description=f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{self.bot.escape_message(target)}",
-            icon_url=f"{target.display_avatar.url}",
-        )
-        embed.add_field(
-            name=f"👤 User",
-            value=f"**{safe_name}**\n{target.mention} ({target.id})",
-            inline=True,
-        )
-        embed.add_field(
-            name=f"🛠️ Staff",
-            value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-            inline=True,
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Colour.from_str("#FF0000")
+        embed.title = "⛔ Ban"
+        embed.description = f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+        author_embed(embed, target)
+        mod_embed(embed, target, ctx.author)
+
         if reason:
             embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
         else:
@@ -202,6 +182,7 @@ class Mod(Cog):
                 value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}ban <user> [reason]` in the future.\nBan reasons are sent to the user.",
                 inline=False,
             )
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -274,27 +255,13 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Colour.from_str("#FF0000"),
-            title="⛔ Ban",
-            description=f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{self.bot.escape_message(target)}",
-            icon_url=f"{target.display_avatar.url}",
-        )
-        embed.add_field(
-            name=f"👤 User",
-            value=f"**{safe_name}**\n{target.mention} ({target.id})",
-            inline=True,
-        )
-        embed.add_field(
-            name=f"🛠️ Staff",
-            value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-            inline=True,
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Colour.from_str("#FF0000")
+        embed.title = "⛔ Ban"
+        embed.description = f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+        author_embed(embed, target)
+        mod_embed(embed, target, ctx.author)
+
         if reason:
             embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
         else:
@@ -303,6 +270,7 @@ class Mod(Cog):
                 value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}dban <user> [reason]` in the future.\nBan reasons are sent to the user.",
                 inline=False,
             )
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -350,30 +318,14 @@ class Mod(Cog):
             if not mlog:
                 continue
 
-            embed = discord.Embed(
-                color=discord.Colour.from_str("#FF0000"),
-                title="🚨 Massban",
-                description=f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-                timestamp=datetime.datetime.now(),
-            )
-            embed.set_footer(
-                text=self.bot.user.name, icon_url=self.bot.user.display_avatar
-            )
-            embed.set_author(
-                name=f"{self.bot.escape_message(target)}",
-                icon_url=f"{target.display_avatar.url}",
-            )
-            embed.add_field(
-                name=f"👤 User",
-                value=f"**{safe_name}**\n{target.mention} ({target.id})",
-                inline=True,
-            )
-            embed.add_field(
-                name=f"🛠️ Staff",
-                value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-                inline=True,
-            )
+            embed = stock_embed(self.bot)
+            embed.color = discord.Colour.from_str("#FF0000")
+            embed.title = "🚨 Massban"
+            embed.description = f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+            author_embed(embed, target)
+            mod_embed(embed, target, ctx.author)
             await mlog.send(embed=embed)
+
         await msg.edit(f"All {len(targets_int)} users are now BANNED.")
 
     @commands.guild_only()
@@ -395,28 +347,13 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        # Prepare embed msg
-        embed = discord.Embed(
-            color=discord.Colour.from_str("#00FF00"),
-            title="🎁 Unban",
-            description=f"{target.mention} was unbanned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{self.bot.escape_message(target)}",
-            icon_url=f"{target.display_avatar.url}",
-        )
-        embed.add_field(
-            name=f"👤 User",
-            value=f"**{safe_name}**\n{target.mention} ({target.id})",
-            inline=True,
-        )
-        embed.add_field(
-            name=f"🛠️ Staff",
-            value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-            inline=True,
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Colour.from_str("#00FF00")
+        embed.title = "🎁 Unban"
+        embed.description = f"{target.mention} was unbanned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+        author_embed(embed, target)
+        mod_embed(embed, target, ctx.author)
+
         if reason:
             embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
         else:
@@ -425,6 +362,7 @@ class Mod(Cog):
                 value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}unban <user> [reason]` in the future.",
                 inline=False,
             )
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -457,8 +395,8 @@ class Mod(Cog):
             ctx, str(target)
         )
 
-        await target.ban(
-            reason=f"{ctx.author}, reason: {reason}", delete_message_days=0
+        await ctx.guild.ban(
+            target, reason=f"[ Ban by {ctx.author} ] {reason}", delete_message_days=0
         )
         await ctx.send(f"{safe_name} is now silently BANNED.")
 
@@ -467,28 +405,13 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        # Prepare embed msg
-        embed = discord.Embed(
-            color=discord.Colour.from_str("#FF0000"),
-            title="⛔ Silent Ban",
-            description=f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{self.bot.escape_message(target)}",
-            icon_url=f"{target.display_avatar.url}",
-        )
-        embed.add_field(
-            name=f"👤 User",
-            value=f"**{safe_name}**\n{target.mention} ({target.id})",
-            inline=True,
-        )
-        embed.add_field(
-            name=f"🛠️ Staff",
-            value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-            inline=True,
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Colour.from_str("#FF0000")
+        embed.title = "⛔ Silent Ban"
+        embed.description = f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+        author_embed(embed, target)
+        mod_embed(embed, target, ctx.author)
+
         if reason:
             embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
         else:
@@ -537,16 +460,14 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Color.lighter_gray(),
-            title="🗑 Purged",
-            description=f"{str(ctx.author)} purged {deleted} messages in {channel.mention}.",
-            timestamp=datetime.datetime.now(),
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = (
+            f"{str(ctx.author)} purged {deleted} messages in {channel.mention}."
         )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{str(ctx.author)}", icon_url=f"{ctx.author.display_avatar.url}"
-        )
+        author_embed(embed, ctx.author)
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -568,16 +489,14 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Color.lighter_gray(),
-            title="🗑 Purged",
-            description=f"{str(ctx.author)} purged {deleted} bot messages in {channel.mention}.",
-            timestamp=datetime.datetime.now(),
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = (
+            f"{str(ctx.author)} purged {deleted} bot messages in {channel.mention}."
         )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{str(ctx.author)}", icon_url=f"{ctx.author.display_avatar.url}"
-        )
+        author_embed(embed, ctx.author)
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -605,16 +524,12 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Color.lighter_gray(),
-            title="🗑 Purged",
-            description=f"{str(ctx.author)} purged {deleted} messages from {target} in {channel.mention}.",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{str(ctx.author)}", icon_url=f"{ctx.author.display_avatar.url}"
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = f"{str(ctx.author)} purged {deleted} messages from {target} in {channel.mention}."
+        author_embed(embed, ctx.author)
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -636,16 +551,14 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Color.lighter_gray(),
-            title="🗑 Purged",
-            description=f"{str(ctx.author)} purged {deleted} emotes in {channel.mention}.",
-            timestamp=datetime.datetime.now(),
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = (
+            f"{str(ctx.author)} purged {deleted} emotes in {channel.mention}."
         )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{str(ctx.author)}", icon_url=ctx.author.display_avatar.url
-        )
+        author_embed(embed, ctx.author)
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -667,16 +580,14 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Color.lighter_gray(),
-            title="🗑 Purged",
-            description=f"{str(ctx.author)} purged {deleted} embeds in {channel.mention}.",
-            timestamp=datetime.datetime.now(),
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = (
+            f"{str(ctx.author)} purged {deleted} embeds in {channel.mention}."
         )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{str(ctx.author)}", icon_url=f"{ctx.author.display_avatar.url}"
-        )
+        author_embed(embed, ctx.author)
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
@@ -699,92 +610,15 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Color.lighter_gray(),
-            title="🗑 Purged",
-            description=f"{str(ctx.author)} purged {deleted} reactions in {channel.mention}.",
-            timestamp=datetime.datetime.now(),
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = (
+            f"{str(ctx.author)} purged {deleted} reactions in {channel.mention}."
         )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{str(ctx.author)}", icon_url=f"{ctx.author.display_avatar.url}"
-        )
+        author_embed(embed, ctx.author)
+
         await mlog.send(embed=embed)
-
-    @commands.guild_only()
-    @commands.check(check_if_staff)
-    @purge.command()
-    async def ireacts(self, ctx):
-        """[S] Clears reactions interactively."""
-        deleted = 0
-        msg = await ctx.channel.send(
-            content="🔎 **Interactive Reactions enabled.** React here when done."
-        )
-        tasks = []
-
-        def check(event):
-            # we only care about the user who is clearing reactions
-            if event.user_id != ctx.author.id:
-                return False
-            # this is how the user finishes
-            if event.message_id == msg.id:
-                return True
-            else:
-                # remove a reaction
-                async def impl():
-                    msg = (
-                        await self.bot.get_guild(event.guild_id)
-                        .get_channel(event.channel_id)
-                        .fetch_message(event.message_id)
-                    )
-
-                    def check_emoji(r):
-                        if event.emoji.is_custom_emoji() == r.custom_emoji:
-                            if event.emoji.is_custom_emoji():
-                                return event.emoji.id == r.emoji.id
-                            else:
-                                # gotta love consistent APIs
-                                return event.emoji.name == r.emoji
-                        else:
-                            return False
-
-                    for reaction in filter(check_emoji, msg.reactions):
-                        async for u in reaction.users():
-                            deleted += 1
-                            await reaction.message.remove_reaction(reaction, u)
-
-                # schedule immediately
-                tasks.append(asyncio.create_task(impl()))
-                return False
-
-        try:
-            await self.bot.wait_for("raw_reaction_add", timeout=120.0, check=check)
-        except asyncio.TimeoutError:
-            await msg.edit(content=f"Operation timed out.")
-        else:
-            await asyncio.gather(*tasks)
-            await msg.edit(
-                f"🚮 `{deleted}` reactions interactively purged.", delete_after=5
-            )
-
-            mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
-            if not mlog:
-                return
-            mlog = await self.bot.fetch_channel(mlog)
-
-            embed = discord.Embed(
-                color=discord.Color.lighter_gray(),
-                title="🗑 Purged",
-                description=f"{str(ctx.author)} purged {deleted} reactions interactively in {channel.mention}.",
-                timestamp=datetime.datetime.now(),
-            )
-            embed.set_footer(
-                text=self.bot.user.name, icon_url=self.bot.user.display_avatar
-            )
-            embed.set_author(
-                name=f"{str(ctx.author)}", icon_url=f"{ctx.author.display_avatar.url}"
-            )
-            await mlog.send(embed=embed)
 
     @commands.guild_only()
     @commands.check(check_if_staff)
@@ -846,27 +680,13 @@ class Mod(Cog):
             return
         mlog = await self.bot.fetch_channel(mlog)
 
-        embed = discord.Embed(
-            color=discord.Colour.from_str("#FFFF00"),
-            title=f"🗞️ Warn #{warn_count}",
-            description=f"{target.mention} was warned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.display_avatar)
-        embed.set_author(
-            name=f"{self.bot.escape_message(target)}",
-            icon_url=f"{target.display_avatar.url}",
-        )
-        embed.add_field(
-            name=f"👤 User",
-            value=f"**{safe_name}**\n{target.mention} ({target.id})",
-            inline=True,
-        )
-        embed.add_field(
-            name=f"🛠️ Staff",
-            value=f"**{str(ctx.author)}**\n{ctx.author.mention} ({ctx.author.id})",
-            inline=True,
-        )
+        embed = stock_embed(self.bot)
+        embed.color = discord.Colour.from_str("#FFFF00")
+        embed.title = f"🗞️ Warn #{warn_count}"
+        embed.description = f"{target.mention} was warned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+        author_embed(embed, target)
+        mod_embed(embed, target, ctx.author)
+
         if reason:
             embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
         else:
@@ -875,6 +695,7 @@ class Mod(Cog):
                 value=f"**No reason was set!**\nPlease use `{config.prefixes[0]}warn <user> [reason]` in the future.\Warn reasons are sent to the user.",
                 inline=False,
             )
+
         await mlog.send(embed=embed)
 
     @commands.guild_only()
