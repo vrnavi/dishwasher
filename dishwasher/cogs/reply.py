@@ -49,9 +49,31 @@ class Reply(Cog):
 
         if reference_author in message.mentions:
             if message.author.id not in self.usercounts:
-                self.usercounts[message.author.id] = 1
-            else:
-                self.usercounts[message.author.id] += 1
+                self.usercounts[message.author.id] = 0
+                cutoff_ts = datetime.datetime.now(
+                    datetime.timezone.utc
+                ) - datetime.timedelta(days=14)
+                if message.author.joined_at >= cutoff_ts:
+                    return await message.reply(
+                        content="**Do not reply ping users who do not wish to be pinged.** As you are new, this first time will not be a violation.",
+                        file=discord.File("assets/noreply.png"),
+                        mention_author=True,
+                    )
+
+            self.usercounts[message.author.id] += 1
+            counts = [
+                "0️⃣",
+                "1️⃣",
+                "2️⃣",
+                "3️⃣",
+                "4️⃣",
+                "5️⃣",
+                "6️⃣",
+                "7️⃣",
+                "8️⃣",
+                "9️⃣",
+                "🔟",
+            ]
 
             if self.usercounts[message.author.id] == 5:
                 await message.reply(
@@ -60,34 +82,41 @@ class Reply(Cog):
                 )
                 self.usercounts[message.author.id] = 0
                 return
+            elif self.usercounts[message.author.id] == 1:
+                nagmsg = await message.reply(
+                    content=f"**This is your first reply ping violation.** Do not exceed `5` violations today.",
+                    file=discord.File("assets/noreply.png"),
+                    mention_author=True,
+                )
 
             await message.add_reaction("🗞️")
-            nagmsg = await message.reply(
-                content=f"This is violation number `{self.usercounts[message.author.id]}`. Do not exceed `5` violations today.",
-                file=discord.File("assets/noreply.png"),
-                mention_author=True,
-            )
-            await nagmsg.add_reaction("🛑")
+            await message.add_reaction(counts[self.usercounts[message.author.id]])
+            await message.add_reaction("🛑")
 
             def check(r, u):
                 return (
                     u.id == reference_author.id
                     and str(r.emoji) == "🛑"
-                    and r.message.id == nagmsg.id
+                    and r.message.id == message.id
                 )
 
             try:
                 await self.bot.wait_for("reaction_add", timeout=15.0, check=check)
             except asyncio.TimeoutError:
-                await nagmsg.delete()
+                await message.clear_reaction("🛑")
             else:
+                await message.clear_reaction("🗞️")
+                await message.clear_reaction(counts[self.usercounts[message.author.id]])
+                await message.clear_reaction("🛑")
                 self.usercounts[message.author.id] -= 1
-                await message.remove_reaction("🗞️", self.bot.user)
-                await nagmsg.edit(
-                    content=f"Violation pardoned. You now have `{self.usercounts[message.author.id]}` violations.",
-                    attachments=[],
-                    delete_after=15,
-                )
+                await message.add_reaction("👍")
+                await message.add_reaction(counts[self.usercounts[message.author.id]])
+                if self.usercounts[message.author.id] == 1:
+                    await nagmsg.edit(
+                        content=f"Violation pardoned. You now have `{self.usercounts[message.author.id]}` violations.",
+                        attachments=[],
+                        delete_after=5,
+                    )
             return
 
     @commands.guild_only()
