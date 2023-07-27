@@ -97,7 +97,7 @@ friendly_names = {
     "embed_enable": "Messagescan Feature Enabled",
     "translate_enable": "Translate Feature Enabled",
     "burstreacts_enable": "Burstreacts Feature Enabled",
-    "burstreacts_enable": "Autoreadable Feature Enabled",
+    "autoreadable_enable": "Autoreadable Feature Enabled",
 }
 server_data = "data/servers"
 
