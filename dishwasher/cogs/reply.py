@@ -112,7 +112,7 @@ class Reply(Cog):
                 self.usercounts[message.author.id] -= 1
                 await message.add_reaction("👍")
                 await message.add_reaction(counts[self.usercounts[message.author.id]])
-                if self.usercounts[message.author.id] == 1:
+                if self.usercounts[message.author.id] + 1 == 1:
                     await nagmsg.edit(
                         content=f"Violation pardoned. You now have `{self.usercounts[message.author.id]}` violations.",
                         attachments=[],
