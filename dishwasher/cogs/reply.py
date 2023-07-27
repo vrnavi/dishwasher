@@ -87,6 +87,7 @@ class Reply(Cog):
                     content=f"**This is your first reply ping violation.** Do not exceed `5` violations today.",
                     file=discord.File("assets/noreply.png"),
                     mention_author=True,
+                    delete_after=5,
                 )
 
             await message.add_reaction("🗞️")
