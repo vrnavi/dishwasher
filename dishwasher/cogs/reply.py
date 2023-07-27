@@ -82,17 +82,27 @@ class Reply(Cog):
                 )
                 self.usercounts[message.author.id] = 0
                 return
-            elif self.usercounts[message.author.id] == 1:
+
+            try:
+                await message.add_reaction("🗞️")
+                await message.add_reaction(counts[self.usercounts[message.author.id]])
+                await message.add_reaction("🛑")
+            except discord.errors.Forbidden:
+                if message.channel.permissions_for(message.guild.me).add_reactions:
+                    await message.reply(
+                        content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
+                        mention_author=True,
+                    )
+                    await member.timeout(datetime.timedelta(minutes=10))
+                    return
+
+            if self.usercounts[message.author.id] == 1:
                 nagmsg = await message.reply(
                     content=f"**This is your first reply ping violation.** Do not exceed `5` violations today.",
                     file=discord.File("assets/noreply.png"),
                     mention_author=True,
                     delete_after=10,
                 )
-
-            await message.add_reaction("🗞️")
-            await message.add_reaction(counts[self.usercounts[message.author.id]])
-            await message.add_reaction("🛑")
 
             def check(r, u):
                 return (
