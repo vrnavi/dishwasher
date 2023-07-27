@@ -209,7 +209,6 @@ class Messagescan(Cog):
 
         tlinks = None
         embeds = None
-        failed = False
 
         if twitterlinks:
             tlinks = "\n".join([t[:8] + "vx" + t[8:] for t in twitterlinks])
@@ -227,7 +226,6 @@ class Messagescan(Cog):
                     rcvchannel = rcvguild.get_channel_or_thread(channelid)
                     rcvmessage = await rcvchannel.fetch_message(msgid)
                 except:
-                    failed = True
                     break
 
                 # Prepare embed msg
@@ -270,12 +268,6 @@ class Messagescan(Cog):
                 elif rcvmessage.stickers:
                     embed.set_image(url=rcvmessage.stickers[0].url)
                 embeds.append(embed)
-
-        if failed:
-            await message.reply(
-                content="Unable to quote a link you posted.\nI am either not in that guild, or I don't have permissions to view it.",
-                mention_author=False,
-            )
 
         if (
             message.guild
