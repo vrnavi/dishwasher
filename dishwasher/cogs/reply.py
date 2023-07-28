@@ -93,7 +93,7 @@ class Reply(Cog):
                         content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
                         mention_author=True,
                     )
-                    await member.timeout(datetime.timedelta(minutes=10))
+                    await message.author.timeout(datetime.timedelta(minutes=10))
                     return
 
             if self.usercounts[message.author.id] == 1:
