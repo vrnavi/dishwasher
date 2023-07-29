@@ -738,7 +738,9 @@ class Mod(Cog):
     ):
         """[S] Posts a given text in a given channel."""
         output = await channel.send(the_text)
+        output.author = ctx.author
         newctx = await self.bot.get_context(output)
+        newctx.message.author = ctx.guild.me
         await self.bot.invoke(newctx)
         await ctx.message.reply("👍", mention_author=False)
 
