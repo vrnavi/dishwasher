@@ -5,6 +5,8 @@ from helpers.sv_config import get_config
 def check_if_staff(ctx):
     if ctx.author.id in config.bot_managers:
         return True
+    if ctx.author.id == self.bot.user.id:
+        return True
     if not ctx.guild:
         return False
     return any(
@@ -20,4 +22,4 @@ def check_if_staff(ctx):
 
 
 def check_if_bot_manager(ctx):
-    return any(m == ctx.author.id for m in config.bot_managers)
+    return any(m == ctx.author.id for m in config.bot_managers + self.bot.user.id)
