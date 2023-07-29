@@ -22,4 +22,4 @@ def check_if_staff(ctx):
 
 
 def check_if_bot_manager(ctx):
-    return any(m == ctx.author.id for m in config.bot_managers + ctx.bot.user.id)
+    return any(m == ctx.author.id for m in config.bot_managers + [ctx.bot.user.id])
