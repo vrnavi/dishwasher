@@ -737,7 +737,9 @@ class Mod(Cog):
         the_text: str,
     ):
         """[S] Posts a given text in a given channel."""
-        await channel.send(the_text)
+        output = await channel.send(the_text)
+        newctx = await self.bot.get_context(output)
+        await self.bot.invoke(newctx)
         await ctx.message.reply("👍", mention_author=False)
 
     @commands.guild_only()
@@ -753,7 +755,9 @@ class Mod(Cog):
     ):
         """[S] Replies to a message with a given text in a given channel."""
         msg = await channel.fetch_message(message)
-        await msg.reply(content=f"{the_text}", mention_author=False)
+        output = await msg.reply(content=f"{the_text}", mention_author=False)
+        newctx = await self.bot.get_context(output)
+        await self.bot.invoke(newctx)
         await ctx.message.reply("👍", mention_author=False)
 
     @commands.guild_only()
