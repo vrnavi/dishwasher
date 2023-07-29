@@ -323,7 +323,7 @@ class Messagescan(Cog):
     async def on_reaction_add(self, reaction, user):
         await self.bot.wait_until_ready()
         if (
-            user.bot
+            all(user.bot, user.id != self.bot.user.id)
             or str(reaction) not in self.langs
             or reaction.count != 1
             or not get_config(reaction.message.guild.id, "misc", "translate_enable")
