@@ -47,6 +47,10 @@ class ModLocks(Cog):
         # Take a snapshot of current channel state before making any changes
         if ctx.guild.id not in self.snapshots:
             self.snapshots[ctx.guild.id] = {}
+        if channel.id in self.snapshots[ctx.guild.id]:
+            return await ctx.reply(
+                content="This channel is already locked.", mention_author=False
+            )
         self.snapshots[ctx.guild.id][channel.id] = channel.overwrites
 
         roles = []
@@ -101,6 +105,12 @@ class ModLocks(Cog):
 
         # Restore from snapshot state.
         overwrites = self.snapshots[ctx.guild.id][channel.id]
+        try:
+            del self.snapshots[ctx.guild.id][channel.id]
+        except:
+            return await ctx.reply(
+                content="This channel is not already locked.", mention_author=False
+            )
         for o, p in channel.overwrites.items():
             try:
                 if o in overwrites:
