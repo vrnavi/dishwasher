@@ -758,7 +758,9 @@ class Mod(Cog):
         """[S] Replies to a message with a given text in a given channel."""
         msg = await channel.fetch_message(message)
         output = await msg.reply(content=f"{the_text}", mention_author=False)
+        output.author = ctx.author
         newctx = await self.bot.get_context(output)
+        newctx.message.author = ctx.guild.me
         await self.bot.invoke(newctx)
         await ctx.message.reply("👍", mention_author=False)
 
