@@ -96,14 +96,6 @@ class Reply(Cog):
                     await message.author.timeout(datetime.timedelta(minutes=10))
                     return
 
-            if self.usercounts[message.author.id] == 1:
-                nagmsg = await message.reply(
-                    content=f"**This is your first reply ping violation.** Do not exceed `5` violations today.",
-                    file=discord.File("assets/noreply.png"),
-                    mention_author=True,
-                    delete_after=10,
-                )
-
             def check(r, u):
                 return (
                     u.id == reference_author.id
@@ -122,12 +114,6 @@ class Reply(Cog):
                 self.usercounts[message.author.id] -= 1
                 await message.add_reaction("👍")
                 await message.add_reaction(counts[self.usercounts[message.author.id]])
-                if self.usercounts[message.author.id] + 1 == 1:
-                    await nagmsg.edit(
-                        content=f"Violation pardoned. You now have `{self.usercounts[message.author.id]}` violations.",
-                        attachments=[],
-                        delete_after=5,
-                    )
             return
 
     @commands.guild_only()
