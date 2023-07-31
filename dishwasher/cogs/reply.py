@@ -114,6 +114,9 @@ class Reply(Cog):
                 self.usercounts[message.author.id] -= 1
                 await message.add_reaction("👍")
                 await message.add_reaction(counts[self.usercounts[message.author.id]])
+                await asyncio.sleep(5)
+                await message.clear_reaction("👍")
+                await message.clear_reaction(counts[self.usercounts[message.author.id]])
             return
 
     @commands.guild_only()
