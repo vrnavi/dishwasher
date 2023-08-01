@@ -21,6 +21,10 @@ class Messagescan(Cog):
             r"https://twitter\.com/[A-z0-9]+/status/[0-9]+",
             re.IGNORECASE,
         )
+        self.tiktoklink_re = re.compile(
+            r"https://(www\.)?tiktok\.com/@[A-z0-9]+/video/[0-9]+",
+            re.IGNORECASE,
+        )
         self.prevmessages = {}
         self.prevedit_before = {}
         self.prevedit_after = {}
@@ -189,29 +193,40 @@ class Messagescan(Cog):
 
         msglinks = self.link_re.findall(message.content)
         twitterlinks = self.twitterlink_re.findall(message.content)
-        if not msglinks and not twitterlinks:
+        tiktoklinks = self.tiktoklink_re.findall(message.content)
+        if not any((msglinks, twitterlinks, tiktoklinks)):
             return
 
-        for link in msglinks + twitterlinks:
+        for link in msglinks + twitterlinks + tiktoklinks:
             parts = message.content.split(link)
             if parts[0].count("||") % 2 and parts[1].count("||") % 2:
-                # Assume message is spoilered.
                 try:
                     msglinks.remove(link)
                 except:
-                    twitterlinks.remove(link)
+                    try:
+                        twitterlinks.remove(link)
+                    except:
+                        tiktoklinks.remove(link)
             elif parts[0].count("<") % 2 and parts[1].count(">") % 2:
-                # Assume message has embed disabled.
                 try:
                     msglinks.remove(link)
                 except:
-                    twitterlinks.remove(link)
+                    try:
+                        twitterlinks.remove(link)
+                    except:
+                        tiktoklinks.remove(link)
 
-        tlinks = None
+        twlinks = []
+        ttlinks = []
         embeds = None
 
         if twitterlinks:
-            tlinks = "\n".join([t[:8] + "vx" + t[8:] for t in twitterlinks])
+            twlinks = "\n".join(
+                [t.replace("twitter", "vxtwitter") for t in twitterlinks]
+            )
+
+        if tiktoklinks:
+            ttlinks = "\n".join([t.replace("tiktok", "vxtiktok") for t in tiktoklinks])
 
         if msglinks:
             embeds = []
@@ -274,7 +289,7 @@ class Messagescan(Cog):
             and message.channel.permissions_for(message.guild.me).manage_messages
         ):
             # Discord SUCKS!!
-            if twitterlinks:
+            if twitterlinks or tiktoklinks:
                 ctr = 0
                 while not message.embeds:
                     if ctr == 50:
@@ -286,9 +301,9 @@ class Messagescan(Cog):
         def deletecheck(m):
             return m.id == message.id
 
-        if tlinks or embeds:
+        if any((ttlinks, twlinks, embeds)):
             reply = await message.reply(
-                content=tlinks, embeds=embeds, mention_author=False
+                content=twlinks + ttlinks, embeds=embeds, mention_author=False
             )
             try:
                 await message.channel.fetch_message(message.id)
