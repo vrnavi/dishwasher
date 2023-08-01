@@ -163,7 +163,11 @@ async def on_command_error(ctx, error):
         f"{type(error)}: {error}"
     )
 
-    guildmsg = f"**Guild:** {ctx.guild.name}\n" if ctx.guild else ""
+    guildmsg = (
+        f"**Guild:** {ctx.guild.name}\n**Channel:** {ctx.channel.name}\n**Link:** {ctx.message.jump_url}\n"
+        if ctx.guild
+        else ""
+    )
     err_log_embed = discord.Embed(
         color=ctx.author.color,
         title="⚠️ Command Error",
