@@ -216,8 +216,8 @@ class Messagescan(Cog):
                     except:
                         tiktoklinks.remove(link)
 
-        twlinks = []
-        ttlinks = []
+        twlinks = ""
+        ttlinks = ""
         embeds = None
 
         if twitterlinks:
