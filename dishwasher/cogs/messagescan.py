@@ -22,7 +22,7 @@ class Messagescan(Cog):
             re.IGNORECASE,
         )
         self.tiktoklink_re = re.compile(
-            r"https://(www\.)?tiktok\.com/@[A-z0-9]+/video/[0-9]+",
+            r"https://(?:www\.)?tiktok\.com/@[A-z0-9]+/video/[0-9]+",
             re.IGNORECASE,
         )
         self.prevmessages = {}
