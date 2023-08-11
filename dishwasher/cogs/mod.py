@@ -700,6 +700,14 @@ class Mod(Cog):
 
     @commands.guild_only()
     @commands.check(check_if_staff)
+    @commands.command(aliases=["addnote"])
+    async def note(self, ctx, target: discord.User, *, note: str = ""):
+        """[S] Adds a note to a user."""
+        userlog(ctx.guild.id, target.id, ctx.author, note, "notes")
+        await ctx.send(f"Noted.")
+
+    @commands.guild_only()
+    @commands.check(check_if_staff)
     @commands.command(aliases=["setnick", "nick"])
     async def nickname(self, ctx, target: discord.Member, *, nick: str = ""):
         """[S] Sets a user's nickname.
