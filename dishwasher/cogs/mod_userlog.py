@@ -155,19 +155,9 @@ class ModUserlog(Cog):
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command(aliases=["clearwarns"])
-    async def clearevent(self, ctx, target, event="warns"):
+    async def clearevent(self, ctx, target: discord.User, event="warns"):
         """[S] Clears all events of given type for a user."""
-        # target handler
-        # In the case of IDs.
-        try:
-            target = await self.bot.fetch_user(int(target))
-        # In the case of mentions.
-        except ValueError:
-            target = await self.bot.fetch_user(target[2:-1])
-
-        mlog = await self.bot.fetch_channel(
-            config.guild_configs[ctx.guild.id]["logs"]["mlog_thread"]
-        )
+        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
         msg = self.clear_event_from_id(str(target.id), event)
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -179,24 +169,17 @@ class ModUserlog(Cog):
             f"{safe_name}"
             f"\n🔗 __Jump__: <{ctx.message.jump_url}>"
         )
+        if not mlog:
+            return
+        mlog = await self.bot.fetch_channel(mlog)
         await mlog.send(msg)
 
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command(aliases=["delwarn"])
-    async def delevent(self, ctx, target, idx: int, event="warns"):
+    async def delevent(self, ctx, target: discord.User, idx: int, event="warns"):
         """[S] Removes a specific event from a user."""
-        # target handler
-        # In the case of IDs.
-        try:
-            target = await self.bot.fetch_user(int(target))
-        # In the case of mentions.
-        except ValueError:
-            target = await self.bot.fetch_user(target[2:-1])
-
-        mlog = await self.bot.fetch_channel(
-            config.guild_configs[ctx.guild.id]["logs"]["mlog_thread"]
-        )
+        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
         del_event = self.delete_event_from_id(str(target.id), idx, event)
         event_name = userlog_event_types[event].lower()
         # This is hell.
@@ -211,6 +194,9 @@ class ModUserlog(Cog):
                 f"{event_name} {idx} from {target.mention} | {safe_name}"
                 f"\n🔗 __Jump__: <{ctx.message.jump_url}>"
             )
+            if not mlog:
+                return
+            mlog = await self.bot.fetch_channel(mlog)
             await mlog.send(msg, embed=del_event)
         else:
             await ctx.send(del_event)
