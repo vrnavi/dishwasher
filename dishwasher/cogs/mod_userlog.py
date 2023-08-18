@@ -69,8 +69,8 @@ class ModUserlog(Cog):
             embed.color = discord.Color.green()
         return embed
 
-    def clear_event_from_id(self, uid: str, event_type):
-        userlog = get_userlog()
+    def clear_event_from_id(self, sid: int, uid: str, event_type):
+        userlog = get_userlog(sid)
         if uid not in userlog:
             return f"<@{uid}> has no {event_type}!"
         event_count = len(userlog[uid][event_type])
@@ -80,8 +80,8 @@ class ModUserlog(Cog):
         set_userlog(json.dumps(userlog))
         return f"<@{uid}> no longer has any {event_type}!"
 
-    def delete_event_from_id(self, uid: str, idx: int, event_type):
-        userlog = get_userlog()
+    def delete_event_from_id(self, sid: int, uid: str, idx: int, event_type):
+        userlog = get_userlog(sid)
         if uid not in userlog:
             return f"<@{uid}> has no {event_type}!"
         event_count = len(userlog[uid][event_type])
@@ -158,7 +158,7 @@ class ModUserlog(Cog):
     async def clearevent(self, ctx, target: discord.User, event="warns"):
         """[S] Clears all events of given type for a user."""
         mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
-        msg = self.clear_event_from_id(str(target.id), event)
+        msg = self.clear_event_from_id(ctx.guild.id, str(target.id), event)
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
         )
@@ -180,7 +180,7 @@ class ModUserlog(Cog):
     async def delevent(self, ctx, target: discord.User, idx: int, event="warns"):
         """[S] Removes a specific event from a user."""
         mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
-        del_event = self.delete_event_from_id(str(target.id), idx, event)
+        del_event = self.delete_event_from_id(ctx.guild.id, str(target.id), idx, event)
         event_name = userlog_event_types[event].lower()
         # This is hell.
         if isinstance(del_event, discord.Embed):
