@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import config
 import json
 from datetime import datetime, timezone
 from helpers.checks import check_if_staff
 from helpers.userlogs import get_userlog, set_userlog, userlog_event_types
+from helpers.sv_config import get_config
 
 
 class ModUserlog(Cog):
