@@ -77,7 +77,7 @@ class ModUserlog(Cog):
         if not event_count:
             return f"<@{uid}> has no {event_type}!"
         userlog[uid][event_type] = []
-        set_userlog(json.dumps(userlog))
+        set_userlog(sid, json.dumps(userlog))
         return f"<@{uid}> no longer has any {event_type}!"
 
     def delete_event_from_id(self, sid: int, uid: str, idx: int, event_type):
@@ -100,7 +100,7 @@ class ModUserlog(Cog):
             f"Reason: {event['reason']}",
         )
         del userlog[uid][event_type][idx - 1]
-        set_userlog(json.dumps(userlog))
+        set_userlog(sid, json.dumps(userlog))
         return embed
 
     @commands.guild_only()
