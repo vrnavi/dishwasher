@@ -6,29 +6,28 @@ from datetime import datetime, timezone
 from helpers.checks import check_if_staff
 from helpers.userlogs import get_userlog, set_userlog, userlog_event_types
 from helpers.sv_config import get_config
+from helpers.embeds import stock_embed, author_embed
 
 
 class ModUserlog(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_userlog_embed_for_id(
-        self, gid: int, uid: str, name: str, own: bool = False, event=""
-    ):
-        own_note = " Congratulations." if own else ""
+    def get_userlog_embed_for_id(self, sid: int, user, own: bool = False, event=""):
+        uid = str(user.id)
+        userlog = get_userlog(sid)
+        embed = stock_embed(self.bot)
+        author_embed(user, embed)
+        embed.title = f"📜 Logs for {user}..."
+        if uid not in userlog:
+            embed.description = f"Not in system."
+            return embed
+
         wanted_events = ["warns", "kicks", "bans"]
         if not own:
             wanted_events = ["tosses"] + wanted_events
         if event and not isinstance(event, list):
             wanted_events = [event]
-        embed = discord.Embed(color=discord.Color.dark_red())
-        embed.set_author(name=f"Logs for {name}")
-        userlog = get_userlog(gid)
-
-        if uid not in userlog:
-            embed.description = f"No records found.{own_note}"
-            embed.color = discord.Color.green()
-            return embed
 
         for event_type in wanted_events:
             if event_type in userlog[uid] and userlog[uid][event_type]:
@@ -56,17 +55,22 @@ class ModUserlog(Cog):
                         inline=False,
                     )
 
-        if not own and "watch" in userlog[uid]:
+        if not embed.fields:
+            embed.color = discord.Color.green()
+        else:
+            embed.color = discord.Color.orange()
+
+        if not own:
             if userlog[uid]["watch"]["state"]:
-                watch_state = ""
+                watch_state = "is"
+                embed.color = discord.Color.dark_red()
             else:
-                watch_state = "not "
-                embed.color = discord.Color.orange()
-            embed.set_footer(text=f"User is {watch_state}under watch.")
+                watch_state = "is not"
+            embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` notes.*"
 
         if not embed.fields:
-            embed.description = f"No logs recorded.{own_note}"
-            embed.color = discord.Color.green()
+            embed.description = f"\nNo logs recorded."
+
         return embed
 
     def clear_event_from_id(self, sid: int, uid: str, event_type):
@@ -119,19 +123,17 @@ class ModUserlog(Cog):
         """[S] Lists userlog events for a user."""
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
-        embed = self.get_userlog_embed_for_id(
-            ctx.guild.id, str(target.id), str(target), event=event
-        )
+        embed = self.get_userlog_embed_for_id(ctx.guild.id, target, event=event)
         await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command(aliases=["listnotes", "usernotes"])
-    async def notes(self, ctx, target: discord.Member):
+    async def notes(self, ctx, target: discord.User):
         """[S] Lists notes for a user."""
-        embed = self.get_userlog_embed_for_id(
-            ctx.guild.id, str(target.id), str(target), event="notes"
-        )
+        if ctx.guild.get_member(target.id):
+            target = ctx.guild.get_member(target.id)
+        embed = self.get_userlog_embed_for_id(ctx.guild.id, target, event="notes")
         await ctx.send(embed=embed)
 
     @commands.guild_only()
@@ -143,9 +145,7 @@ class ModUserlog(Cog):
     )
     async def myuserlog(self, ctx):
         """[U] Lists your userlog events (warns, etc)."""
-        embed = self.get_userlog_embed_for_id(
-            ctx.guild.id, str(ctx.author.id), str(ctx.author), True
-        )
+        embed = self.get_userlog_embed_for_id(ctx.guild.id, ctx.author, True)
         await ctx.author.send(embed=embed)
         await ctx.message.add_reaction("📨")
         await ctx.reply(
@@ -286,9 +286,7 @@ class ModUserlog(Cog):
         )
 
         event_types = ["warns", "bans", "kicks", "tosses", "notes"]
-        embed = self.get_userlog_embed_for_id(
-            ctx.guild.id, str(target.id), str(target), event=event_types
-        )
+        embed = self.get_userlog_embed_for_id(ctx.guild.id, target, event=event_types)
         embeds.append(embed)
 
         await ctx.reply(embeds=embeds, mention_author=False)
