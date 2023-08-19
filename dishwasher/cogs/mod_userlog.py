@@ -17,7 +17,7 @@ class ModUserlog(Cog):
         uid = str(user.id)
         userlog = get_userlog(sid)
         embed = stock_embed(self.bot)
-        author_embed(user, embed)
+        author_embed(embed, user)
         embed.title = f"📜 Logs for {user}..."
         if uid not in userlog:
             embed.description = f"Not in system."
@@ -66,7 +66,7 @@ class ModUserlog(Cog):
                 embed.color = discord.Color.dark_red()
             else:
                 watch_state = "is not"
-            embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` note{'' if len(userlog[uid]['notes']) != 1 else 's'}.*"
+            embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` note{'s' if len(userlog[uid]['notes']) != 1 else ''}.*"
 
         if not embed.fields:
             embed.description += f"\nNo logs recorded."
