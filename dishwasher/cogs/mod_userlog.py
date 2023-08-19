@@ -18,9 +18,9 @@ class ModUserlog(Cog):
         userlog = get_userlog(sid)
         embed = stock_embed(self.bot)
         author_embed(embed, user)
-        embed.title = f"📜 Logs for {user}..."
+        embed.title = f"📜 Recorded logs..."
         if uid not in userlog:
-            embed.description = f"Not in system."
+            embed.description = f"> Not in system."
             return embed
 
         wanted_events = ["warns", "kicks", "bans"]
@@ -69,7 +69,7 @@ class ModUserlog(Cog):
             embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` note{'s' if len(userlog[uid]['notes']) != 1 else ''}.*"
 
         if not embed.fields:
-            embed.description += f"\nNo logs recorded."
+            embed.description += f"\n> No logs recorded."
 
         return embed
 
