@@ -66,10 +66,10 @@ class ModUserlog(Cog):
                 embed.color = discord.Color.dark_red()
             else:
                 watch_state = "is not"
-            embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` notes.*"
+            embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` note{'' if len(userlog[uid]['notes']) != 1 else 's'}.*"
 
         if not embed.fields:
-            embed.description = f"\nNo logs recorded."
+            embed.description += f"\nNo logs recorded."
 
         return embed
 
