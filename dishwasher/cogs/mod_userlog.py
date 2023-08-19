@@ -67,6 +67,8 @@ class ModUserlog(Cog):
             else:
                 watch_state = "is not"
             embed.description = f"🔎 *User **{watch_state}** under watch, and has `{len(userlog[uid]['notes'])}` note{'s' if len(userlog[uid]['notes']) != 1 else ''}.*"
+        else:
+            embed.description = f""
 
         if not embed.fields:
             embed.description += f"\n> No logs recorded."
