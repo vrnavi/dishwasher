@@ -74,7 +74,7 @@ class Messagespam(Cog):
                 "Detected and purged message spam.\n**Offending users:**\n"
                 + "\n".join(
                     [
-                        await self.bot.fetch_user(x)
+                        str(await self.bot.fetch_user(x))
                         for x in self.channelspam[message.guild.id][message.channel.id][
                             "senders"
                         ]
