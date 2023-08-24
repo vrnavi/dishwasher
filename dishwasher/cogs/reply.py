@@ -112,6 +112,8 @@ class Reply(Cog):
                 await self.bot.wait_for("reaction_add", timeout=15.0, check=check)
             except asyncio.TimeoutError:
                 await message.clear_reaction("🛑")
+            except discord.errors.NotFound:
+                pass
             else:
                 await message.clear_reaction("🗞️")
                 await message.clear_reaction(counts[self.usercounts[message.author.id]])
