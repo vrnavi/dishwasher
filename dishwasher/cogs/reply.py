@@ -95,6 +95,11 @@ class Reply(Cog):
                     )
                     await message.author.timeout(datetime.timedelta(minutes=10))
                     return
+            except discord.errors.NotFound:
+                return await message.reply(
+                    content=f"Immediately deleting your message won't hide you from your sin, {message.author.mention}. You have `{self.usercounts[message.author.id]}` violation(s).",
+                    mention_author=True,
+                )
 
             def check(r, u):
                 return (
