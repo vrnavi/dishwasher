@@ -19,6 +19,9 @@ class Basic(Cog):
         self.bot = bot
         matplotlib.use("agg")
 
+    def pacify_name(self, name):
+        return discord.utils.escape_markdown(name.replace("@", "@ "))
+
     @commands.command()
     async def hello(self, ctx):
         """[U] Says hello!"""
@@ -330,10 +333,11 @@ class Basic(Cog):
         message = ""
         for idx, m in enumerate(members):
             if memberidx - 6 <= idx <= memberidx + 4:
+                user = self.pacify_name(str(m))
                 message = (
-                    f"{message}\n`{idx+1}` **{m}**"
+                    f"{message}\n`{idx+1}` **{user}**"
                     if memberidx == idx + 1
-                    else f"{message}\n`{idx+1}` {m}"
+                    else f"{message}\n`{idx+1}` {user}"
                 )
         await ctx.reply(content=message, mention_author=False)
 
