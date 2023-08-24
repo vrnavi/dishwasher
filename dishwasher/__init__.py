@@ -261,7 +261,27 @@ async def on_message(message):
         return
 
     ctx = await bot.get_context(message)
-    await bot.invoke(ctx)
+    if ctx.valid:
+        await bot.invoke(ctx)
+    else:
+
+        def check(b, a):
+            return a.id == message.id
+
+        while True:
+            try:
+                b, a = await self.bot.wait_for(
+                    "message_edit", timeout=15.0, check=check
+                )
+            except asyncio.TimeoutError:
+                return
+            except discord.errors.NotFound:
+                return
+            else:
+                ctx = await bot.get_context(a)
+                if ctx.valid:
+                    await bot.invoke(ctx)
+                    return
 
 
 if not os.path.exists("data"):
