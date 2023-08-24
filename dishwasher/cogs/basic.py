@@ -170,7 +170,7 @@ class Basic(Cog):
     async def help(self, ctx):
         """Posts a help command."""
         await ctx.reply(
-            "[Press F1 For] HELP\nhttps://0ccu.lt/dishwasher/commands/",
+            "[Press F1 For] HELP\nhttps://kitchen.0ccu.lt/",
             mention_author=False,
         )
 
