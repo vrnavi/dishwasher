@@ -270,7 +270,7 @@ async def on_message(message):
 
         while True:
             try:
-                b, a = await self.bot.wait_for(
+                b, a = await bot.wait_for(
                     "message_edit", timeout=15.0, check=check
                 )
             except asyncio.TimeoutError:
