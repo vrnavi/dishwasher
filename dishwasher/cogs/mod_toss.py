@@ -194,6 +194,7 @@ class ModToss(Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(kick_members=True)
     @commands.check(check_if_staff)
+    @commands.cooldown(1, 5, commands.BucketType.server)
     @commands.command(aliases=["roleban"])
     async def toss(self, ctx, *, user_ids):
         if not get_config(ctx.guild.id, "toss", "enable"):
@@ -345,6 +346,7 @@ class ModToss(Cog):
     @commands.guild_only()
     @commands.bot_has_permissions(kick_members=True)
     @commands.check(check_if_staff)
+    @commands.cooldown(1, 5, commands.BucketType.server)
     @commands.command(aliases=["unroleban"])
     async def untoss(self, ctx, *, user_ids=None):
         if not get_config(ctx.guild.id, "toss", "enable"):

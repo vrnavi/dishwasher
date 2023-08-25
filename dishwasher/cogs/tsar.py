@@ -13,7 +13,7 @@ from helpers.sv_config import fill_config, set_config
 
 class TSAR(Cog):
     """
-    TSAR BOMBA! True. Self. Assignable. Roles.
+    True. Self. Assignable. Roles.
     """
 
     def __init__(self, bot):
