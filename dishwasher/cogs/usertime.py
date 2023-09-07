@@ -23,11 +23,7 @@ class usertime(Cog):
             await ctx.reply(
                 content=f"Your timezone is `{'not set' if not userdata[uid]['timezone'] else userdata[uid]['timezone']}`.\n"
                 "To change this, enter a timezone. You can find your specific timezone with this tool.\n"
-                "<https://xske.github.io/tz/>\n"
-                "A list of timezones is also available here.\n"
-                "<https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>\n"
-                "You can also use your GMT offset with the following format: `Etc/GMT<offset>`.\n"
-                "For example, `Etc/GMT+5` for Eastern Time, or UTC-5.",
+                "<https://xske.github.io/tz/>",
                 mention_author=False,
             )
             return

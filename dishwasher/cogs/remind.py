@@ -41,6 +41,8 @@ class Remind(Cog):
                 value=f"*Added <t:{addedtime}:R>.*\n" f"{job_details['text']}",
                 inline=False,
             )
+        if not embed.fields:
+            embed.description = "You do not have any reminders set."
         await ctx.send(embed=embed)
 
     @reminders.command()
