@@ -322,7 +322,7 @@ class Mod(Cog):
             mod_embed(embed, target_user, ctx.author)
             await mlog.send(embed=embed)
 
-        await msg.edit(f"All {len(targets_int)} users are now BANNED.")
+        await msg.edit(content=f"All {len(targets_int)} users are now BANNED.")
 
     @commands.guild_only()
     @commands.bot_has_permissions(ban_members=True)
