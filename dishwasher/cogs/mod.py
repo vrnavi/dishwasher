@@ -305,10 +305,6 @@ class Mod(Cog):
                 "bans",
             )
 
-            safe_name = await commands.clean_content(escape_markdown=True).convert(
-                ctx, str(target)
-            )
-
             await ctx.guild.ban(
                 target_user,
                 reason=f"[ Ban by {ctx.author} ] Massban.",
@@ -321,9 +317,9 @@ class Mod(Cog):
             embed = stock_embed(self.bot)
             embed.color = discord.Colour.from_str("#FF0000")
             embed.title = "🚨 Massban"
-            embed.description = f"{target.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
-            author_embed(embed, target)
-            mod_embed(embed, target, ctx.author)
+            embed.description = f"{target_user.mention} was banned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
+            author_embed(embed, target_user)
+            mod_embed(embed, target_user, ctx.author)
             await mlog.send(embed=embed)
 
         await msg.edit(f"All {len(targets_int)} users are now BANNED.")
