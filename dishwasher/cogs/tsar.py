@@ -34,14 +34,14 @@ class TSAR(Cog):
     @commands.command()
     async def timespent(self, ctx, target: discord.Member):
         configs = fill_config(ctx.guild.id)
-        usertracks = get_usertrack(g)
+        usertracks = get_usertrack(ctx.guild.id)
         if target.id not in usertracks:
             return await ctx.reply(
                 content="User not presently tracked. Wait.", mention_author=False
             )
 
         return await ctx.reply(
-            content=f"**{target}** first joined <t:{usertracks[uid]['jointime']}:R> on <t:{usertracks[uid]['jointime']}:F>, and has chatted for `{usertracks[uid]['truedays']}` days.",
+            content=f"**{target}** first joined <t:{usertracks[target.id]['jointime']}:R> on <t:{usertracks[target.id]['jointime']}:F>, and has chatted for `{usertracks[target.id]['truedays']}` days.",
             mention_author=False,
         )
 
