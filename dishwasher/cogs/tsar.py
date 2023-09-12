@@ -293,10 +293,10 @@ class TSAR(Cog):
             configs["tsar"]["roles"][nameresp.content] = {
                 "roleid": int(IDresp.content),
                 "mindays": int(mindaysresp.content),
-                "blacklisted": blacklistedrolesresp.content.split()
+                "blacklisted": [int(r) for r in blacklistedrolesresp.content.split()]
                 if blacklistedrolesresp.content.lower() != "none"
                 else None,
-                "required": requiredrolesresp.content.split()
+                "required": [int(r) for r in requiredrolesresp.content.split()]
                 if requiredrolesresp.content.lower() != "none"
                 else None,
             }
