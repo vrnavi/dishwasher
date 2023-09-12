@@ -75,7 +75,7 @@ class TSAR(Cog):
             ]
             if any([n not in ctx.author.roles for n in mustroles]):
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you don't have {', '.join(['`' + str(n) + '`' not in ctx.author.roles for n in mustroles])}.",
+                    content=f"You cannot get this role, as you don't have {', '.join(['`' + str(r) + '`' for r in mustroles if r not in ctx.author.roles])}.",
                     mention_author=False,
                 )
 
