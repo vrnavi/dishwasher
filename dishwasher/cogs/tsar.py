@@ -73,7 +73,7 @@ class TSAR(Cog):
                 mustrole
                 for mustrole in [ctx.guild.get_role(r) for r in roledata["required"]]
             ]
-            if any([n in ctx.author.roles for n in badroles]):
+            if any([n not in ctx.author.roles for n in mustroles]):
                 return await ctx.reply(
                     content=f"You cannot get this role, as you don't have {', '.join([str(n) not in ctx.author.roles for n in mustroles])}.",
                     mention_author=False,
