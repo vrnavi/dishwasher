@@ -31,6 +31,21 @@ class TSAR(Cog):
         set_usertrack(member.guild.id, json.dumps(usertracks))
 
     @commands.guild_only()
+    @commands.command()
+    async def timespent(self, ctx, target: discord.Member):
+        configs = fill_config(ctx.guild.id)
+        usertracks = get_usertrack(g)
+        if target.id not in usertracks:
+            return await ctx.reply(
+                content="User not presently tracked. Wait.", mention_author=False
+            )
+
+        return await ctx.reply(
+            content=f"**{target}** first joined <t:{usertracks[uid]['jointime']}:R> on <t:{usertracks[uid]['jointime']}:F>, and has chatted for `{usertracks[uid]['truedays']}` days.",
+            mention_author=False,
+        )
+
+    @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command()
     async def tsar(self, ctx):
