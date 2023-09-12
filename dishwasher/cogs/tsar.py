@@ -273,7 +273,7 @@ class TSAR(Cog):
             namemsg = await ctx.send(content="**Making new TSAR.**\nName of this TSAR?")
             nameresp = await waitformsg()
             if nameresp.content.lower() in dict(
-                (k.lower(), v) for k, v in configs["tsar"]["roles"].iteritems()
+                (k.lower(), v) for k, v in configs["tsar"]["roles"].items()
             ):
                 await configmsg.delete()
                 return await namemsg.edit(
