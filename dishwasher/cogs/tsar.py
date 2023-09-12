@@ -32,8 +32,54 @@ class TSAR(Cog):
 
     @commands.guild_only()
     @commands.command()
-    async def timespent(self, ctx, target: discord.Member = None):
+    async def roles(self, ctx, target: discord.Member = None):
         configs = fill_config(ctx.guild.id)
+        embed = stock_embed(self.bot)
+        embed.title = "🎫 Assignable Roles"
+        embed.color = discord.Color.gold
+        embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
+        if not configs["tsar"]["roles"]:
+            embed.add_field(
+                name="None",
+                value="There are no assignable roles.",
+                inline=False,
+            )
+        else:
+            for name, tsar in list(configs["tsar"]["roles"].items()):
+                fieldval = (
+                    f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
+                    + f"> **Minimum Days:** `{tsar['mindays']}`\n"
+                    + f"> **Forbidden Roles:** "
+                )
+                fieldval += (
+                    ", ".join(
+                        [
+                            ctx.guild.get_role(int(s)).mention
+                            for s in tsar["blacklisted"]
+                        ]
+                    )
+                    if tsar["blacklisted"]
+                    else "None"
+                )
+                fieldval += "\n" + f"> **Required Roles: **"
+                fieldval += (
+                    ", ".join(
+                        [ctx.guild.get_role(int(s)).mention for s in tsar["required"]]
+                    )
+                    if tsar["required"]
+                    else "None" + "\n"
+                )
+                embed.add_field(
+                    name=name,
+                    value=fieldval,
+                    inline=False,
+                )
+
+        return await ctx.reply(embed=embed, mention_author=False)
+
+    @commands.guild_only()
+    @commands.command()
+    async def timespent(self, ctx, target: discord.Member = None):
         usertracks = get_usertrack(ctx.guild.id)
         if not target:
             target = ctx.author
@@ -67,12 +113,13 @@ class TSAR(Cog):
             )
         else:
             for name, tsar in list(configs["tsar"]["roles"].items()):
-                embed.add_field(
-                    name=name,
-                    value=f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
+                fieldval = (
+                    f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
                     + f"> **Minimum Days:** `{tsar['mindays']}`\n"
                     + f"> **Forbidden Roles:** "
-                    + ", ".join(
+                )
+                fieldval += (
+                    ", ".join(
                         [
                             ctx.guild.get_role(int(s)).mention
                             for s in tsar["blacklisted"]
@@ -80,13 +127,18 @@ class TSAR(Cog):
                     )
                     if tsar["blacklisted"]
                     else "None"
-                    + "\n"
-                    + f"> **Required Roles: **"
-                    + ", ".join(
+                )
+                fieldval += "\n" + f"> **Required Roles: **"
+                fieldval += (
+                    ", ".join(
                         [ctx.guild.get_role(int(s)).mention for s in tsar["required"]]
                     )
                     if tsar["required"]
-                    else "None" + "\n",
+                    else "None" + "\n"
+                )
+                embed.add_field(
+                    name=name,
+                    value=fieldval,
                     inline=False,
                 )
         configmsg = await ctx.reply(embed=embed, mention_author=False)
