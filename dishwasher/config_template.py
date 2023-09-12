@@ -53,6 +53,8 @@ initial_cogs = [
     "cogs.prefixes",
     "cogs.messagescan",
     "cogs.burstreacts",
+    "cogs.tsar",
+    "cogs.usertrack",
 ]
 
 # This section is for various API keys.
