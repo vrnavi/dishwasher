@@ -32,11 +32,81 @@ class TSAR(Cog):
 
     @commands.guild_only()
     @commands.command()
+    async def role(self, ctx, *, role):
+        configs = fill_config(ctx.guild.id)
+        if not configs["tsar"]["roles"]:
+            return await ctx.reply(
+                content="You cannot get a role when no roles are configured.",
+                mention_author=False,
+            )
+        if role.isdigit:
+            try:
+                rolename, roledata = list(configs["tsar"]["roles"].items())[
+                    int(role) - 1
+                ]
+            except:
+                return await ctx.reply(
+                    content="There is no role in that index.", mention_author=False
+                )
+        else:
+            try:
+                roledata = configs["tsar"]["roles"][role]
+                rolename = role
+            except:
+                return await ctx.reply(
+                    content=f"There is no role named `{role}`.", mention_author=False
+                )
+
+        if roledata["blacklisted"]:
+            badroles = [
+                badrole
+                for badrole in [ctx.guild.get_role(r) for r in roledata["blacklisted"]]
+            ]
+            if any([n in ctx.author.roles for n in badroles]):
+                return await ctx.reply(
+                    content=f"You cannot get this role, as you have {', '.join([str(n) in ctx.author.roles for n in badroles])}.",
+                    mention_author=False,
+                )
+
+        if roledata["required"]:
+            mustroles = [
+                mustrole
+                for mustrole in [ctx.guild.get_role(r) for r in roledata["required"]]
+            ]
+            if any([n in ctx.author.roles for n in badroles]):
+                return await ctx.reply(
+                    content=f"You cannot get this role, as you don't have {', '.join([str(n) not in ctx.author.roles for n in mustroles])}.",
+                    mention_author=False,
+                )
+
+        if roledata["mindays"]:
+            usertracks = get_usertrack(ctx.guild.id)
+            if roledata["mindays"] > usertracks[str(target.id)]["truedays"]:
+                return await ctx.reply(
+                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - usertracks[str(target.id)]['truedays']}` days.",
+                    mention_author=False,
+                )
+
+        actualrole = ctx.guild.get_role(roledata["roleid"])
+        if actualrole in ctx.author.roles:
+            await ctx.author.remove_roles(actualrole.id)
+            return await ctx.reply(
+                content=f"`{rolename} was remvoed from your roles.",
+                mention_author=False,
+            )
+        else:
+            await ctx.author.add_roles(actualrole.id)
+            return await ctx.reply(
+                content=f"`{rolename} was added to your roles.", mention_author=False
+            )
+
+    @commands.guild_only()
+    @commands.command()
     async def roles(self, ctx, target: discord.Member = None):
         configs = fill_config(ctx.guild.id)
         embed = stock_embed(self.bot)
         embed.title = "🎫 Assignable Roles"
-        embed.description = "Use `role` with the index or name to get or remove a role."
+        embed.description = f"Use `{config.prefixes[0]}role` with the index or name to get or remove a role."
         embed.color = discord.Color.gold()
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not configs["tsar"]["roles"]:
