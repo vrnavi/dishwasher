@@ -60,18 +60,18 @@ class TSAR(Cog):
         if roledata["blacklisted"]:
             badroles = [
                 badrole
-                for badrole in [ctx.guild.get_role(r) for r in roledata["blacklisted"]]
+                for badrole in [ctx.guild.get_role(int(r)) for r in roledata["blacklisted"]]
             ]
             if any([n in ctx.author.roles for n in badroles]):
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you have {', '.join([str(n) in ctx.author.roles for n in badroles])}.",
+                    content=f"You cannot get this role, as you have {', '.join(['`' + r.name + '`' for r in badroles if r in ctx.author.roles])}.",
                     mention_author=False,
                 )
 
         if roledata["required"]:
             mustroles = [
                 mustrole
-                for mustrole in [ctx.guild.get_role(r) for r in roledata["required"]]
+                for mustrole in [ctx.guild.get_role(int(r)) for r in roledata["required"]]
             ]
             if any([n not in ctx.author.roles for n in mustroles]):
                 return await ctx.reply(
