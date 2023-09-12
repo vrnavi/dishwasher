@@ -6,6 +6,7 @@ import re
 import config
 import datetime
 import asyncio
+from helpers.usertrack import get_usertrack
 from helpers.checks import check_if_staff
 from helpers.sv_config import get_config
 
@@ -50,10 +51,11 @@ class Reply(Cog):
         if reference_author in message.mentions:
             if message.author.id not in self.usercounts:
                 self.usercounts[message.author.id] = 0
-                cutoff_ts = datetime.datetime.now(
-                    datetime.timezone.utc
-                ) - datetime.timedelta(days=14)
-                if message.author.joined_at >= cutoff_ts:
+                usertracks = get_usertrack(ctx.guild.id)
+                if (
+                    str(message.author.id) not in usertracks
+                    or usertracks[str(message.author.id)]["truedays"] >= 14
+                ):
                     return await message.reply(
                         content="**Do not reply ping users who do not wish to be pinged.** As you are new, this first time will not be a violation.",
                         file=discord.File("assets/noreply.png"),
