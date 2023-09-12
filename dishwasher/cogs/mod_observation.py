@@ -91,17 +91,18 @@ class ModObserve(Cog):
 
             try:
                 msg = await self.bot.wait_for("message", timeout=7200, check=check)
-                embed.set_field_at(
-                    index=2,
-                    name="🔍 First message:",
-                    value=f"[Sent]({msg.jump_url}) in {msg.channel.mention} on <t:{msg.created_at.astimezone().strftime('%s')}:f> (<t:{msg.created_at.astimezone().strftime('%s')}:R>):\n```{msg.clean_content}```",
-                    inline=False,
-                )
             except asyncio.TimeoutError:
                 embed.set_field_at(
                     index=2,
                     name="🔍 First message:",
                     value=f"This user did not send a message within `2 hours`.",
+                    inline=False,
+                )
+            else:
+                embed.set_field_at(
+                    index=2,
+                    name="🔍 First message:",
+                    value=f"[Sent]({msg.jump_url}) in {msg.channel.mention} on <t:{msg.created_at.astimezone().strftime('%s')}:f> (<t:{msg.created_at.astimezone().strftime('%s')}:R>):\n```{msg.clean_content}```",
                     inline=False,
                 )
             await callout.edit(embed=embed)
