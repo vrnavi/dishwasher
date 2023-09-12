@@ -39,7 +39,7 @@ class TSAR(Cog):
                 content="You cannot get a role when no roles are configured.",
                 mention_author=False,
             )
-        if role.isdigit:
+        if role.isdigit():
             try:
                 rolename, roledata = list(configs["tsar"]["roles"].items())[
                     int(role) - 1
