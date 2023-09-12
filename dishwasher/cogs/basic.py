@@ -42,7 +42,7 @@ class Basic(Cog):
 
                     html = await response.text()
                     id = ren.findall(r"watch\?v=(\S{11})", html)[
-                        0
+                        1
                     ]  # finds the first instance of watch\?=[youtube video id]
                     await ctx.send(f"https://www.youtube.com/watch?v={id}")
         except ConnectionError:

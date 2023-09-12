@@ -91,13 +91,13 @@ class TSAR(Cog):
         if actualrole in ctx.author.roles:
             await ctx.author.remove_roles(actualrole)
             return await ctx.reply(
-                content=f"`{rolename} was remvoed from your roles.",
+                content=f"`{actualrole}` was removed from your roles.",
                 mention_author=False,
             )
         else:
             await ctx.author.add_roles(actualrole)
             return await ctx.reply(
-                content=f"`{rolename} was added to your roles.", mention_author=False
+                content=f"`{actualrole}` was added to your roles.", mention_author=False
             )
 
     @commands.guild_only()
