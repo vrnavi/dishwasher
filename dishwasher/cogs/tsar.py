@@ -89,20 +89,20 @@ class TSAR(Cog):
 
         actualrole = ctx.guild.get_role(roledata["roleid"])
         if actualrole in ctx.author.roles:
-            await ctx.author.remove_roles(actualrole.id)
+            await ctx.author.remove_roles(actualrole)
             return await ctx.reply(
                 content=f"`{rolename} was remvoed from your roles.",
                 mention_author=False,
             )
         else:
-            await ctx.author.add_roles(actualrole.id)
+            await ctx.author.add_roles(actualrole)
             return await ctx.reply(
                 content=f"`{rolename} was added to your roles.", mention_author=False
             )
 
     @commands.guild_only()
     @commands.command()
-    async def roles(self, ctx, target: discord.Member = None):
+    async def roles(self, ctx):
         configs = fill_config(ctx.guild.id)
         embed = stock_embed(self.bot)
         embed.title = "🎫 Assignable Roles"
