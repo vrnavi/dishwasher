@@ -45,7 +45,7 @@ class TSAR(Cog):
                 inline=False,
             )
         else:
-            for idx(name, tsar) in enumerate(list(configs["tsar"]["roles"].items())):
+            for idx, (name, tsar) in enumerate(list(configs["tsar"]["roles"].items())):
                 fieldval = (
                     f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
                     + f"> **Minimum Days:** `{tsar['mindays']}`\n"
