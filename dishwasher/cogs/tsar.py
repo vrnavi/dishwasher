@@ -32,9 +32,11 @@ class TSAR(Cog):
 
     @commands.guild_only()
     @commands.command()
-    async def timespent(self, ctx, target: discord.Member):
+    async def timespent(self, ctx, target: discord.Member = None):
         configs = fill_config(ctx.guild.id)
         usertracks = get_usertrack(ctx.guild.id)
+        if not target:
+            target = ctx.author
         if str(target.id) not in usertracks:
             return await ctx.reply(
                 content="User not presently tracked. Wait.", mention_author=False
