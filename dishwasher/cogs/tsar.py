@@ -81,9 +81,9 @@ class TSAR(Cog):
 
         if roledata["mindays"]:
             usertracks = get_usertrack(ctx.guild.id)
-            if roledata["mindays"] > usertracks[str(target.id)]["truedays"]:
+            if roledata["mindays"] > usertracks[str(ctx.author.id)]["truedays"]:
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - usertracks[str(target.id)]['truedays']}` days.",
+                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - usertracks[str(ctx.author.id)]['truedays']}` days.",
                     mention_author=False,
                 )
 
