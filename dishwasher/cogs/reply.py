@@ -51,7 +51,7 @@ class Reply(Cog):
         if reference_author in message.mentions:
             if message.author.id not in self.usercounts:
                 self.usercounts[message.author.id] = 0
-                usertracks = get_usertrack(ctx.guild.id)
+                usertracks = get_usertrack(message.guild.id)
                 if (
                     str(message.author.id) not in usertracks
                     or usertracks[str(message.author.id)]["truedays"] >= 14
