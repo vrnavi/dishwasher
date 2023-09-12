@@ -168,7 +168,7 @@ class TSAR(Cog):
             )
 
         return await ctx.reply(
-            content=f"**{target}** first joined <t:{usertracks[str(target.id)]['jointime']}:R> on <t:{usertracks[str(target.id)]['jointime']}:F>, and has chatted for `{usertracks[str(target.id)]['truedays']}` days.",
+            content=f"**{target}** was first seen <t:{usertracks[str(target.id)]['jointime']}:R> on <t:{usertracks[str(target.id)]['jointime']}:F>, and has chatted for `{usertracks[str(target.id)]['truedays']}` days.",
             mention_author=False,
         )
 
