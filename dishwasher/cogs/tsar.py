@@ -50,8 +50,12 @@ class TSAR(Cog):
                 )
         else:
             try:
-                roledata = configs["tsar"]["roles"][role]
-                rolename = role
+                for name, tsar in list(configs["tsar"]["roles"].items()):
+                    if name.lower() == role.lower():
+                        roledata = tsar
+                        rolename = name
+                if rolename:
+                    pass
             except:
                 return await ctx.reply(
                     content=f"There is no role named `{role}`.", mention_author=False
@@ -60,7 +64,9 @@ class TSAR(Cog):
         if roledata["blacklisted"]:
             badroles = [
                 badrole
-                for badrole in [ctx.guild.get_role(int(r)) for r in roledata["blacklisted"]]
+                for badrole in [
+                    ctx.guild.get_role(int(r)) for r in roledata["blacklisted"]
+                ]
             ]
             if any([n in ctx.author.roles for n in badroles]):
                 return await ctx.reply(
@@ -71,7 +77,9 @@ class TSAR(Cog):
         if roledata["required"]:
             mustroles = [
                 mustrole
-                for mustrole in [ctx.guild.get_role(int(r)) for r in roledata["required"]]
+                for mustrole in [
+                    ctx.guild.get_role(int(r)) for r in roledata["required"]
+                ]
             ]
             if any([n not in ctx.author.roles for n in mustroles]):
                 return await ctx.reply(
@@ -259,11 +267,18 @@ class TSAR(Cog):
         elif str(reaction) == "✨":
             if len(configs["tsar"]["roles"]) == 20:
                 return await ctx.reply(
-                    content="Unable to create new TSAR: Maximum of 20 TSARs reached.",
+                    content="Unable to create new TSAR: Maximum of 20 reached.",
                     mention_author=False,
                 )
             namemsg = await ctx.send(content="**Making new TSAR.**\nName of this TSAR?")
             nameresp = await waitformsg()
+            if nameresp.content.lower() in dict(
+                (k.lower(), v) for k, v in configs["tsar"]["roles"].iteritems()
+            ):
+                await configmsg.delete()
+                return await namemsg.edit(
+                    content=f"Unable to proceed: TSAR already exists.", delete_after=5
+                )
             await namemsg.edit(
                 content=f"TSAR Name: `{nameresp.content}`", delete_after=5
             )
@@ -280,15 +295,32 @@ class TSAR(Cog):
             )
             blacklistedrolesresp = await waitformsg()
             await blacklistedrolesmsg.edit(
-                content=f"Forbidden roles: `{blacklistedrolesresp.content}`",
+                content=f"Forbidden roles: `{blacklistedrolesresp.content}`"
+                + "\nYou specified the same Role ID, so this TSAR will be give only."
+                if any(
+                    [o == IDresp.content for o in blacklistedrolesresp.content.split()]
+                )
+                else "",
                 delete_after=5,
             )
             requiredrolesmsg = await ctx.send(
                 content="Roles required? (IDs separated by spaces, or none for none)"
             )
             requiredrolesresp = await waitformsg()
+            if any(
+                [r == IDresp.content for r in blacklistedrolesresp.content.split()]
+            ) and any([r == IDresp.content for r in requiredrolesresp.content.split()]):
+                await configmsg.delete()
+                return await requiredrolesmsg.edit(
+                    content=f"Unable to proceed: Cannot create a TSAR both blacklisted and required.",
+                    delete_after=5,
+                )
             await requiredrolesmsg.edit(
-                content=f"Required roles: `{requiredrolesresp.content}`", delete_after=5
+                content=f"Required roles: `{requiredrolesresp.content}`"
+                + "\nYou specified the same Role ID, so this TSAR will be remove only."
+                if any([o == IDresp.content for o in requiredrolesresp.content.split()])
+                else "",
+                delete_after=5,
             )
             configs["tsar"]["roles"][nameresp.content] = {
                 "roleid": int(IDresp.content),
