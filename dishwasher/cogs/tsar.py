@@ -70,7 +70,7 @@ class TSAR(Cog):
                     else "None" + "\n"
                 )
                 embed.add_field(
-                    name=f"`{idx}` | " + name,
+                    name=f"`{idx+1}` | " + name,
                     value=fieldval,
                     inline=False,
                 )
