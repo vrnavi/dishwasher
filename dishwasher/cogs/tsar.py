@@ -64,7 +64,7 @@ class TSAR(Cog):
             ]
             if any([n in ctx.author.roles for n in badroles]):
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you have {', '.join([str(n) for n in badroles if n in ctx.author.roles])}.",
+                    content=f"You cannot get this role, as you have {', '.join([str(n) in ctx.author.roles for n in badroles])}.",
                     mention_author=False,
                 )
 
@@ -75,7 +75,7 @@ class TSAR(Cog):
             ]
             if any([n not in ctx.author.roles for n in mustroles]):
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you don't have {', '.join([str(n) for n in mustroles if n not in ctx.author.roles])}.",
+                    content=f"You cannot get this role, as you don't have {', '.join(['`' + str(n) + '`' not in ctx.author.roles for n in mustroles])}.",
                     mention_author=False,
                 )
 
