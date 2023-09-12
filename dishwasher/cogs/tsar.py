@@ -36,6 +36,7 @@ class TSAR(Cog):
         configs = fill_config(ctx.guild.id)
         embed = stock_embed(self.bot)
         embed.title = "🎫 Assignable Roles"
+        embed.description = "Use `role` with the index to get or remove a role."
         embed.color = discord.Color.gold()
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not configs["tsar"]["roles"]:
