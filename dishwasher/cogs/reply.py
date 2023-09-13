@@ -121,7 +121,7 @@ class Reply(Cog):
                 try:
                     await message.clear_reaction("🗞️")
                     await message.clear_reaction(
-                        counts[self.usercounts[message.author.id]]
+                        counts[self.usercounts[message.author.id] + 1]
                     )
                     await message.clear_reaction("🛑")
                     await message.add_reaction("👍")
