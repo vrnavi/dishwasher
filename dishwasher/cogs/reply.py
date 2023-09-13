@@ -127,11 +127,11 @@ class Reply(Cog):
                     await asyncio.sleep(5)
                     await message.clear_reaction("👍")
                     await message.clear_reaction(counts[self.usercounts[message.author.id]])
-            except discord.errors.NotFound:
-                return await message.reply(
-                    content=f"Come on, I'm trying to put reactions here. Let me do so instead of immediately deleting your message, thanks?",
-                    mention_author=True,
-                )
+                except discord.errors.NotFound:
+                    return await message.reply(
+                        content=f"Come on, I'm trying to put reactions here. Let me do so instead of immediately deleting your message, thanks?",
+                        mention_author=True,
+                    )
             return
 
     @commands.guild_only()
