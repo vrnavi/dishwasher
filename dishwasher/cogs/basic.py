@@ -64,6 +64,11 @@ class Basic(Cog):
         await ctx.send(f"I am incapable of hugs, but... \*hugs*")
 
     @commands.command()
+    async def baguette(self, ctx):
+        """[U] hon hon hon baguette"""
+        await ctx.send(f"🥖")
+
+    @commands.command()
     async def kill(self, ctx, the_text: str):
         """[U] Kills someone."""
         await ctx.send(f"{the_text} got stuck in the Dishwasher.")
