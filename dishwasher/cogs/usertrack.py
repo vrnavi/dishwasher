@@ -38,7 +38,7 @@ class usertrack(Cog):
             )
 
         return await ctx.reply(
-            content=f"**{target}** was first seen <t:{usertracks[str(target.id)]['jointime']}:R> on <t:{usertracks[str(target.id)]['jointime']}:F>, and has chatted for `{usertracks[str(target.id)]['truedays']}` days.",
+            content=f"**{target}** was first seen <t:{usertracks[str(target.id)]['jointime']}:R> on <t:{usertracks[str(target.id)]['jointime']}:F>, and was seen chatting for `{usertracks[str(target.id)]['truedays']}` days.\n\n**This counter may be inaccurate.** It calculates join dates and chatting days from when it was first activated.",
             mention_author=False,
         )
 
