@@ -7,6 +7,7 @@ import asyncio
 import matplotlib
 import matplotlib.pyplot as plt
 import typing
+import random
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
@@ -32,7 +33,11 @@ class Basic(Cog):
     @commands.command()
     async def clapifier(self, ctx, *, content):
         """[U] don't 👏 call 👏 yourself 👏 a 👏 pansexual 👏 if 👏 you've 👏 never 👏 deepthroated 👏 a 👏 pan 👏"""
-        await ctx.send(content=" 👏 ".join(content.split()))
+        await ctx.send(
+            content=f" {random.choice(['👏', '👏🏻', '👏🏼', '👏🏽', '👏🏾', '👏🏿'])} ".join(
+                content.split()
+            )
+        )
 
     @commands.command(aliases=["yt"])
     async def youtube(self, ctx, *, arg: str):
