@@ -120,13 +120,19 @@ class Reply(Cog):
                 self.usercounts[message.author.id] -= 1
                 try:
                     await message.clear_reaction("🗞️")
-                    await message.clear_reaction(counts[self.usercounts[message.author.id]])
+                    await message.clear_reaction(
+                        counts[self.usercounts[message.author.id]]
+                    )
                     await message.clear_reaction("🛑")
                     await message.add_reaction("👍")
-                    await message.add_reaction(counts[self.usercounts[message.author.id]])
+                    await message.add_reaction(
+                        counts[self.usercounts[message.author.id]]
+                    )
                     await asyncio.sleep(5)
                     await message.clear_reaction("👍")
-                    await message.clear_reaction(counts[self.usercounts[message.author.id]])
+                    await message.clear_reaction(
+                        counts[self.usercounts[message.author.id]]
+                    )
                 except discord.errors.NotFound:
                     return await message.reply(
                         content=f"Come on, I'm trying to put reactions here. Let me do so instead of immediately deleting your message, thanks?",

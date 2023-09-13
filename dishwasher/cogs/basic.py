@@ -29,6 +29,11 @@ class Basic(Cog):
             f"Hello {ctx.author.display_name}! Have you drank your Soylent Green today?"
         )
 
+    @commands.command()
+    async def clapifier(self, ctx, *, content):
+        """[U] don't 👏 call 👏 yourself 👏 a 👏 pansexual 👏 if 👏 you've 👏 never 👏 deepthroated 👏 a 👏 pan 👏"""
+        await ctx.send(content=" 👏 ".join(content.split()))
+
     @commands.command(aliases=["yt"])
     async def youtube(self, ctx, *, arg: str):
         """[U] Returns the first video in a YouTube search."""
