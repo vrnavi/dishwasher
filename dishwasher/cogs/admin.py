@@ -343,7 +343,7 @@ class Admin(Cog):
         msgs = []
         for m in config.bot_managers:
             msg = await self.bot.get_user(m).send(
-                content=f"{self.bot.user.name} joined `{guild}` with `{guild.members}` members.\nCheck the checkmark within an hour to leave."
+                content=f"{self.bot.user.name} joined `{guild}` with `{len(guild.members)}` members.\nCheck the checkmark within an hour to leave."
             )
             await msg.add_reaction("✅")
             msgs.append(msg)
