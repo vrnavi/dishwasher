@@ -228,7 +228,8 @@ class Messagescan(Cog):
 
         if twitterlinks:
             twlinks = "\n".join(
-                [t.replace("twitter", "vxtwitter") for t in twitterlinks]
+                t.replace("x.com", "vxtwitter.com")
+                for t in [[t.replace("twitter", "vxtwitter") for t in twitterlinks]]
             )
 
         if tiktoklinks:
