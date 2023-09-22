@@ -530,6 +530,39 @@ class Mod(Cog):
 
     @commands.guild_only()
     @commands.check(check_if_staff)
+    @purge.command(name="with")
+    async def _with(
+        self,
+        ctx,
+        string: str,
+        limit=50,
+        channel: discord.abc.GuildChannel = None,
+    ):
+        """[S] Clears a given number of messages containing input."""
+        if not channel:
+            channel = ctx.channel
+
+        def contains(m):
+            return string in m.content
+
+        deleted = len(await channel.purge(limit=limit, check=contains))
+        await ctx.send(f"🚮 `{deleted}` messages containing {string} purged.", delete_after=5)
+
+        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
+        if not mlog:
+            return
+        mlog = await self.bot.fetch_channel(mlog)
+
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.lighter_gray()
+        embed.title = "🗑 Purged"
+        embed.description = f"{str(ctx.author)} purged {deleted} messages containing {string} in {channel.mention}."
+        author_embed(embed, ctx.author)
+
+        await mlog.send(embed=embed)
+
+    @commands.guild_only()
+    @commands.check(check_if_staff)
     @purge.command(aliases=["emoji"])
     async def emotes(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """[S] Clears a given number of emotes."""
