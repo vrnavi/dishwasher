@@ -546,7 +546,7 @@ class Mod(Cog):
             return string in m.content
 
         deleted = len(await channel.purge(limit=limit, check=contains))
-        await ctx.send(f"🚮 `{deleted}` messages containing {string} purged.", delete_after=5)
+        await ctx.send(f"🚮 `{deleted}` messages containing `{string}` purged.", delete_after=5)
 
         mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
         if not mlog:
@@ -556,7 +556,7 @@ class Mod(Cog):
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
         embed.title = "🗑 Purged"
-        embed.description = f"{str(ctx.author)} purged {deleted} messages containing {string} in {channel.mention}."
+        embed.description = f"{str(ctx.author)} purged {deleted} messages containing `{string}` in {channel.mention}."
         author_embed(embed, ctx.author)
 
         await mlog.send(embed=embed)
