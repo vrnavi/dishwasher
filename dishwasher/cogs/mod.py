@@ -623,7 +623,7 @@ class Mod(Cog):
 
     @commands.guild_only()
     @commands.check(check_if_staff)
-    @purge.command()
+    @purge.command(aliases=["reactions"])
     async def reacts(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """[S] Clears a given number of reactions."""
         if not channel:
