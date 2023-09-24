@@ -267,13 +267,13 @@ class TSAR(Cog):
                 content="Roles forbidden? (IDs separated by spaces, or none for none)"
             )
             blacklistedrolesresp = await waitformsg()
-            await blacklistedrolesmsg.edit(
-                content=f"Forbidden roles: `{blacklistedrolesresp.content}`"
-                + "\nYou specified the same Role ID, so this TSAR will be give only."
-                if any(
-                    [o == IDresp.content for o in blacklistedrolesresp.content.split()]
+            content = f"Forbidden roles: `{blacklistedrolesresp.content}`"
+            if any([o == IDresp.content for o in blacklistedrolesresp.content.split()]):
+                content += (
+                    "\nYou specified the same Role ID, so this TSAR will be give only."
                 )
-                else "",
+            await blacklistedrolesmsg.edit(
+                content=content,
                 delete_after=5,
             )
             requiredrolesmsg = await ctx.send(
