@@ -288,11 +288,11 @@ class TSAR(Cog):
                     content=f"Unable to proceed: Cannot create a TSAR both blacklisted and required.",
                     delete_after=5,
                 )
+            content = f"Required roles: `{requiredrolesresp.content}`"
+            if any([o == IDresp.content for o in requiredrolesresp.content.split()]):
+                content += "\nYou specified the same Role ID, so this TSAR will be remove only."
             await requiredrolesmsg.edit(
-                content=f"Required roles: `{requiredrolesresp.content}`"
-                + "\nYou specified the same Role ID, so this TSAR will be remove only."
-                if any([o == IDresp.content for o in requiredrolesresp.content.split()])
-                else "",
+                content=content,
                 delete_after=5,
             )
             configs["tsar"]["roles"][nameresp.content] = {
