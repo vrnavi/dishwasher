@@ -41,7 +41,7 @@ class Explains(Cog):
     async def journal(self, ctx):
         """Explains Strange Journal and Camera."""
         await ctx.send(
-            '**How do I post embeds/use emoji/stickers/reactions?**\nTo do any of the following:\n- Post embeds.\n- React to messages.\n- Post emoji.\n- Post stickers.\n- Speak in voice channels.\n\nYou need the Strange Journal role. <#256926147827335170> specifically requires the Camera role to post embeds.\nTo learn how to get these roles, read <#989959374900449380> thoroughly.\n\n**Do __not__ "spoonfeed" any user the command for them (e.g. "just use X command!)". Doing so may result in a warning.**'
+            '**How do I post embeds/use emoji/stickers/reactions?**\nTo do any of the following:\n- Post embeds.\n- React to messages.\n- Post emoji.\n- Post stickers.\n- Speak in voice channels.\n\nYou need the Strange Journal role. <#256926147827335170> specifically requires the Camera role to post embeds.\nTo learn how to get these roles, read the roles section in <id:guide> thoroughly.\n\n**Do __not__ "spoonfeed" any user the command for them (e.g. "just use X command!)". Doing so may result in a warning.**'
         )
 
     @tag.command(aliases=["readcontrols", "beforeask"])
