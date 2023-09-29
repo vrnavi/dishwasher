@@ -59,7 +59,8 @@ class usertrack(Cog):
     @Cog.listener()
     async def on_message(self, message):
         await self.bot.wait_until_ready()
-        if message.author.bot or not message.guild:
+        ctx = await self.bot.get_context(message)
+        if message.author.bot or not message.guild or ctx.valid:
             return
         if message.guild.id not in self.interactivecache:
             self.interactivecache[message.guild.id] = []
