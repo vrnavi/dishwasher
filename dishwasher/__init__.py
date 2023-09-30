@@ -9,6 +9,7 @@ import random
 import discord
 import datetime
 import traceback
+import itertools
 from discord.ext import commands
 from helpers.userdata import get_userprefix
 
@@ -24,16 +25,17 @@ log.setLevel(logging.INFO)
 log.addHandler(stdout_handler)
 
 
+def cap_permutations(s):
+    # thank you to https://stackoverflow.com/a/11165671
+    lu_sequence = ((c.lower(), c.upper()) for c in s)
+    return [''.join(x) for x in intertools.product(*lu_sequence)]
+
 def get_prefix(bot, message):
-    # yes i know this is mangy but people wont stop complaining about not being able to use "Pls" for some reason
-    prefixes = (
-        [prefix.lower() for prefix in config.prefixes]
-        + [prefix.upper() for prefix in config.prefixes]
-        + [prefix.title() for prefix in config.prefixes]
-    )
-    userprefixes = get_userprefix(message.author.id)
-    if userprefixes is not None:
-        return commands.when_mentioned_or(*prefixes + userprefixes)(bot, message)
+    prefixes = []
+    for prefix in config.prefixes:
+        prefixes += cap_permutations(prefix)
+    for userprefix in get_userprefix(message.author.id)
+        prefixes += cap_permutations(userprefix)
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
