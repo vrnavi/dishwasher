@@ -31,6 +31,11 @@ class Basic(Cog):
         )
 
     @commands.command()
+    async def whatismyid(self, ctx):
+        """[U] It just tells you your ID."""
+        await ctx.send(str(ctx.author.id))
+
+    @commands.command()
     async def clapifier(self, ctx, *, content):
         """[U] don't 👏 call 👏 yourself 👏 a 👏 pansexual 👏 if 👏 you've 👏 never 👏 deepthroated 👏 a 👏 pan 👏"""
         await ctx.send(
