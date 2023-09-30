@@ -34,8 +34,9 @@ def get_prefix(bot, message):
     prefixes = []
     for prefix in config.prefixes:
         prefixes += cap_permutations(prefix)
-    for userprefix in get_userprefix(message.author.id):
-        prefixes += cap_permutations(userprefix)
+    if get_userprefix(message.author.id):
+        for userprefix in get_userprefix(message.author.id):
+            prefixes += cap_permutations(userprefix)
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
