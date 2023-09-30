@@ -30,7 +30,7 @@ class Basic(Cog):
             f"Hello {ctx.author.display_name}! Have you drank your Soylent Green today?"
         )
 
-    @commands.command()
+    @commands.command(aliases=["whatsmyid", "myid"])
     async def whatismyid(self, ctx):
         """[U] It just tells you your ID."""
         await ctx.send(str(ctx.author.id))
