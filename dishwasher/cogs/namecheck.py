@@ -28,7 +28,7 @@ class NameCheck(Cog):
         newname = unidecode(target.display_name)
         if not newname:
             newname = "Unreadable Name"
-        await target.edit(nick=target.display_name, reason="Namecheck")
+        await target.edit(nick=newname, reason="Namecheck")
         return await ctx.reply(
             content=f"Successfully decancered **{oldname}** to  `{newname}`.",
             mention_author=False,

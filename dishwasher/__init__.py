@@ -28,7 +28,8 @@ log.addHandler(stdout_handler)
 def cap_permutations(s):
     # thank you to https://stackoverflow.com/a/11165671
     lu_sequence = ((c.lower(), c.upper()) for c in s)
-    return [''.join(x) for x in itertools.product(*lu_sequence)]
+    return ["".join(x) for x in itertools.product(*lu_sequence)]
+
 
 def get_prefix(bot, message):
     prefixes = []
