@@ -8,7 +8,7 @@ from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed
 
 
-class Mod(Cog):
+class ModReport(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.cleaner.start()
