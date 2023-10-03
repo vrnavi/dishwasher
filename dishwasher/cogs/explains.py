@@ -30,25 +30,18 @@ class Explains(Cog):
             '**What is PluralKit?/Why are there people chatting as bots?**\nPluralKit, specifically, allows plural users (see <https://pluralpedia.org/w/Plurality> for more information!) to chat without breaking the no-alting rule.\n\n**All plural users are valid. Please do not treat them as "wow! how do I chat like a bot???".**'
         )
 
-    @tag.command(aliases=["matrix", "revolt"])
+    @tag.command(aliases=["revolt"])
     async def forwarders(self, ctx):
         """Explains the alternative chat forwarders."""
         return await ctx.send(
-            "**Why are there people chatting as bots?/Why are people chatting off platform?**\nThe OneShot Discord has two different chats attached to it.\n- Matrix (see <https://matrix.org/>), bridged to <#256970699581685761>, is open to all and is available in the channel topic.\n- Revolt (see <https://revolt.chat/>) is private *for now*, is available in all channels, and will eventually be open as a mirror for the OneShot Discord."
+            "**Why are there people chatting as bots?/Why are people chatting off platform?**\nThe OneShot Discord has a different chat attached to it.\n- Revolt (see <https://revolt.chat/>) is private *for now*, is available in all channels, and will eventually be open as a mirror for the OneShot Discord."
         )
 
     @tag.command(aliases=["embeds", "howpostembeds", "embed", "emoji"])
     async def journal(self, ctx):
         """Explains Strange Journal and Camera."""
         await ctx.send(
-            '**How do I post embeds/use emoji/stickers/reactions?**\nTo do any of the following:\n- Post embeds.\n- React to messages.\n- Post emoji.\n- Post stickers.\n- Speak in voice channels.\n\nYou need the Strange Journal role. <#256926147827335170> specifically requires the Camera role to post embeds.\nTo learn how to get these roles, read the roles section in <id:guide> thoroughly.\n\n**Do __not__ "spoonfeed" any user the command for them (e.g. "just use X command!)". Doing so may result in a warning.**'
-        )
-
-    @tag.command(aliases=["readcontrols", "beforeask"])
-    async def controls(self, ctx):
-        """Tells someone to read controls."""
-        await ctx.send(
-            "**Whatever your question is, READ <#989959374900449380> FIRST!**\nYou are asking a question that is already answered in the information channel.\nYour question will not be answered until you read the information channel and attempt to find the answer for yourself.\nIf you are still having trouble, only then you may ask on where to find the answer."
+            "**How do I post embeds/use emoji/stickers/reactions?**\nTo do any of the following:\n- Post embeds.\n- React to messages.\n- Post emoji.\n- Post stickers.\n- Speak in voice channels.\n\nYou need the Strange Journal role. <#256926147827335170> specifically requires the Camera role to post embeds.\nTo learn how to get these roles, read the roles section in <id:guide> thoroughly, and ask for help if you cannot find it!"
         )
 
     @tag.command(aliases=["nogifs"])
