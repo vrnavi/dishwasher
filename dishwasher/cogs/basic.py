@@ -30,6 +30,13 @@ class Basic(Cog):
             f"Hello {ctx.author.display_name}! Have you drank your Soylent Green today?"
         )
 
+    @commands.command(aliases=["whatsmyip", "myip"])
+    async def whatismyip(self, ctx):
+        """[U] It just tells you 'you' IP."""
+        await ctx.send(
+            f"**Your IP is:** {random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}"
+        )
+
     @commands.command(aliases=["whatsmyid", "myid"])
     async def whatismyid(self, ctx):
         """[U] It just tells you your ID."""
