@@ -35,6 +35,7 @@ initial_cogs = [
     "cogs.mod_observation",
     "cogs.mod_note",
     "cogs.mod_userlog",
+    "cogs.mod_report",
     "cogs.mod_timed",
     "cogs.mod_toss",
     "cogs.mod_watch",
