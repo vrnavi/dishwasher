@@ -33,9 +33,11 @@ class ModReport(Cog):
                 content="No servers we share have configured their Staff channels.",
                 mention_author=False,
             )
-        message = "Select a guild to report to. Send the number only.\n"
+        content = "Select a guild to report to. Send the number only.\n"
         for idx, guild in enumerate(guilds):
-            message += f"`{idx+1}` **{guild.name}**"
+            content += f"`{idx+1}` **{guild.name}**"
+
+        message = await ctx.send(content=content)
 
         def messagecheck(m):
             return m.author.id == ctx.author.id and m.channel.id == ctx.channel.id
