@@ -186,6 +186,13 @@ class ModReport(Cog):
             content=f"Your report has been{' anonymously' if anon else ''} sent."
         )
 
+    @commands.guild_only()
+    @commands.command()
+    async def reprot(self, ctx):
+        return await ctx.send(
+            content="This incident has been reproted to the proper authorities. Thank you for your tmie."
+        )
+
     @tasks.loop(time=datetime.time(hour=0))
     async def cleaner(self):
         # water go down the hole x2
