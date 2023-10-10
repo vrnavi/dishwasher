@@ -33,10 +33,12 @@ class Snippets(Cog):
                 )
             else:
                 for name, snippet in list(snippets.items()):
+                    if snippet in snippets:
+                        continue
                     aliases = "\n"
                     for subname, subsnippet in list(snippets.items()):
                         if subsnippet == name:
-                            aliases += f"\n➡️ " + snippet
+                            aliases += f"\n➡️ " + subname
                     embed.add_field(
                         name=name,
                         value=">>> " + snippet[:200] + "..." + aliases
@@ -50,7 +52,9 @@ class Snippets(Cog):
             if name.lower() not in snippets:
                 return
             if snippets[name.lower()] in snippets:
-                return await ctx.reply(content=snippets[snippets[name.lower()]], mention_author=False)
+                return await ctx.reply(
+                    content=snippets[snippets[name.lower()]], mention_author=False
+                )
             return await ctx.reply(content=snippets[name.lower()], mention_author=False)
 
     @commands.check(check_if_staff)
