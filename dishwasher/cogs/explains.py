@@ -1,4 +1,5 @@
 import discord
+import json
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff
@@ -14,6 +15,7 @@ class Snippets(Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.guild_only()
     @commands.group(aliases=["snip"], invoke_without_command=True)
     async def snippet(self, ctx, *, name=None):
         """[U] Staff defined tags."""
