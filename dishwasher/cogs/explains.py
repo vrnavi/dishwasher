@@ -35,15 +35,15 @@ class Snippets(Cog):
                 for name, snippet in list(snippets.items()):
                     if snippet in snippets:
                         continue
-                    aliases = "\n"
+                    aliases = ""
                     for subname, subsnippet in list(snippets.items()):
                         if subsnippet == name:
                             aliases += f"\n➡️ " + subname
                     embed.add_field(
                         name=name,
-                        value=">>> " + snippet[:200] + "..." + aliases
+                        value="> " + "\n> ".join(snippet[:200].split("\n")) + "..." + aliases
                         if len(snippet) > 200
-                        else ">>> " + snippet + aliases,
+                        else "> " + "\n> ".join(snippet.split("\n")) + aliases,
                         inline=False,
                     )
 
