@@ -41,7 +41,7 @@ class Analytics(Cog):
         userdata["nostats"].remove(ctx.author.id)
         set_botfile("dishusers", json.dumps(userdata))
         return await ctx.reply(
-            content="*Analytics for you have been toggled on.**",
+            content="**Analytics for you have been toggled on.**",
             mention_author=False,
         )
 
