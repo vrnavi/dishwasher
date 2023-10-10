@@ -13,7 +13,7 @@ from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
 from io import BytesIO
 from helpers.checks import check_if_staff
-from helpers.userlogs import userlog
+from helpers.datafiles import add_userlog
 from helpers.placeholders import random_self_msg, random_bot_msg
 from helpers.archive import log_whole_channel, get_members
 from helpers.embeds import stock_embed, username_system, mod_embed
@@ -90,8 +90,8 @@ class ModToss(Cog):
         ]
         for c in get_config(guild.id, "toss", "toss_channels"):
             if c not in [g.name for g in guild.channels]:
-                if not os.path.exists(f"{self.bot.server_data}/{guild.id}/toss/{c}"):
-                    os.makedirs(f"{self.bot.server_data}/{guild.id}/toss/{c}")
+                if not os.path.exists(f"data/servers/{guild.id}/toss/{c}"):
+                    os.makedirs(f"data/servers/{guild.id}/toss/{c}")
                 overwrites = {
                     guild.default_role: discord.PermissionOverwrite(
                         read_messages=False
@@ -120,7 +120,7 @@ class ModToss(Cog):
                 roles.append(rx)
 
         with open(
-            rf"{self.bot.server_data}/{user.guild.id}/toss/{toss_channel.name}/{user.id}.json",
+            rf"data/servers/{user.guild.id}/toss/{toss_channel.name}/{user.id}.json",
             "w",
         ) as file:
             file.write(json.dumps([role.id for role in roles]))
@@ -160,8 +160,8 @@ class ModToss(Cog):
         for c in get_config(ctx.guild.id, "toss", "toss_channels"):
             if c in [g.name for g in ctx.guild.channels]:
                 if not os.path.exists(
-                    f"{self.bot.server_data}/{ctx.guild.id}/toss/{c}"
-                ) or not os.listdir(f"{self.bot.server_data}/{ctx.guild.id}/toss/{c}"):
+                    f"data/servers/{ctx.guild.id}/toss/{c}"
+                ) or not os.listdir(f"data/servers/{ctx.guild.id}/toss/{c}"):
                     embed.add_field(
                         name=f"🟡 #{c}",
                         value="__Empty__\n> Please close the channel.",
@@ -176,7 +176,7 @@ class ModToss(Cog):
                                 for u in [
                                     uf[:-5]
                                     for uf in os.listdir(
-                                        f"{self.bot.server_data}/{ctx.guild.id}/toss/{c}"
+                                        f"data/servers/{ctx.guild.id}/toss/{c}"
                                     )
                                 ]
                             ]
@@ -205,8 +205,7 @@ class ModToss(Cog):
             for dsub in [
                 os.listdir(channel)
                 for channel in [
-                    dirs[0]
-                    for dirs in os.walk(f"{self.bot.server_data}/{ctx.guild.id}/toss")
+                    dirs[0] for dirs in os.walk(f"data/servers/{ctx.guild.id}/toss")
                 ]
             ]
             for tossed in dsub
@@ -263,7 +262,7 @@ class ModToss(Cog):
                 )
                 await toss_channel.set_permissions(us, read_messages=True)
 
-                userlog(
+                add_userlog(
                     ctx.guild.id,
                     us.id,
                     ctx.author,
@@ -382,7 +381,7 @@ class ModToss(Cog):
                     [
                         record[:-5]
                         for record in os.listdir(
-                            f"{self.bot.server_data}/{ctx.guild.id}/toss/{ctx.channel.name}"
+                            f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"
                         )
                     ]
                 )
@@ -391,7 +390,7 @@ class ModToss(Cog):
                 [
                     record[:-5]
                     for record in os.listdir(
-                        f"{self.bot.server_data}/{ctx.guild.id}/toss/{ctx.channel.name}"
+                        f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"
                     )
                 ]
             )
@@ -409,7 +408,7 @@ class ModToss(Cog):
             elif (
                 str(us.id) + ".json"
                 not in os.listdir(
-                    f"{self.bot.server_data}/{ctx.guild.id}/toss/{ctx.channel.name}"
+                    f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"
                 )
                 and toss_role not in us.roles
             ):
@@ -428,11 +427,11 @@ class ModToss(Cog):
         for us in user_id_list:
             try:
                 with open(
-                    rf"{self.bot.server_data}/{ctx.guild.id}/toss/{ctx.channel.name}/{us.id}.json"
+                    rf"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}/{us.id}.json"
                 ) as file:
                     roles = json.loads(file.read())
                 os.remove(
-                    rf"{self.bot.server_data}/{ctx.guild.id}/toss/{ctx.channel.name}/{us.id}.json"
+                    rf"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}/{us.id}.json"
                 )
             except FileNotFoundError:
                 roles = []
@@ -477,9 +476,7 @@ class ModToss(Cog):
                 + ", ".join([str(iv) for iv in invalid_ids])
             )
 
-        if not os.listdir(
-            f"{self.bot.server_data}/{ctx.guild.id}/toss/{ctx.channel.name}"
-        ):
+        if not os.listdir(f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"):
             output += "\n\n" + "There is nobody left in this session."
 
         await ctx.reply(content=output, mention_author=False)
@@ -654,7 +651,7 @@ class ModToss(Cog):
                 await toss_channel.send(
                     content=f"{message.author.mention}, you were rolebanned for spamming."
                 )
-                userlog(
+                add_userlog(
                     message.guild.id,
                     message.author.id,
                     message.guild.me,
@@ -690,10 +687,8 @@ class ModToss(Cog):
             get_config(member.guild.id, "staff", "staff_channel")
         )
         try:
-            for p in os.listdir(f"{self.bot.server_data}/{member.guild.id}/toss"):
-                for c in os.listdir(
-                    f"{self.bot.server_data}/{member.guild.id}/toss/{p}"
-                ):
+            for p in os.listdir(f"data/servers/{member.guild.id}/toss"):
+                for c in os.listdir(f"data/servers/{member.guild.id}/toss/{p}"):
                     if member.id == c[:-5]:
                         session = p
                         break
@@ -713,8 +708,8 @@ class ModToss(Cog):
             content=f"{member.mention}, you were previously rolebanned. As such, a new session has been made for you here."
         )
         os.replace(
-            f"{self.bot.server_data}/{member.guild.id}/toss/{session}/{member.id}",
-            f"{self.bot.server_data}/{member.guild.id}/toss/{toss_channel.name}/{member.id}",
+            f"data/servers/{member.guild.id}/toss/{session}/{member.id}",
+            f"data/servers/{member.guild.id}/toss/{toss_channel.name}/{member.id}",
         )
         if staff_channel:
             await staff_channel.send(
@@ -729,10 +724,8 @@ class ModToss(Cog):
             return
         if self.is_rolebanned(member):
             session = None
-            for p in os.listdir(f"{self.bot.server_data}/{member.guild.id}/toss"):
-                for c in os.listdir(
-                    f"{self.bot.server_data}/{member.guild.id}/toss/{p}"
-                ):
+            for p in os.listdir(f"data/servers/{member.guild.id}/toss"):
+                for c in os.listdir(f"data/servers/{member.guild.id}/toss/{p}"):
                     if str(member.id) == c[:-5]:
                         if member.guild.id not in self.bot.tosscache:
                             self.bot.tosscache[member.guild.id] = {}
@@ -740,8 +733,8 @@ class ModToss(Cog):
                             self.bot.tosscache[member.guild.id][p] = []
                         self.bot.tosscache[member.guild.id][p].append(member.id)
                         os.replace(
-                            f"{self.bot.server_data}/{member.guild.id}/toss/{p}/{c}",
-                            f"{self.bot.server_data}/{member.guild.id}/toss/left_while_tossed/{c}",
+                            f"data/servers/{member.guild.id}/toss/{p}/{c}",
+                            f"data/servers/{member.guild.id}/toss/left_while_tossed/{c}",
                         )
                         for channel in member.guild.channels:
                             if channel.name == p:
@@ -770,15 +763,11 @@ class ModToss(Cog):
             return
         if self.is_rolebanned(before) and not self.is_rolebanned(after):
             try:
-                for p in os.listdir(f"{self.bot.server_data}/{after.guild.id}/toss"):
-                    for c in os.listdir(
-                        f"{self.bot.server_data}/{after.guild.id}/toss/{p}"
-                    ):
+                for p in os.listdir(f"data/servers/{after.guild.id}/toss"):
+                    for c in os.listdir(f"data/servers/{after.guild.id}/toss/{p}"):
                         if after.id == c[:-5]:
                             self.bot.tosscache[after.guild.id][p].append(after.id)
-                            os.remove(
-                                f"{self.bot.server_data}/{after.guild.id}/toss/{p}/{c}"
-                            )
+                            os.remove(f"data/servers/{after.guild.id}/toss/{p}/{c}")
             except:
                 return
 

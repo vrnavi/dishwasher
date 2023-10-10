@@ -8,7 +8,7 @@ import os
 from datetime import datetime, timezone
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
-from helpers.dishtimer import get_crontab, delete_job
+from helpers.datafiles import get_botfile, delete_job
 from helpers.checks import check_if_staff
 
 
@@ -24,17 +24,12 @@ class Dishtimer(Cog):
         self.hourly.cancel()
         self.daily.cancel()
 
-    async def send_data(self):
-        log_channel = self.bot.get_channel(config.bot_logchannel)
-        data_files = [discord.File(fpath) for fpath in self.bot.wanted_jsons]
-        await log_channel.send("Hourly data backups:", files=data_files)
-
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command()
     async def listjobs(self, ctx):
         """[S] Lists timed Dishtimer jobs."""
-        ctab = get_crontab()
+        ctab = get_botfile("dishtimers")
         embed = discord.Embed(title=f"Active Dishtimer jobs")
         for jobtype in ctab:
             for jobtimestamp in ctab[jobtype]:
@@ -130,7 +125,7 @@ class Dishtimer(Cog):
         await self.bot.wait_until_ready()
         log_channel = self.bot.get_channel(config.bot_logchannel)
         try:
-            ctab = get_crontab()
+            ctab = get_botfile("dishtimers")
             timestamp = time.time()
             for jobtype in ctab:
                 for jobtimestamp in ctab[jobtype]:
@@ -170,7 +165,7 @@ class Dishtimer(Cog):
         await self.bot.wait_until_ready()
         log_channel = self.bot.get_channel(config.bot_logchannel)
         try:
-            shutil.make_archive("data_backup", "zip", self.bot.all_data)
+            shutil.make_archive("data_backup", "zip", "data")
             for m in config.bot_managers:
                 await self.bot.get_user(m).send(
                     content="Daily backups:",

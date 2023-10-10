@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
-from helpers.dishtimer import add_job, get_crontab, delete_job
+from helpers.datafiles import add_job, get_botfile, delete_job
 
 
 class Remind(Cog):
@@ -14,7 +14,7 @@ class Remind(Cog):
     @commands.group(invoke_without_command=True)
     async def reminders(self, ctx):
         """[U] Lists your reminders."""
-        ctab = get_crontab()
+        ctab = get_botfile("dishtimers")
         uid = str(ctx.author.id)
         embed = discord.Embed(
             title="Your current reminders...",
@@ -48,7 +48,7 @@ class Remind(Cog):
     @reminders.command()
     async def remove(self, ctx, number: int):
         """[U] Removes one of your reminders."""
-        ctab = get_crontab()
+        ctab = get_botfile("dishtimers")
         uid = str(ctx.author.id)
         idx = 0
         for jobtimestamp in ctab["remind"]:

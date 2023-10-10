@@ -6,7 +6,7 @@ import asyncio
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff, check_if_bot_manager
-from helpers.usertrack import get_usertrack
+from helpers.datafiles import get_guildfile
 from helpers.embeds import stock_embed
 from helpers.sv_config import fill_config, set_config
 
@@ -77,7 +77,7 @@ class TSAR(Cog):
                 )
 
         if roledata["mindays"]:
-            usertracks = get_usertrack(ctx.guild.id)
+            usertracks = get_guildfile(ctx.guild.id, "usertrack")
             if str(ctx.author.id) not in usertracks and roledata["mindays"] != 0:
                 return await ctx.reply(
                     content=f"You cannot get this role, as you must wait `{roledata['mindays'] - 0}` days.",

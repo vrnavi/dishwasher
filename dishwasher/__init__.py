@@ -11,7 +11,7 @@ import datetime
 import traceback
 import itertools
 from discord.ext import commands
-from helpers.userdata import get_userprefix
+from helpers.datafiles import get_userfile
 
 # TODO: check __name__ for __main__ nerd
 
@@ -31,6 +31,13 @@ def cap_permutations(s):
     return ["".join(x) for x in itertools.product(*lu_sequence)]
 
 
+def get_userprefix(uid):
+    profile = get_userfile(uid, "profile")
+    if not profile:
+        return []
+    return profile["prefixes"]
+
+
 def get_prefix(bot, message):
     prefixes = []
     for prefix in config.prefixes:
@@ -43,11 +50,7 @@ def get_prefix(bot, message):
 
 wanted_jsons = [
     "data/dishtimers.json",
-    "data/userdata.json",
 ]
-server_data = "data/servers"
-bot_data = "data/bot"
-all_data = "data"
 
 intents = discord.Intents.all()
 intents.typing = False
@@ -61,10 +64,6 @@ bot = commands.Bot(
 bot.help_command = None
 bot.log = log
 bot.config = config
-bot.wanted_jsons = wanted_jsons
-bot.server_data = server_data
-bot.bot_data = bot_data
-bot.all_data = all_data
 
 
 @bot.event
@@ -288,9 +287,6 @@ async def on_message(message):
 
 if not os.path.exists("data"):
     os.makedirs("data")
-
-if not os.path.exists(server_data):
-    os.makedirs(server_data)
 
 for wanted_json in wanted_jsons:
     if not os.path.exists(wanted_json):

@@ -7,7 +7,7 @@ import asyncio
 import typing
 import random
 from helpers.checks import check_if_staff, check_if_bot_manager
-from helpers.userlogs import userlog
+from helpers.datafiles import add_userlog
 from helpers.placeholders import random_self_msg, random_bot_msg
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed, mod_embed
@@ -59,7 +59,7 @@ class Mod(Cog):
         elif self.check_if_target_is_staff(target):
             return await ctx.send("I cannot kick Staff members.")
 
-        userlog(ctx.guild.id, target.id, ctx.author, reason, "kicks")
+        add_userlog(ctx.guild.id, target.id, ctx.author, reason, "kicks")
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -122,9 +122,9 @@ class Mod(Cog):
                 return await ctx.send("I cannot ban Staff members.")
 
         if reason:
-            userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
+            add_userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
         else:
-            userlog(
+            add_userlog(
                 ctx.guild.id,
                 target.id,
                 ctx.author,
@@ -208,9 +208,9 @@ class Mod(Cog):
             )
 
         if reason:
-            userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
+            add_userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
         else:
-            userlog(
+            add_userlog(
                 ctx.guild.id,
                 target.id,
                 ctx.author,
@@ -297,7 +297,7 @@ class Mod(Cog):
                 await ctx.send(f"(re: {target}) I cannot ban Staff members.")
                 continue
 
-            userlog(
+            add_userlog(
                 ctx.guild.id,
                 target,
                 ctx.author,
@@ -377,9 +377,9 @@ class Mod(Cog):
                 return await ctx.send("I cannot ban Staff members.")
 
         if reason:
-            userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
+            add_userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
         else:
-            userlog(
+            add_userlog(
                 ctx.guild.id,
                 target.id,
                 ctx.author,
@@ -666,9 +666,11 @@ class Mod(Cog):
                 return await ctx.send("I cannot ban Staff members.")
 
         if reason:
-            warn_count = userlog(ctx.guild.id, target.id, ctx.author, reason, "warns")
+            warn_count = add_userlog(
+                ctx.guild.id, target.id, ctx.author, reason, "warns"
+            )
         else:
-            warn_count = userlog(
+            warn_count = add_userlog(
                 ctx.guild.id,
                 target.id,
                 ctx.author,
@@ -734,7 +736,7 @@ class Mod(Cog):
     @commands.command(aliases=["addnote"])
     async def note(self, ctx, target: discord.User, *, note: str = ""):
         """[S] Adds a note to a user."""
-        userlog(ctx.guild.id, target.id, ctx.author, note, "notes")
+        add_userlog(ctx.guild.id, target.id, ctx.author, note, "notes")
         await ctx.send(f"Noted.")
 
     @commands.guild_only()

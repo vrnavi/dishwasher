@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff
 from helpers.dishtimer import add_job
-from helpers.userlogs import userlog
+from helpers.datafiles import add_userlog
 from helpers.placeholders import random_self_msg, random_bot_msg
 
 
@@ -30,7 +30,7 @@ class ModTimed(Cog):
 
         expiry_timestamp = self.bot.parse_time(duration)
 
-        userlog(
+        add_userlog(
             ctx.guild.id,
             target.id,
             ctx.author,

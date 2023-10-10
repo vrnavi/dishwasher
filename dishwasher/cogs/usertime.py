@@ -4,7 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo, available_timezones
 from discord.ext.commands import Cog, Context, Bot
 from discord.ext import commands
-from helpers.userdata import fill_userdata, set_userdata
+from helpers.datafiles import fill_profile, set_userfile
 
 
 class usertime(Cog):
@@ -18,10 +18,10 @@ class usertime(Cog):
         Timezones must be supplied the IANA tzdb (i.e. America/Chicago) format.
         """
 
-        userdata, uid = fill_userdata(ctx.author.id)
+        profile = fill_profile(ctx.author.id)
         if timezone == None:
             await ctx.reply(
-                content=f"Your timezone is `{'not set' if not userdata[uid]['timezone'] else userdata[uid]['timezone']}`.\n"
+                content=f"Your timezone is `{'not set' if not profile['timezone'] else profile['timezone']}`.\n"
                 "To change this, enter a timezone. You can find your specific timezone with this tool.\n"
                 "<https://xske.github.io/tz/>",
                 mention_author=False,
@@ -34,8 +34,8 @@ class usertime(Cog):
             )
             return
         else:
-            userdata[uid]["timezone"] = timezone
-            set_userdata(json.dumps(userdata))
+            userdata["timezone"] = timezone
+            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
             await ctx.reply(
                 f"Your timezone has been set to `{timezone}`.", mention_author=False
             )
@@ -45,15 +45,15 @@ class usertime(Cog):
         """Send the current time in the invoker's (or mentioned user's) time zone."""
         if time and target.id != ctx.author.id:
             # check both *have* timezones
-            suserdata, suid = fill_userdata(ctx.author.id)
-            tuserdata, tuid = fill_userdata(target.id)
-            if not suserdata[suid]["timezone"]:
+            suserdata = fill_profile(ctx.author.id)
+            tuserdata = fill_profile(target.id)
+            if not suserdata["timezone"]:
                 await ctx.reply(
                     content="I have no idea what time it is for you. You can set your timezone with `timezone`.",
                     mention_author=False,
                 )
                 return
-            elif not tuserdata[tuid]["timezone"]:
+            elif not tuserdata["timezone"]:
                 await ctx.reply(
                     content="I don't know what time it is for {target.display_name}.",
                     mention_author=False,
@@ -69,8 +69,8 @@ class usertime(Cog):
                 )
                 return
 
-            suser_timezone = ZoneInfo(suserdata[suid]["timezone"])
-            tuser_timezone = ZoneInfo(tuserdata[tuid]["timezone"])
+            suser_timezone = ZoneInfo(suserdata["timezone"])
+            tuser_timezone = ZoneInfo(tuserdata["timezone"])
 
             parsed_time = datetime.combine(
                 datetime.now(), parsed_time, tzinfo=tuser_timezone
@@ -82,8 +82,8 @@ class usertime(Cog):
                 mention_author=False,
             )
         else:
-            userdata, uid = fill_userdata(ctx.author.id if not target else target.id)
-            if not userdata[uid]["timezone"]:
+            userdata = fill_profile(ctx.author.id if not target else target.id)
+            if not userdata["timezone"]:
                 await ctx.reply(
                     content=(
                         "I have no idea what time it is for you. You can set your timezone with `timezone`."
@@ -93,7 +93,7 @@ class usertime(Cog):
                     mention_author=False,
                 )
                 return
-            now = datetime.now(ZoneInfo(userdata[uid]["timezone"]))
+            now = datetime.now(ZoneInfo(userdata["timezone"]))
             await ctx.reply(
                 content=f"{'Your' if not target else 'Their'} current time is `{now.strftime('%H:%M, %Y-%m-%d')}`",
                 mention_author=False,

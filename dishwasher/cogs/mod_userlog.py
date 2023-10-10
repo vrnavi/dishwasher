@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 import json
 from datetime import datetime, timezone
 from helpers.checks import check_if_staff
-from helpers.userlogs import get_userlog, set_userlog, userlog_event_types
+from helpers.datafiles import userlog_event_types, get_guildfile, set_guildfile
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed
 
@@ -15,7 +15,7 @@ class ModUserlog(Cog):
 
     def get_userlog_embed_for_id(self, sid: int, user, own: bool = False, event=""):
         uid = str(user.id)
-        userlog = get_userlog(sid)
+        userlog = get_guildfile(sid, "userlog")
         embed = stock_embed(self.bot)
         author_embed(embed, user)
         embed.title = f"📜 Recorded logs..."
@@ -76,18 +76,18 @@ class ModUserlog(Cog):
         return embed
 
     def clear_event_from_id(self, sid: int, uid: str, event_type):
-        userlog = get_userlog(sid)
+        userlog = get_guildfile(sid, "userlog")
         if uid not in userlog:
             return f"<@{uid}> has no {event_type}!"
         event_count = len(userlog[uid][event_type])
         if not event_count:
             return f"<@{uid}> has no {event_type}!"
         userlog[uid][event_type] = []
-        set_userlog(sid, json.dumps(userlog))
+        set_guildfile(sid, "userlog", json.dumps(userlog))
         return f"<@{uid}> no longer has any {event_type}!"
 
     def delete_event_from_id(self, sid: int, uid: str, idx: int, event_type):
-        userlog = get_userlog(sid)
+        userlog = get_guildfile(sid, "userlog")
         if uid not in userlog:
             return f"<@{uid}> has no {event_type}!"
         event_count = len(userlog[uid][event_type])
@@ -106,7 +106,7 @@ class ModUserlog(Cog):
             f"Reason: {event['reason']}",
         )
         del userlog[uid][event_type][idx - 1]
-        set_userlog(sid, json.dumps(userlog))
+        set_guildfile(sid, "userlog", json.dumps(userlog))
         return embed
 
     @commands.guild_only()

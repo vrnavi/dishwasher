@@ -8,6 +8,7 @@ import json
 import math
 import parsedatetime
 import random
+from helpers.datafiles import get_guildfile, set_guildfile
 from discord.ext.commands import Cog
 
 
@@ -104,16 +105,7 @@ class Common(Cog):
 
     async def get_used_invites(self, member: discord.Member):
         """Handles the invite correlation stuff"""
-        if not os.path.exists(f"{self.bot.server_data}/{member.guild.id}/invites.json"):
-            if not os.path.exists(f"{self.bot.server_data}/{member.guild.id}"):
-                os.makedirs(f"{self.bot.server_data}/{member.guild.id}")
-            with open(
-                f"{self.bot.server_data}/{member.guild.id}/invites.json", "w"
-            ) as f:
-                f.write("{}")
-        with open(f"{self.bot.server_data}/{member.guild.id}/invites.json", "r") as f:
-            invites = json.load(f)
-
+        invites = get_guildfile(member.guild.id, "invites")
         real_invites = await member.guild.invites()
 
         # Add unknown active invites. Can happen if invite was manually created
@@ -146,8 +138,7 @@ class Common(Cog):
             del invites[id]
 
         # Save invites data.
-        with open(f"{self.bot.server_data}/{member.guild.id}/invites.json", "w") as f:
-            f.write(json.dumps(invites))
+        set_guildfile(member.guild.id, "invites", json.dumps(invites))
 
         # Prepare the invite correlation message
         if len(probable_invites_used) == 1:

@@ -34,7 +34,7 @@ class Admin(Cog):
     @commands.command()
     async def getdata(self, ctx):
         """[O] Returns data files."""
-        shutil.make_archive("data_backup", "zip", self.bot.all_data)
+        shutil.make_archive("data_backup", "zip", "data")
         await ctx.message.reply(
             content="Your current data files...",
             file=discord.File("data_backup.zip"),
@@ -92,11 +92,9 @@ class Admin(Cog):
             )
             return
         await ctx.message.attachments[0].save(f"data/{server.id}.zip")
-        if os.path.exists(f"{self.bot.server_data}/{server.id}"):
-            shutil.rmtree(f"{self.bot.server_data}/{server.id}")
-        shutil.unpack_archive(
-            f"data/{server.id}.zip", f"{self.bot.server_data}/{server.id}"
-        )
+        if os.path.exists(f"data/servers/{server.id}"):
+            shutil.rmtree(f"data/servers/{server.id}")
+        shutil.unpack_archive(f"data/{server.id}.zip", f"data/servers/{server.id}")
         await ctx.reply(content=f"{server.name}'s data saved.", mention_author=False)
 
     @commands.check(check_if_bot_manager)

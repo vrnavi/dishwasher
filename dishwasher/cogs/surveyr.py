@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
+from discord.utils import escape_markdown
 import json
 import config
 import datetime
@@ -8,12 +9,11 @@ import asyncio
 import os
 from helpers.checks import check_if_staff
 from helpers.sv_config import get_config
-from helpers.surveyr import (
+from helpers.datafiles import (
     surveyr_event_types,
     new_survey,
     edit_survey,
-    get_surveys,
-    username_system,
+    get_guildfile,
 )
 
 
@@ -64,6 +64,17 @@ class Surveyr(Cog):
             )
         return user, reason
 
+    def username_system(user):
+        def pacify_name(name):
+            return escape_markdown(name.replace("@", "@ "))
+
+        part = (
+            pacify_name(user.global_name) + f" [{pacify_name(str(user))}]"
+            if user.global_name
+            else f"{pacify_name(str(user))}"
+        )
+        return part + " (" + str(user.id) + ")"
+
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command(invoke_without_command=True, aliases=["s"])
@@ -71,7 +82,7 @@ class Surveyr(Cog):
         """[S] Invokes Surveyr."""
         if not get_config(ctx.guild.id, "surveyr", "enable"):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        surveys = get_surveys(ctx.guild.id)
+        surveys = get_guildfile(ctx.guild.id, "surveys")
         if not surveys:
             await ctx.reply(content="There are no surveys yet.", mention_author=False)
         msg = []
@@ -102,7 +113,7 @@ class Surveyr(Cog):
         """[S] Invokes Surveyr manually."""
         if not get_config(ctx.guild.id, "surveyr", "enable"):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        surveys = get_surveys(ctx.guild.id)
+        surveys = get_guildfile(ctx.guild.id, "surveys")
         survey_channel = get_config(ctx.guild.id, "surveyr", "survey_channel")
 
         msg = await ctx.guild.get_channel(survey_channel).send(content="⌛")
@@ -113,8 +124,8 @@ class Surveyr(Cog):
         await msg.edit(
             content=(
                 f"`#{caseid}` **{surveyr_event_types[survey_type].upper()}** on <t:{timestamp}:f>\n"
-                f"**User:** " + username_system(member) + "\n"
-                f"**Staff:** " + username_system(user) + "\n"
+                f"**User:** " + self.username_system(member) + "\n"
+                f"**Staff:** " + self.username_system(user) + "\n"
                 f"**Reason:** {reason}"
             )
         )
@@ -127,7 +138,7 @@ class Surveyr(Cog):
         """[S] Edits case reasons."""
         if not get_config(ctx.guild.id, "surveyr", "enable"):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_surveys(ctx.guild.id))
+        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
         if len(cases) > 20:
@@ -148,7 +159,7 @@ class Surveyr(Cog):
         msg = []
         for case in cases:
             try:
-                survey = get_surveys(ctx.guild.id)[str(case)]
+                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
                 msg = await ctx.guild.get_channel(
                     get_config(ctx.guild.id, "surveyr", "survey_channel")
                 ).fetch_message(survey["post_id"])
@@ -161,7 +172,7 @@ class Surveyr(Cog):
                     survey["type"],
                 )
                 content = msg.content.split("\n")
-                content[2] = f"**Staff:** " + username_system(ctx.author)
+                content[2] = f"**Staff:** " + self.username_system(ctx.author)
                 content[3] = f"**Reason:** {reason}"
                 await msg.edit(content="\n".join(content))
             except KeyError:
@@ -180,7 +191,7 @@ class Surveyr(Cog):
         """[S] Censors cases."""
         if not get_config(ctx.guild.id, "surveyr", "enable"):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_surveys(ctx.guild.id))
+        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
         if len(cases) > 20:
@@ -201,7 +212,7 @@ class Surveyr(Cog):
 
         for case in cases:
             try:
-                survey = get_surveys(ctx.guild.id)[str(case)]
+                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
                 member = await self.bot.fetch_user(survey["target_id"])
                 censored_username = "`" + " " * len(member.name) + "`"
                 censored_globalname = (
@@ -236,7 +247,7 @@ class Surveyr(Cog):
         """[S] Uncensors cases."""
         if not get_config(ctx.guild.id, "surveyr", "enable"):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_surveys(ctx.guild.id))
+        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
         if len(cases) > 20:
@@ -257,13 +268,13 @@ class Surveyr(Cog):
 
         for case in cases:
             try:
-                survey = get_surveys(ctx.guild.id)[str(case)]
+                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
                 member = await self.bot.fetch_user(survey["target_id"])
                 msg = await ctx.guild.get_channel(
                     get_config(ctx.guild.id, "surveyr", "survey_channel")
                 ).fetch_message(survey["post_id"])
                 content = msg.content.split("\n")
-                content[1] = f"**User:** " + username_system(member)
+                content[1] = f"**User:** " + self.username_system(member)
                 await msg.edit(content="\n".join(content))
             except KeyError:
                 await ctx.reply(
@@ -280,14 +291,14 @@ class Surveyr(Cog):
         """[S] Dumps userids from cases."""
         if not get_config(ctx.guild.id, "surveyr", "enable"):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_surveys(ctx.guild.id))
+        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
 
         userids = []
         for case in cases:
             try:
-                survey = get_surveys(ctx.guild.id)[str(case)]
+                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
                 if survey["type"] == "bans":
                     userids.append(str(survey["target_id"]))
             except KeyError:
@@ -339,8 +350,8 @@ class Surveyr(Cog):
         await msg.edit(
             content=(
                 f"`#{caseid}` **KICK** on <t:{timestamp}:f>\n"
-                f"**User:** " + username_system(member) + "\n"
-                f"**Staff:** " + username_system(user) + "\n"
+                f"**User:** " + self.username_system(member) + "\n"
+                f"**Staff:** " + self.username_system(user) + "\n"
                 f"**Reason:** {reason}"
             )
         )
@@ -385,8 +396,8 @@ class Surveyr(Cog):
         await msg.edit(
             content=(
                 f"`#{caseid}` **BAN** on <t:{timestamp}:f>\n"
-                f"**User:** " + username_system(member) + "\n"
-                f"**Staff:** " + username_system(user) + "\n"
+                f"**User:** " + self.username_system(member) + "\n"
+                f"**Staff:** " + self.username_system(user) + "\n"
                 f"**Reason:** {reason}"
             )
         )
@@ -396,7 +407,7 @@ class Surveyr(Cog):
             await guild.fetch_ban(member)
             self.bancooldown[guild.id].remove(member.id)
         except discord.NotFound:
-            reason = get_surveys(guild.id)[str(caseid)]["reason"]
+            reason = get_guildfile(ctx.guild.id, "surveys")[str(caseid)]["reason"]
             edit_survey(guild.id, caseid, entry.user.id, reason, "softbans")
             msg = await guild.get_channel(survey_channel).fetch_message(msg.id)
             content = msg.content.split("\n")
@@ -444,8 +455,8 @@ class Surveyr(Cog):
         await msg.edit(
             content=(
                 f"`#{caseid}` **UNBAN** on <t:{timestamp}:f>\n"
-                f"**User:** " + username_system(member) + "\n"
-                f"**Staff:** " + username_system(user) + "\n"
+                f"**User:** " + self.username_system(member) + "\n"
+                f"**Staff:** " + self.username_system(user) + "\n"
                 f"**Reason:** {reason}"
             )
         )
@@ -496,8 +507,8 @@ class Surveyr(Cog):
             await msg.edit(
                 content=(
                     f"`#{caseid}` **TIMEOUT** ending <t:{int(entry.after.timed_out_until.timestamp())}:R> on <t:{timestamp}:f>\n"
-                    f"**User:** " + username_system(member) + "\n"
-                    f"**Staff:** " + username_system(user) + "\n"
+                    f"**User:** " + self.username_system(member) + "\n"
+                    f"**Staff:** " + self.username_system(user) + "\n"
                     f"**Reason:** {reason}"
                 )
             )
@@ -557,8 +568,8 @@ class Surveyr(Cog):
                     await msg.edit(
                         content=(
                             f"`#{caseid}` **PROMOTION** to `{role.name}` on <t:{timestamp}:f>\n"
-                            f"**User:** " + username_system(member) + "\n"
-                            f"**Staff:** " + username_system(user) + "\n"
+                            f"**User:** " + self.username_system(member) + "\n"
+                            f"**Staff:** " + self.username_system(user) + "\n"
                             f"**Reason:** {reason}"
                         )
                     )
@@ -578,8 +589,8 @@ class Surveyr(Cog):
                     await msg.edit(
                         content=(
                             f"`#{caseid}` **DEMOTION** from `{role.name}` on <t:{timestamp}:f>\n"
-                            f"**User:** " + username_system(member) + "\n"
-                            f"**Staff:** " + username_system(user) + "\n"
+                            f"**User:** " + self.username_system(member) + "\n"
+                            f"**Staff:** " + self.username_system(user) + "\n"
                             f"**Reason:** {reason}"
                         )
                     )

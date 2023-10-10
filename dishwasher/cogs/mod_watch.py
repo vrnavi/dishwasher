@@ -5,7 +5,7 @@ import random
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff
-from helpers.userlogs import setwatch, get_userlog
+from helpers.datafiles import watch_userlog, get_guildfile
 from helpers.placeholders import random_self_msg, random_bot_msg, create_log_embed
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, createdat_embed, joinedat_embed
@@ -45,7 +45,7 @@ class ModWatch(Cog):
             icon_url=target.display_avatar.url,
         )
         trackermsg = await trackerlog.send(embed=embed)
-        setwatch(
+        watch_userlog(
             ctx.guild.id, target.id, ctx.author, True, trackerthread.id, trackermsg.id
         )
         await ctx.reply(
@@ -69,7 +69,7 @@ class ModWatch(Cog):
             if self.bot.check_if_target_is_staff(target):
                 return await ctx.send("I cannot unwatch Staff members.")
 
-        userlog = get_userlog(ctx.guild.id)
+        userlog = get_guildfile(ctx.guild.id, "userlog")
         if userlog[str(target.id)]["watch"]["state"]:
             trackerthread = await self.bot.fetch_channel(
                 userlog[str(target.id)]["watch"]["thread"]
@@ -82,7 +82,7 @@ class ModWatch(Cog):
                 userlog[str(target.id)]["watch"]["message"]
             )
             await trackermsg.delete()
-            setwatch(ctx.guild.id, target.id, ctx.author, False)
+            watch_userlog(ctx.guild.id, target.id, ctx.author, False)
             await ctx.reply("User is now not on watch.", mention_author=False)
         else:
             return await ctx.reply(
@@ -98,7 +98,7 @@ class ModWatch(Cog):
             or not get_config(message.guild.id, "staff", "tracker_channel")
         ):
             return
-        userlog = get_userlog(message.guild.id)
+        userlog = get_guildfile(message.guild.id, "userlog")
         try:
             if userlog[str(message.author.id)]["watch"]["state"]:
                 trackerthread = await self.bot.fetch_channel(
@@ -135,7 +135,7 @@ class ModWatch(Cog):
         await self.bot.wait_until_ready()
         if not get_config(member.guild.id, "staff", "tracker_channel"):
             return
-        userlog = get_userlog(member.guild.id)
+        userlog = get_guildfile(member.guild.id, "userlog")
         try:
             if userlog[str(member.id)]["watch"]["state"]:
                 trackerthread = await self.bot.fetch_channel(
@@ -177,7 +177,7 @@ class ModWatch(Cog):
         await self.bot.wait_until_ready()
         if not get_config(member.guild.id, "staff", "tracker_channel"):
             return
-        userlog = get_userlog(member.guild.id)
+        userlog = get_guildfile(member.guild.id, "userlog")
         try:
             if userlog[str(member.id)]["watch"]["state"]:
                 trackerthread = await self.bot.fetch_channel(
