@@ -2,10 +2,8 @@ import discord
 from discord.ext.commands import Cog
 from discord.ext import commands, tasks
 import json
-import re
-import config
 from helpers.checks import check_if_staff
-from helpers.datafiles import get_botfile, set_botfile
+from helpers.datafiles import get_botfile, set_botfile, get_userfile, set_userfile
 
 
 class Analytics(Cog):
