@@ -28,27 +28,17 @@ class TSAR(Cog):
                 content="You cannot get a role when no roles are configured.",
                 mention_author=False,
             )
-        if role.isdigit():
-            try:
-                rolename, roledata = list(configs["tsar"]["roles"].items())[
-                    int(role) - 1
-                ]
-            except:
-                return await ctx.reply(
-                    content="There is no role in that index.", mention_author=False
-                )
-        else:
-            try:
-                for name, tsar in list(configs["tsar"]["roles"].items()):
-                    if name.lower() == role.lower():
-                        roledata = tsar
-                        rolename = name
-                if rolename:
-                    pass
-            except:
-                return await ctx.reply(
-                    content=f"There is no role named `{role}`.", mention_author=False
-                )
+        try:
+            for name, tsar in list(configs["tsar"]["roles"].items()):
+                if name.lower() == role.lower():
+                    roledata = tsar
+                    rolename = name
+            if rolename:
+                pass
+        except:
+            return await ctx.reply(
+                content=f"There is no role named `{role}`.", mention_author=False
+            )
 
         if roledata["blacklisted"]:
             badroles = [
@@ -108,7 +98,9 @@ class TSAR(Cog):
         configs = fill_config(ctx.guild.id)
         embed = stock_embed(self.bot)
         embed.title = "🎫 Assignable Roles"
-        embed.description = f"Use `{config.prefixes[0]}role` with the index or name to get or remove a role."
+        embed.description = (
+            f"Use `{ctx.prefix}role` with the name to get or remove a role."
+        )
         embed.color = discord.Color.gold()
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
         if not configs["tsar"]["roles"]:
@@ -118,7 +110,7 @@ class TSAR(Cog):
                 inline=False,
             )
         else:
-            for idx, (name, tsar) in enumerate(list(configs["tsar"]["roles"].items())):
+            for name, tsar in list(configs["tsar"]["roles"].items()):
                 fieldval = (
                     f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
                     + f"> **Minimum Days:** `{tsar['mindays']}`\n"
@@ -143,7 +135,7 @@ class TSAR(Cog):
                     else "None" + "\n"
                 )
                 embed.add_field(
-                    name=f"`{idx+1}` | " + name,
+                    name=name,
                     value=fieldval,
                     inline=False,
                 )

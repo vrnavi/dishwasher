@@ -1,63 +1,88 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
+from helpers.embeds import stock_embed
+from helpers.datafiles import get_guildfile, set_guildfile
 
 
-class Explains(Cog):
+class Snippets(Cog):
     """
-    Commands for easily explaining certain things.
+    Commands for easily explaining things.
     """
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(invoke_without_command=True)
-    async def tag(self, ctx):
+    @commands.group(aliases=["snip"], invoke_without_command=True)
+    async def snippet(self, ctx, *, name=None):
         """[U] Staff defined tags."""
-        return await ctx.send("Staff tag list coming soonTM")
+        snippets = get_guildfile(ctx.guild.id, "snippets")
+        if not name:
+            embed = stock_embed(self.bot)
+            embed.title = "✂️ Configured Snippets"
+            embed.color = discord.Color.red()
+            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
+            if not snippets:
+                embed.add_field(
+                    name="None",
+                    value="There are no configured snippets.",
+                    inline=False,
+                )
+            else:
+                for name, snippet in list(snippets.items()):
+                    embed.add_field(
+                        name=name,
+                        value="> " + snippet[:100] + "..."
+                        if len(snippet) > 100
+                        else "> " + snippet,
+                        inline=False,
+                    )
 
-    @tag.command(aliases=["memechannel", "wherememes", "memes", "whypay"])
-    async def dumpster(self, ctx):
-        """Explains Dumpster."""
-        return await ctx.send(
-            "**Where can I meme?/Why do I have to pay for memes?/You paywalled your meme channel!**\nA while ago, there was a channel for memes called Dumpster. It was removed due to misuse. In an effort to revive the channel, and curbstomp misuse in the process, all users of Dumpster are required to donate to charity *once*. To do so, see the <#1104519693026476173>.\nYou can also donate to the Staff team through Server Subscriptions, but the charity donation is preferred.\n\n**Please keep memes out of this server. <#256926147827335170> and <#256970699581685761> are NOT substitute meme channels.**"
+            return await ctx.reply(embed=embed, mention_author=False)
+        else:
+            if name not in snippets:
+                return
+            return await ctx.reply(content=snippets[name], mention_author=False)
+
+    @commands.check(check_if_staff)
+    @snippet.command()
+    async def create(self, ctx, name, *, contents):
+        """Creates a new snippet."""
+        snippets = get_guildfile(ctx.guild.id, "snippets")
+        if name in snippets:
+            return await ctx.reply(
+                content=f"`{name}` is already a snippet.",
+                mention_author=False,
+            )
+        elif len(contents.split()) == 1 and contents in snippets:
+            return await ctx.reply(
+                content=f"Aliasing is not currently supported yet.",
+                mention_author=False,
+            )
+        snippets[name] = contents
+        set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+        await ctx.reply(
+            content=f"`{name}` has been saved.",
+            mention_author=False,
         )
 
-    @tag.command(aliases=["pluralkit"])
-    async def plurality(self, ctx):
-        """Explains PluralKit and bot webhooks."""
-        return await ctx.send(
-            '**What is PluralKit?/Why are there people chatting as bots?**\nPluralKit, specifically, allows plural users (see <https://pluralpedia.org/w/Plurality> for more information!) to chat without breaking the no-alting rule.\n\n**All plural users are valid. Please do not treat them as "wow! how do I chat like a bot???".**'
-        )
-
-    @tag.command(aliases=["revolt"])
-    async def forwarders(self, ctx):
-        """Explains the alternative chat forwarders."""
-        return await ctx.send(
-            "**Why are there people chatting as bots?/Why are people chatting off platform?**\nThe OneShot Discord has a different chat attached to it.\n- Revolt (see <https://revolt.chat/>) is private *for now*, is available in all channels, and will eventually be open as a mirror for the OneShot Discord."
-        )
-
-    @tag.command(aliases=["embeds", "howpostembeds", "embed", "emoji"])
-    async def journal(self, ctx):
-        """Explains Strange Journal and Camera."""
-        await ctx.send(
-            "**How do I post embeds/use emoji/stickers/reactions?**\nTo do any of the following:\n- Post embeds.\n- React to messages.\n- Post emoji.\n- Post stickers.\n- Speak in voice channels.\n\nYou need the Strange Journal role. <#256926147827335170> specifically requires the Camera role to post embeds.\nTo learn how to get these roles, read the roles section in <id:guide> thoroughly, and ask for help if you cannot find it!"
-        )
-
-    @tag.command(aliases=["nogifs"])
-    async def tenor(self, ctx):
-        """Explains why Tenor is banned."""
-        await ctx.send(
-            "**Why can't I use tenor GIFs?**\nTenor GIFs are banned from this server due to spam and misuse.\nYou are welcome to upload your own GIFs though, if they are relevant."
-        )
-
-    @tag.command(aliases=["howappeal", "howtoappeal"])
-    async def appeal(self, ctx):
-        """Explains how to appeal."""
-        await ctx.send(
-            "**To appeal a ban, use the following link.**\nhttps://os.sysware.plus/appeal\n\nThis link can also be found on the pinned Steam Discussions post, and on the external site at https://os.sysware.plus"
+    @commands.check(check_if_staff)
+    @snippet.command()
+    async def delete(self, ctx, name):
+        """Deletes a snippet."""
+        snippets = get_guildfile(ctx.guild.id, "snippets")
+        if name not in snippets:
+            return await ctx.reply(
+                content=f"`{name}` is not a snippet.",
+                mention_author=False,
+            )
+        del snippets[name]
+        set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+        await ctx.reply(
+            content=f"`{name}` has been deleted.",
+            mention_author=False,
         )
 
 
 async def setup(bot):
-    await bot.add_cog(Explains(bot))
+    await bot.add_cog(Snippets(bot))

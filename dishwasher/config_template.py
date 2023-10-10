@@ -26,6 +26,7 @@ maxprefixes = 6
 initial_cogs = [
     "cogs.common",
     "cogs.admin",
+    "cogs.analytics",
     "cogs.cotd",
     "cogs.explains",
     "cogs.mod",
