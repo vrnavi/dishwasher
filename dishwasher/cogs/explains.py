@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
+from helpers.checks import check_if_staff
 from helpers.embeds import stock_embed
 from helpers.datafiles import get_guildfile, set_guildfile
 
