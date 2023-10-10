@@ -264,7 +264,9 @@ class Messagescan(Cog):
                         or message.content.split(m)[0][-1:] == '"'
                         and message.content.split(m)[1][:1] == '"'
                     ):
-                        embed.description = f">>> {rcvmessage.clean_content}"
+                        embed.description = "> " + "\n> ".join(
+                            rcvmessage.clean_content.split("\n")
+                        )
                     else:
                         embed.description = (
                             "> "
