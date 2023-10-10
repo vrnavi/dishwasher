@@ -6,7 +6,6 @@ import config
 import datetime
 import os
 from helpers.checks import check_if_staff
-from helpers.userlogs import userlog, get_userlog
 from helpers.datafiles import add_userlog, get_guildfile
 from helpers.sv_config import get_config
 from helpers.embeds import (
