@@ -35,9 +35,9 @@ class Snippets(Cog):
                 for name, snippet in list(snippets.items()):
                     embed.add_field(
                         name=name,
-                        value="> " + snippet[:200] + "..."
+                        value=">>> " + snippet[:200] + "..."
                         if len(snippet) > 200
-                        else "> " + snippet,
+                        else ">>> " + snippet,
                         inline=False,
                     )
 
