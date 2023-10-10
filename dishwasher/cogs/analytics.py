@@ -87,7 +87,7 @@ class Analytics(Cog):
                 # don't save analytics unless user is informed
                 return
 
-        if not useranalytics[str(ctx.command)]:
+        if str(ctx.command) not in useranalytics:
             useranalytics[str(ctx.command)] = {
                 "success": 0,
                 "failure": 0,
@@ -117,7 +117,7 @@ class Analytics(Cog):
                 # don't save analytics unless user is informed
                 return
 
-        if not useranalytics[str(ctx.command)]:
+        if str(ctx.command) not in useranalytics:
             useranalytics[str(ctx.command)] = {
                 "success": 0,
                 "failure": 0,
