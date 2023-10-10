@@ -281,12 +281,13 @@ class Messagescan(Cog):
                     icon_url=rcvmessage.author.display_avatar.url,
                     url=rcvmessage.jump_url,
                 )
-                # Use a single image from post for now.
                 if (
                     rcvmessage.attachments
                     and rcvmessage.attachments[0].content_type[:6] == "image/"
                 ):
                     embed.set_image(url=rcvmessage.attachments[0].url)
+                    if len(rcvmessage.attachments) > 1:
+                        embed.description += f"\n\n🖼️ Original post has `{len(rcvmessage.attachments)}` images."
                 elif rcvmessage.embeds and rcvmessage.embeds[0].image:
                     embed.set_image(url=rcvmessage.embeds[0].image.url)
                 elif rcvmessage.stickers:
