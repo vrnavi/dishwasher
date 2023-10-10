@@ -35,24 +35,24 @@ class Snippets(Cog):
                 for name, snippet in list(snippets.items()):
                     embed.add_field(
                         name=name,
-                        value="> " + snippet[:100] + "..."
-                        if len(snippet) > 100
+                        value="> " + snippet[:200] + "..."
+                        if len(snippet) > 200
                         else "> " + snippet,
                         inline=False,
                     )
 
             return await ctx.reply(embed=embed, mention_author=False)
         else:
-            if name not in snippets:
+            if name.lower() not in snippets:
                 return
-            return await ctx.reply(content=snippets[name], mention_author=False)
+            return await ctx.reply(content=snippets[name.lower()], mention_author=False)
 
     @commands.check(check_if_staff)
     @snippet.command()
     async def create(self, ctx, name, *, contents):
         """Creates a new snippet."""
         snippets = get_guildfile(ctx.guild.id, "snippets")
-        if name in snippets:
+        if name.lower() in snippets:
             return await ctx.reply(
                 content=f"`{name}` is already a snippet.",
                 mention_author=False,
@@ -62,10 +62,10 @@ class Snippets(Cog):
                 content=f"Aliasing is not currently supported yet.",
                 mention_author=False,
             )
-        snippets[name] = contents
+        snippets[name.lower()] = contents
         set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
         await ctx.reply(
-            content=f"`{name}` has been saved.",
+            content=f"`{name.lower()}` has been saved.",
             mention_author=False,
         )
 
@@ -74,15 +74,15 @@ class Snippets(Cog):
     async def delete(self, ctx, name):
         """Deletes a snippet."""
         snippets = get_guildfile(ctx.guild.id, "snippets")
-        if name not in snippets:
+        if name.lower() not in snippets:
             return await ctx.reply(
-                content=f"`{name}` is not a snippet.",
+                content=f"`{name.lower()}` is not a snippet.",
                 mention_author=False,
             )
-        del snippets[name]
+        del snippets[name.lower()]
         set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
         await ctx.reply(
-            content=f"`{name}` has been deleted.",
+            content=f"`{name.lower()}` has been deleted.",
             mention_author=False,
         )
 
