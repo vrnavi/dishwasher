@@ -3,7 +3,7 @@ import discord
 import config
 from discord.ext import commands
 from discord.ext.commands import Cog
-from helpers.userdata import get_userprefix, fill_userdata, set_userdata
+from helpers.datafiles import get_userfile, fill_profile, set_userfile
 
 
 class prefixes(Cog):
@@ -13,6 +13,12 @@ class prefixes(Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    def get_userprefix(uid):
+        profile = get_userfile(uid, "profile")
+        if not profile:
+            return []
+        return profile["prefixes"]
 
     @commands.group(aliases=["prefix"], invoke_without_command=True)
     async def prefixes(self, ctx):
@@ -26,7 +32,7 @@ class prefixes(Cog):
             icon_url=ctx.author.display_avatar.url, name=ctx.author.display_name
         )
         uid = str(ctx.author.id)
-        userprefixes = get_userprefix(uid)
+        userprefixes = self.get_userprefix(uid)
 
         for i in range(
             max(config.maxprefixes, len(userprefixes))
@@ -45,25 +51,24 @@ class prefixes(Cog):
     @prefixes.command()
     async def add(self, ctx, *, arg: str):
         """[U] Adds a new prefix."""
-        userdata, uid = fill_userdata(ctx.author.id)
-        if not len(userdata[uid]["prefixes"]) >= config.maxprefixes:
-            userdata[uid]["prefixes"].append(f"{arg} ")
-            set_userdata(json.dumps(userdata))
+        userdata = fill_profile(ctx.author.id)
+        if not len(userdata["prefixes"]) >= config.maxprefixes:
+            userdata["prefixes"].append(f"{arg} ")
+            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
             await ctx.reply(content="Prefix added.", mention_author=False)
         else:
             await ctx.reply(
-                content=f"You have reached your limit of {config.maxprefixes} prefixes.",
+                content=f"You have reached your limit of `{config.maxprefixes}` prefixes.",
                 mention_author=False,
             )
 
     @prefixes.command()
     async def remove(self, ctx, number: int):
         """[U] Removes a prefix."""
-        userdata, uid = fill_userdata(ctx.author.id)
-        userdata[uid]["prefixes"]
+        profile = fill_profile(ctx.author.id)
         try:
-            userdata[uid]["prefixes"].pop(number - 1)
-            set_userdata(json.dumps(userdata))
+            profile["prefixes"].pop(number - 1)
+            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
             await ctx.reply(content="Prefix removed.", mention_author=False)
         except IndexError:
             await ctx.reply(content="This prefix does not exist.", mention_author=False)

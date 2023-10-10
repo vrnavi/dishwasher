@@ -6,7 +6,7 @@ import re
 import config
 import datetime
 import asyncio
-from helpers.usertrack import get_usertrack
+from helpers.datafiles import get_guildfile
 from helpers.checks import check_if_staff
 from helpers.sv_config import get_config
 
@@ -56,7 +56,7 @@ class Reply(Cog):
         if reference_author in message.mentions:
             if message.author.id not in self.usercounts:
                 self.usercounts[message.author.id] = 0
-                usertracks = get_usertrack(message.guild.id)
+                usertracks = get_guildfile(message.guild.id, "usertrack")
                 if (
                     str(message.author.id) not in usertracks
                     or usertracks[str(message.author.id)]["truedays"] < 14

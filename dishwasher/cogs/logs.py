@@ -7,6 +7,7 @@ import datetime
 import os
 from helpers.checks import check_if_staff
 from helpers.userlogs import userlog, get_userlog
+from helpers.datafiles import add_userlog, get_guildfile
 from helpers.sv_config import get_config
 from helpers.embeds import (
     stock_embed,
@@ -48,7 +49,7 @@ class Logs2(Cog):
 
         embeds.append(embed)
 
-        warns = get_userlog(member.guild.id)
+        warns = get_guildfile(member.guild.id, "userlog")
         try:
             if warns[str(member.id)]["warns"]:
                 embed = stock_embed(self.bot)
@@ -169,7 +170,7 @@ class Logs2(Cog):
             ) - datetime.timedelta(seconds=5)
             if not alog[0].created_at <= cutoff_ts:
                 if alog[0].user.id != self.bot.user.id:
-                    userlog(
+                    add_userlog(
                         member.guild.id,
                         member.id,
                         alog[0].user,
@@ -220,7 +221,7 @@ class Logs2(Cog):
         if alog[0].user.id == self.bot.user.id or alog[0].target.id != member.id:
             return
 
-        userlog(
+        add_userlog(
             guild.id,
             member.id,
             alog[0].user,

@@ -4,8 +4,7 @@ from datetime import datetime
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff
-from helpers.dishtimer import add_job
-from helpers.datafiles import add_userlog
+from helpers.datafiles import add_userlog, add_job
 from helpers.placeholders import random_self_msg, random_bot_msg
 
 
