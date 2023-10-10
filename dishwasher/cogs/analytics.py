@@ -25,7 +25,7 @@ class Analytics(Cog):
         contents = ""
         for key, value in useranalytics.items():
             contents += f"\n`{key}` | Used **{value['success']}** times, failed **{value['failure']}** times."
-        contents += f"\n\nYou have used **{len(useranalytics.keys())}**/{len(self.bot.commands)} commands.\nYour completion score is **{round(len(useranalytics.keys())/len(self.bot.commands)*100)}**%."
+        contents += f"\n\nYou have used **{len(useranalytics.keys())}**/{len(self.bot.commands)} commands.\nYour completion score is **{round(len(useranalytics.keys())/len(self.bot.commands)*100, 2)}**%."
         await ctx.reply(content=contents, mention_author=False)
 
     @stats.command()
