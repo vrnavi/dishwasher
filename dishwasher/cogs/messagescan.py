@@ -96,7 +96,7 @@ class Messagescan(Cog):
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command()
-    async def snip(self, ctx):
+    async def snipf(self, ctx):
         if ctx.channel.id in self.prevedit_before:
             lastbeforemsg = self.prevedit_before[ctx.channel.id]
             lastaftermsg = self.prevedit_after[ctx.channel.id]
