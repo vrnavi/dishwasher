@@ -64,7 +64,7 @@ class Surveyr(Cog):
             )
         return user, reason
 
-    def username_system(user):
+    def username_system(self, user):
         def pacify_name(name):
             return escape_markdown(name.replace("@", "@ "))
 

@@ -14,7 +14,7 @@ class prefixes(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_userprefix(uid):
+    def get_userprefix(self, uid):
         profile = get_userfile(uid, "profile")
         if not profile:
             return []
