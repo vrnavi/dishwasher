@@ -33,11 +33,15 @@ class Snippets(Cog):
                 )
             else:
                 for name, snippet in list(snippets.items()):
+                    aliases = "\n"
+                    for subname, subsnippet in list(snippets.items()):
+                        if subsnippet == name:
+                            aliases += f"\n➡️ " + snippet
                     embed.add_field(
                         name=name,
-                        value=">>> " + snippet[:200] + "..."
+                        value=">>> " + snippet[:200] + "..." + aliases
                         if len(snippet) > 200
-                        else ">>> " + snippet,
+                        else ">>> " + snippet + aliases,
                         inline=False,
                     )
 
@@ -45,6 +49,8 @@ class Snippets(Cog):
         else:
             if name.lower() not in snippets:
                 return
+            if snippets[name.lower()] in snippets:
+                return await ctx.reply(content=snippets[snippets[name.lower()]], mention_author=False)
             return await ctx.reply(content=snippets[name.lower()], mention_author=False)
 
     @commands.check(check_if_staff)
@@ -58,16 +64,24 @@ class Snippets(Cog):
                 mention_author=False,
             )
         elif len(contents.split()) == 1 and contents in snippets:
-            return await ctx.reply(
-                content=f"Aliasing is not currently supported yet.",
+            if snippets[contents] in snippets:
+                return await ctx.reply(
+                    content=f"You cannot create nested aliases.",
+                    mention_author=False,
+                )
+            snippets[name.lower()] = contents
+            set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+            await ctx.reply(
+                content=f"`{name.lower()}` has been saved as an alias.",
                 mention_author=False,
             )
-        snippets[name.lower()] = contents
-        set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
-        await ctx.reply(
-            content=f"`{name.lower()}` has been saved.",
-            mention_author=False,
-        )
+        else:
+            snippets[name.lower()] = contents
+            set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+            await ctx.reply(
+                content=f"`{name.lower()}` has been saved.",
+                mention_author=False,
+            )
 
     @commands.check(check_if_staff)
     @snippet.command()
