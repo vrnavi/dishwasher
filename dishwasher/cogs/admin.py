@@ -34,14 +34,17 @@ class Admin(Cog):
     @commands.command()
     async def getdata(self, ctx):
         """[O] Returns data files."""
-        shutil.make_archive("data_backup", "zip", "data")
-        await ctx.message.reply(
-            content="Your current data files...",
-            file=discord.File("data_backup.zip"),
-            mention_author=False,
-        )
+        shutil.make_archive("data_export", "zip", "data")
+        try:
+            await ctx.author.send(
+                content=f"Current bot data...",
+                file=discord.File("data_export.zip"),
+            )
+        except:
+            await ctx.reply(content="I can't DM you, dumbass.", mention_author=False)
         os.remove("data_backup.zip")
 
+    @commands.dm_only()
     @commands.check(check_if_bot_manager)
     @commands.command()
     async def setdata(self, ctx):
@@ -55,7 +58,8 @@ class Admin(Cog):
         if os.path.exists("data"):
             shutil.rmtree("data")
         shutil.unpack_archive("data.zip", "data")
-        await ctx.reply(content=f"{server.name}'s data saved.", mention_author=False)
+        os.remove("data.zip")
+        await ctx.reply(content=f"Data saved.", mention_author=False)
 
     @commands.check(check_if_bot_manager)
     @commands.command(aliases=["getserverdata"])
@@ -64,9 +68,7 @@ class Admin(Cog):
         if not server:
             server = ctx.guild
         try:
-            shutil.make_archive(
-                f"data/{server.id}", "zip", f"{self.bot.server_data}/{server.id}"
-            )
+            shutil.make_archive(f"data/{server.id}", "zip", f"data/servers/{server.id}")
             sdata = discord.File(f"data/{server.id}.zip")
             await ctx.message.reply(
                 content=f"{server.name}'s data...",
@@ -95,7 +97,47 @@ class Admin(Cog):
         if os.path.exists(f"data/servers/{server.id}"):
             shutil.rmtree(f"data/servers/{server.id}")
         shutil.unpack_archive(f"data/{server.id}.zip", f"data/servers/{server.id}")
+        os.remove(f"data/servers/{server.id}")
         await ctx.reply(content=f"{server.name}'s data saved.", mention_author=False)
+
+    @commands.check(check_if_bot_manager)
+    @commands.command(aliases=["getuserdata"])
+    async def getudata(self, ctx, user: discord.User = None):
+        """[O] Returns user data."""
+        if not user:
+            user = ctx.author
+        try:
+            shutil.make_archive(f"data/{user.id}", "zip", f"data/users/{user.id}")
+            sdata = discord.File(f"data/{user.id}.zip")
+            await ctx.message.reply(
+                content=f"{user}'s data...",
+                file=sdata,
+                mention_author=False,
+            )
+            os.remove(f"data/{user.id}.zip")
+        except FileNotFoundError:
+            await ctx.message.reply(
+                content="That user doesn't have any data.",
+                mention_author=False,
+            )
+
+    @commands.check(check_if_bot_manager)
+    @commands.command(aliases=["setuserdata"])
+    async def setudata(self, ctx, server: discord.User = None):
+        """[O] Replaces user data files. This is destructive behavior!"""
+        if not user:
+            user = ctx.author
+        if not ctx.message.attachments:
+            await ctx.reply(
+                content="You need to supply the data file.", mention_author=False
+            )
+            return
+        await ctx.message.attachments[0].save(f"data/{user.id}.zip")
+        if os.path.exists(f"data/users/{user.id}"):
+            shutil.rmtree(f"data/users/{user.id}")
+        shutil.unpack_archive(f"data/{user.id}.zip", f"data/users/{user.id}")
+        os.remove(f"data/users/{user.id}")
+        await ctx.reply(content=f"{user}'s data saved.", mention_author=False)
 
     @commands.check(check_if_bot_manager)
     @commands.command()

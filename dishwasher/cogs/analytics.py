@@ -17,11 +17,20 @@ class Analytics(Cog):
     @commands.group(invoke_without_command=True)
     async def stats(self, ctx):
         """[U] Shows your analytics."""
-        return
+        useranalytics = get_userfile(ctx.author.id, "analytics")
+        if not useranalytics:
+            return await ctx.reply(
+                content="There are no analytics to show.", mention_author=False
+            )
+        contents = ""
+        for key, value in useranalytics.items():
+            contents += f"\n`{key}` | Used **{value['success']}** times, failed **{value['failure']}** times."
+        contents += f"\n\nYou have used **{len(useranalytics.keys())}**/{len(self.bot.commands)} commands.\nYour completion score is **{round(len(useranalytics.keys())/len(self.bot.commands)*100)}**%."
+        await ctx.reply(content=contents, mention_author=False)
 
     @stats.command()
-    async def on(self, ctx):
-        """[U] Enables analytics collection."""
+    async def enable(self, ctx):
+        """[U] Turns on analytics collection."""
         userdata = get_botfile("dishusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
@@ -32,13 +41,13 @@ class Analytics(Cog):
         userdata["nostats"].remove(ctx.author.id)
         set_botfile("dishusers", json.dumps(userdata))
         return await ctx.reply(
-            content="*Analytics for you have been toggled on.**\nUse `off` to turn back off, or `delete` to purge your analytics.",
+            content="*Analytics for you have been toggled on.**",
             mention_author=False,
         )
 
     @stats.command()
-    async def off(self, ctx):
-        """[U] Disables analytics collection."""
+    async def disable(self, ctx):
+        """[U] Turns off analytics collection and deletes analytics data."""
         userdata = get_botfile("dishusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
@@ -48,22 +57,16 @@ class Analytics(Cog):
             )
         userdata["nostats"].append(ctx.author.id)
         set_botfile("dishusers", json.dumps(userdata))
-        return await ctx.reply(
-            content="*Analytics for you have been toggled off.**\nUse `on` to turn back on, or `delete` to purge your analytics.",
-            mention_author=False,
-        )
-
-    @stats.command()
-    async def delete(self, ctx):
-        """[U] Deletes analytics data."""
         useranalytics = get_userfile(ctx.author.id, "analytics")
         if not useranalytics:
             return await ctx.reply(
-                content="There are no analytics to delete.", mention_author=False
+                content="**Analytics for you have been toggled off.**\nAnalytics were not deleted as there is nothing to delete.",
+                mention_author=False,
             )
         set_userfile(ctx.author.id, "analytics", json.dumps({}))
-        return await ctx.reply(
-            content="Your user analytics have been deleted.", mention_author=False
+        await ctx.reply(
+            content="**Analytics for you have been toggled off.**",
+            mention_author=False,
         )
 
     @Cog.listener()
@@ -81,7 +84,7 @@ class Analytics(Cog):
         if not useranalytics:
             try:
                 await ctx.author.send(
-                    content="📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#Analytics>\n\nIf you do not consent to this, please run `stats off` followed by `stats delete`.\nThis will disable user analytics collection for you, and delete your analytics data."
+                    content="📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#privacy-notice>\n\nIf you do not consent to this, please run `stats disable`.\nThis will disable user analytics collection for you, and delete your analytics data."
                 )
             except:
                 # don't save analytics unless user is informed
@@ -111,7 +114,7 @@ class Analytics(Cog):
         if not useranalytics:
             try:
                 await ctx.author.send(
-                    content="📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#Analytics>\n\nIf you do not consent to this, please run `stats off` followed by `stats delete`.\nThis will disable user analytics collection for you, and delete your analytics data."
+                    content="📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#privacy-notice>\n\nIf you do not consent to this, please run `stats disable`.\nThis will disable user analytics collection for you, and delete your analytics data."
                 )
             except:
                 # don't save analytics unless user is informed
