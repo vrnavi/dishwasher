@@ -66,7 +66,7 @@ class ModTimed(Cog):
         else:
             chan_message += (
                 "Please add an explanation below. In the future"
-                f", it is recommended to use `{config.prefixes[0]}ban <user> [reason]`"
+                f", it is recommended to use `{ctx.prefix}ban <user> [reason]`"
                 " as the reason is automatically sent to the user."
             )
 

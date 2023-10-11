@@ -53,7 +53,7 @@ class sv_config(Cog):
         while True:
             page = list(configs.items())[hindex - 1]
             vlimit = len(page[1])
-            embed.description = f"Page `{hindex}` of `{hlimit}` for server {guild}.\nTweak a setting with `{config.prefixes[0]}configs set {page[0]} <setting> <value>`."
+            embed.description = f"Page `{hindex}` of `{hlimit}` for server {guild}.\nTweak a setting with `{ctx.prefix}configs set {page[0]} <setting> <value>`."
             lines = ""
             for i, (k, v) in enumerate(page[1].items()):
                 friendly = f"**{friendly_names[k]}**\n" if k in friendly_names else ""

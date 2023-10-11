@@ -100,7 +100,7 @@ class Mod(Cog):
         else:
             embed.add_field(
                 name=f"📝 Reason",
-                value=f"**No reason was set!**\nPlease use `{config.prefixes[0]}kick <user> [reason]` in the future.\Kick reasons are sent to the user.",
+                value=f"**No reason was set!**\nPlease use `{ctx.prefix}kick <user> [reason]` in the future.\Kick reasons are sent to the user.",
                 inline=False,
             )
 
@@ -179,7 +179,7 @@ class Mod(Cog):
         else:
             embed.add_field(
                 name=f"📝 Reason",
-                value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}ban <user> [reason]` in the future.\nBan reasons are sent to the user.",
+                value=f"**No reason provided!**\nPlease use `{ctx.prefix}ban <user> [reason]` in the future.\nBan reasons are sent to the user.",
                 inline=False,
             )
 
@@ -267,7 +267,7 @@ class Mod(Cog):
         else:
             embed.add_field(
                 name=f"📝 Reason",
-                value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}dban <user> [reason]` in the future.\nBan reasons are sent to the user.",
+                value=f"**No reason provided!**\nPlease use `{ctx.prefix}dban <user> [reason]` in the future.\nBan reasons are sent to the user.",
                 inline=False,
             )
 
@@ -355,7 +355,7 @@ class Mod(Cog):
         else:
             embed.add_field(
                 name=f"📝 Reason",
-                value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}unban <user> [reason]` in the future.",
+                value=f"**No reason provided!**\nPlease use `{ctx.prefix}unban <user> [reason]` in the future.",
                 inline=False,
             )
 
@@ -413,7 +413,7 @@ class Mod(Cog):
         else:
             embed.add_field(
                 name=f"📝 Reason",
-                value=f"**No reason provided!**\nPlease use `{config.prefixes[0]}sban <user> [reason]` in the future.",
+                value=f"**No reason provided!**\nPlease use `{ctx.prefix}sban <user> [reason]` in the future.",
                 inline=False,
             )
         await mlog.send(embed=embed)
@@ -725,7 +725,7 @@ class Mod(Cog):
         else:
             embed.add_field(
                 name=f"📝 Reason",
-                value=f"**No reason was set!**\nPlease use `{config.prefixes[0]}warn <user> [reason]` in the future.\Warn reasons are sent to the user.",
+                value=f"**No reason was set!**\nPlease use `{ctx.prefix}warn <user> [reason]` in the future.\Warn reasons are sent to the user.",
                 inline=False,
             )
 
