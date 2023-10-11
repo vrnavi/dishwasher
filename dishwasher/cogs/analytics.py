@@ -70,7 +70,7 @@ class Analytics(Cog):
         )
 
     @Cog.listener()
-    async def on_command_error(self, ctx):
+    async def on_command_error(self, ctx, error):
         await self.bot.wait_until_ready()
         userdata = get_botfile("dishusers")
         if (
