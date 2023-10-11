@@ -18,7 +18,7 @@ class usertime(Cog):
         Timezones must be supplied the IANA tzdb (i.e. America/Chicago) format.
         """
 
-        profile = fill_profile(ctx.author.id)
+        userdata = fill_profile(ctx.author.id)
         if timezone == None:
             await ctx.reply(
                 content=f"Your timezone is `{'not set' if not profile['timezone'] else profile['timezone']}`.\n"
