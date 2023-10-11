@@ -21,7 +21,7 @@ class usertime(Cog):
         userdata = fill_profile(ctx.author.id)
         if timezone == None:
             await ctx.reply(
-                content=f"Your timezone is `{'not set' if not profile['timezone'] else profile['timezone']}`.\n"
+                content=f"Your timezone is `{'not set' if not userdata['timezone'] else userdata['timezone']}`.\n"
                 "To change this, enter a timezone. You can find your specific timezone with this tool.\n"
                 "<https://xske.github.io/tz/>",
                 mention_author=False,
