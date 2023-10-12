@@ -43,7 +43,7 @@ class AvyDecorations(Cog):
 
         # Laugh
         if random.randint(1,100) <= 20:
-            await message.reply(file=discord.File("congratulations.png"), mention_author=False)
+            await message.reply(file=discord.File("assets/congratulations.png"), mention_author=False)
 
     @commands.Cog.listener()
     async def on_socket_raw_receive(self, msg: str):
