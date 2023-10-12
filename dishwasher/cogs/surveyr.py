@@ -159,7 +159,8 @@ class Surveyr(Cog):
         msg = []
         for case in cases:
             try:
-                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+                survey = get_guildfile(ctx.guild.id, "surveys")
+                survey = survey[str(case)]
                 msg = await ctx.guild.get_channel(
                     get_config(ctx.guild.id, "surveyr", "survey_channel")
                 ).fetch_message(survey["post_id"])
