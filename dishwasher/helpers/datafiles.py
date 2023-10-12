@@ -202,9 +202,8 @@ def edit_survey(sid, cid, iid, reason, event):
         "reason": reason,
         "issuer_id": iid,
     }
-    for k, v in sv_data.items():
-        survey[str(cid)][k] = v
-    set_guildfile(sid, "surveys", json.dumps(survey))
+    surveys[str(cid)] = sv_data
+    set_guildfile(sid, "surveys", json.dumps(surveys))
     return cid
 
 
