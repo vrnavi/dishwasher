@@ -29,7 +29,7 @@ class AvyDecorations(Cog):
                 if channel.id == channel_id:
                     guild_id = guild.id
 
-        if not decoration_hash or guild_id:
+        if not decoration_hash or not guild_id:
             return
 
         # Ignore not configured guilds
