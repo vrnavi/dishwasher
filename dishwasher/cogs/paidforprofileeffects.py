@@ -22,7 +22,7 @@ class AvyDecorations(Cog):
         user_id = payload["author"]["id"]
         message_id = payload["id"]
         guild_id = payload.get("guild_id", None)
-        decoration_hash = payload["author"].get("avatar_decoration", None)
+        decoration_hash = payload["author"].get("avatar_decoration_data", None)
 
         if not decoration_hash or not guild_id:
             return
