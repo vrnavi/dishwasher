@@ -4,6 +4,7 @@ import discord
 import config
 import random
 from discord.ext import commands
+from discord.ext.commands import Cog
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed
 
