@@ -199,7 +199,9 @@ class ModReport(Cog):
         for g in self.bot.guilds:
             reportlog = get_guildfile(g.id, "reportlog")
             for instance, user in reportlog.items():
-                if datetime.datetime.now().strftime("%s") - datetime.timedelta(seconds=259200) > int(instance):
+                if datetime.datetime.now().strftime("%s") - datetime.timedelta(
+                    seconds=259200
+                ) > int(instance):
                     del reportlog[instance]
         set_guildfile(g.id, "reportlog", json.dumps(reportlog))
 

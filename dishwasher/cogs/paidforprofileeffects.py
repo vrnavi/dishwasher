@@ -22,14 +22,19 @@ class AvyDecorations(Cog):
         user_id = payload["author"]["id"]
         message_id = payload["id"]
         decoration_hash = payload["author"].get("avatar_decoration_data", None)
-        
+
         guild_id = None
         for guild in self.bot.guilds:
             for channel in guild.channels:
                 if channel.id == int(channel_id):
                     guild_id = guild.id
 
-        if not decoration_hash or not guild_id:
+        if (
+            not decoration_hash
+            or not guild_id
+            or decoration_hash["sku_id"]
+            in ("1144058522808614923", "1144058844004233369", "1144059132517826601")
+        ):
             return
 
         # Ignore not configured guilds
@@ -42,8 +47,10 @@ class AvyDecorations(Cog):
         message = channel.get_partial_message(int(message_id))
 
         # Laugh
-        if random.randint(1,100) <= 20:
-            await message.reply(file=discord.File("assets/congratulations.png"), mention_author=False)
+        if random.randint(1, 100) <= 20:
+            await message.reply(
+                file=discord.File("assets/congratulations.png"), mention_author=False
+            )
 
     @commands.Cog.listener()
     async def on_socket_raw_receive(self, msg: str):
