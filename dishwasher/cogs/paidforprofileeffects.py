@@ -20,7 +20,7 @@ class AvyDecorations(Cog):
         """The funny handler."""
         channel_id = payload["channel_id"]
         user_id = payload["author"]["id"]
-        message_id = payload["message_id"]
+        message_id = payload["id"]
         guild_id = payload.get("guild_id", None)
         decoration_hash = payload["author"]["avatar_decoration"]
 
