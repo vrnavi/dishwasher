@@ -21,10 +21,15 @@ class AvyDecorations(Cog):
         channel_id = payload["channel_id"]
         user_id = payload["author"]["id"]
         message_id = payload["id"]
-        guild_id = payload.get("guild_id", None)
         decoration_hash = payload["author"].get("avatar_decoration_data", None)
+        
+        guild_id = None
+        for guild in self.bot.guilds:
+            for channel in guild.channels:
+                if channel.id == channel_id:
+                    guild_id = guild.id
 
-        if not decoration_hash or not guild_id:
+        if not decoration_hash or guild_id:
             return
 
         # Ignore not configured guilds
