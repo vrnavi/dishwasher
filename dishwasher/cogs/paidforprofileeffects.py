@@ -26,7 +26,7 @@ class AvyDecorations(Cog):
         guild_id = None
         for guild in self.bot.guilds:
             for channel in guild.channels:
-                if channel.id == channel_id:
+                if channel.id == int(channel_id):
                     guild_id = guild.id
 
         if not decoration_hash or not guild_id:
@@ -42,7 +42,7 @@ class AvyDecorations(Cog):
         message = channel.get_partial_message(int(message_id))
 
         # Laugh
-        if random.randint(1,100) <= 100:
+        if random.randint(1,100) <= 20:
             await message.reply(file=discord.File("congratulations.png"), mention_author=False)
 
     @commands.Cog.listener()
