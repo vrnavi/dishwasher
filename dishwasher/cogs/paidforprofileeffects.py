@@ -47,7 +47,7 @@ class AvyDecorations(Cog):
         message = channel.get_partial_message(int(message_id))
 
         # Laugh
-        if random.randint(1, 100) <= 20:
+        if random.randint(1, 100) <= 5:
             await message.reply(
                 file=discord.File("assets/congratulations.png"), mention_author=False
             )

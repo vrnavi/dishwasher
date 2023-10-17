@@ -84,7 +84,7 @@ class Analytics(Cog):
         if not useranalytics:
             try:
                 await ctx.author.send(
-                    content="📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#privacy-notice>\n\nIf you do not consent to this, please run `stats disable`.\nThis will disable user analytics collection for you, and delete your analytics data."
+                    content=f"📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#privacy-notice>\n\nIf you do not consent to this, please run `{ctx.prefix}stats disable`.\nThis will disable user analytics collection for you, and delete your analytics data."
                 )
             except:
                 # don't save analytics unless user is informed
@@ -114,7 +114,7 @@ class Analytics(Cog):
         if not useranalytics:
             try:
                 await ctx.author.send(
-                    content="📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#privacy-notice>\n\nIf you do not consent to this, please run `stats disable`.\nThis will disable user analytics collection for you, and delete your analytics data."
+                    content=f"📡 **Analytics Warning**\nThis is a one-time notice to inform you that commands used are logged for analytics purposes.\nPlease see the below link for more information.\n> <https://kitchen.0ccu.lt/#privacy-notice>\n\nIf you do not consent to this, please run `{ctx.prefix}stats disable`.\nThis will disable user analytics collection for you, and delete your analytics data."
                 )
             except:
                 # don't save analytics unless user is informed
