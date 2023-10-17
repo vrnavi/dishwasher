@@ -35,11 +35,14 @@ class Admin(Cog):
     @commands.command(name="errors")
     async def _errors(self, ctx):
         """[O] Shows bot command errors."""
+        if not self.bot.errors:
+            return await ctx.reply(content="There are no logged command errors yet.", mention_author=False)
+            
         errlist = reversed(self.bot.errors)
         idx = 0
         navigation_reactions = ["⬅️", "➡"]
         embed = stock_embed(self.bot)
-        embed.color = discord.Color.green
+        embed.color = discord.Color.green()
         holder = await ctx.reply(embed=embed, mention_author=False)
         for e in navigation_reactions:
             await holder.add_reaction(e)
@@ -75,7 +78,7 @@ class Admin(Cog):
                     "reaction_add", timeout=30.0, check=reactioncheck
                 )
             except asyncio.TimeoutError:
-                embed.color = discord.Color.default
+                embed.color = discord.Color.default()
                 return await holder.edit(
                     embed=embed,
                     allowed_mentions=allowed_mentions,
