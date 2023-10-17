@@ -36,8 +36,10 @@ class Admin(Cog):
     async def _errors(self, ctx):
         """[O] Shows bot command errors."""
         if not self.bot.errors:
-            return await ctx.reply(content="There are no logged command errors yet.", mention_author=False)
-            
+            return await ctx.reply(
+                content="There are no logged command errors yet.", mention_author=False
+            )
+
         errlist = reversed(self.bot.errors)
         idx = 0
         navigation_reactions = ["⬅️", "➡"]
@@ -72,6 +74,8 @@ class Admin(Cog):
                 f"{guildmsg}"
                 f"```{type(errmsg)}: {errmsg}```"
             )
+
+            await holder.edit(embed=embed, allowed_mentions=allowed_mentions)
 
             try:
                 reaction, user = await self.bot.wait_for(
