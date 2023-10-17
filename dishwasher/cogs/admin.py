@@ -69,7 +69,6 @@ class Admin(Cog):
                 name=errctx.author, icon_url=errctx.author.display_avatar.url
             )
             embed.description = (
-                f"An error occurred...\n"
                 f"**Command:** `{errctx.message.content}`\n"
                 f"**User:** {errctx.message.author} ({errctx.message.author.id})\n"
                 f"{guildmsg}"
@@ -91,11 +90,17 @@ class Admin(Cog):
             if str(reaction) == "⬅️":
                 if idx != 0:
                     idx -= 1
-                await holder.remove_reaction("⬅️", ctx.author)
+                try:
+                    await holder.remove_reaction("⬅️", ctx.author)
+                except:
+                    pass
             elif str(reaction) == "➡":
                 if idx != len(errlist):
                     idx += 1
-                await holder.remove_reaction("➡", ctx.author)
+                try:
+                    await holder.remove_reaction("➡", ctx.author)
+                except:
+                    pass
 
     @commands.check(check_if_bot_manager)
     @commands.command()
