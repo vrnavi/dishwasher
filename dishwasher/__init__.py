@@ -64,6 +64,7 @@ bot = commands.Bot(
 bot.help_command = None
 bot.log = log
 bot.config = config
+bot.errors = []
 
 
 @bot.event
@@ -192,6 +193,8 @@ async def on_command_error(ctx, error):
     for m in config.bot_managers:
         await bot.get_user(m).send(embed=err_log_embed)
 
+    bot.errrors.append((ctx, error))
+
     if isinstance(error, commands.NoPrivateMessage):
         return await ctx.send("This command doesn't work in DMs.")
     elif isinstance(error, commands.MissingPermissions):
@@ -229,8 +232,7 @@ async def on_command_error(ctx, error):
             f"**Error: DM Failure**\n"
             "I can't DM you. You either have me blocked, or have DMs "
             f"blocked, either globally or for this server.\n"
-            "Please resolve that, then "
-            "try again."
+            "Please resolve that, then try again."
         )
 
     help_text = (

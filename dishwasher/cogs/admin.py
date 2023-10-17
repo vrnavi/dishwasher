@@ -11,6 +11,7 @@ import random
 import asyncio
 import shutil
 import os
+from helpers.embeds import stock_embed
 from helpers.checks import check_if_bot_manager
 from helpers.sv_config import get_config
 
@@ -29,6 +30,64 @@ class Admin(Cog):
             content=random.choice(self.bot.config.death_messages), mention_author=False
         )
         await self.bot.close()
+
+    @commands.check(check_if_bot_manager)
+    @commands.command(name="errors")
+    async def _errors(self, ctx):
+        """[O] Shows bot command errors."""
+        errlist = reversed(self.bot.errors)
+        idx = 0
+        navigation_reactions = ["⬅️", "➡"]
+        embed = stock_embed(self.bot)
+        embed.color = discord.Color.green
+        holder = await ctx.reply(embed=embed, mention_author=False)
+        for e in navigation_reactions:
+            await holder.add_reaction(e)
+
+        def reactioncheck(r, u):
+            return u.id == ctx.author.id and str(r.emoji) in navigation_reactions
+
+        while True:
+            page = errlist[idx]
+            errctx = page[0]
+            errmsg = page[1]
+
+            guildmsg = (
+                f"**Guild:** {errctx.guild.name}\n**Channel:** {errctx.channel.name}\n**Link:** {errctx.message.jump_url}\n"
+                if errctx.guild
+                else ""
+            )
+
+            embed.title = f"⚠️ Error {len(self.bot.errors) - idx}"
+            embed.set_author(
+                name=errctx.author, icon_url=errctx.author.display_avatar.url
+            )
+            embed.description = (
+                f"An error occurred...\n"
+                f"**Command:** `{errctx.message.content}`\n"
+                f"**User:** {errctx.message.author} ({errctx.message.author.id})\n"
+                f"{guildmsg}"
+                f"```{type(errmsg)}: {errmsg}```"
+            )
+
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=30.0, check=reactioncheck
+                )
+            except asyncio.TimeoutError:
+                embed.color = discord.Color.default
+                return await holder.edit(
+                    embed=embed,
+                    allowed_mentions=allowed_mentions,
+                )
+            if str(reaction) == "⬅️":
+                if idx != 0:
+                    idx -= 1
+                await holder.remove_reaction("⬅️", ctx.author)
+            elif str(reaction) == "➡":
+                if idx != len(errlist):
+                    idx += 1
+                await holder.remove_reaction("➡", ctx.author)
 
     @commands.check(check_if_bot_manager)
     @commands.command()
