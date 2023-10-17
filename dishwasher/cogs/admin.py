@@ -40,6 +40,7 @@ class Admin(Cog):
                 content="There are no logged command errors yet.", mention_author=False
             )
 
+        allowed_mentions = discord.AllowedMentions(replied_user=False)
         errlist = list(reversed(self.bot.errors))
         idx = 0
         navigation_reactions = ["⬅️", "➡"]
