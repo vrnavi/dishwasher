@@ -167,33 +167,7 @@ async def on_command_error(ctx, error):
         f"{type(error)}: {error}"
     )
 
-    guildmsg = (
-        f"**Guild:** {ctx.guild.name}\n**Channel:** {ctx.channel.name}\n**Link:** {ctx.message.jump_url}\n"
-        if ctx.guild
-        else ""
-    )
-    err_log_embed = discord.Embed(
-        color=ctx.author.color,
-        title="⚠️ Command Error",
-        description=(
-            f"An error occurred...\n"
-            f"**Command:** `{ctx.message.content}`\n"
-            f"**User:** {ctx.message.author} ({ctx.message.author.id})\n"
-            f"{guildmsg}"
-            f"```{type(error)}: {error}```"
-        ),
-        timestamp=datetime.datetime.now(),
-    )
-    err_log_embed.set_footer(text=bot.user.name, icon_url=bot.user.display_avatar)
-    err_log_embed.set_author(
-        name=f"{bot.escape_message(ctx.author)}",
-        icon_url=f"{ctx.author.display_avatar.url}",
-    )
-
-    for m in config.bot_managers:
-        await bot.get_user(m).send(embed=err_log_embed)
-
-    bot.errrors.append((ctx, error))
+    bot.errors.append((ctx, error))
 
     if isinstance(error, commands.NoPrivateMessage):
         return await ctx.send("This command doesn't work in DMs.")
