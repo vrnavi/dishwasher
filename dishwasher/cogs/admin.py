@@ -40,7 +40,7 @@ class Admin(Cog):
                 content="There are no logged command errors yet.", mention_author=False
             )
 
-        errlist = reversed(self.bot.errors)
+        errlist = list(reversed(self.bot.errors))
         idx = 0
         navigation_reactions = ["⬅️", "➡"]
         embed = stock_embed(self.bot)
