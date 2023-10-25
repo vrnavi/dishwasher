@@ -62,7 +62,7 @@ class Reply(Cog):
                     or usertracks[str(message.author.id)]["truedays"] < 14
                 ):
                     return await message.reply(
-                        content="**Do not reply ping users who do not wish to be pinged.** As you are new, this first time will not be a violation.",
+                        content="**Do not reply ping users who do not wish to be pinged.**\nAs you are new, this first time will not be a violation.",
                         file=discord.File("assets/noreply.png"),
                         mention_author=True,
                     )

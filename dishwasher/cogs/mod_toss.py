@@ -687,6 +687,7 @@ class ModToss(Cog):
             get_config(member.guild.id, "staff", "staff_channel")
         )
         try:
+            session = None
             for p in os.listdir(f"data/servers/{member.guild.id}/toss"):
                 for c in os.listdir(f"data/servers/{member.guild.id}/toss/{p}"):
                     if member.id == c[:-5]:
@@ -699,17 +700,17 @@ class ModToss(Cog):
         if not session:
             return
 
-        toss_channel = await self.new_session(message.guild)
+        toss_channel = await self.new_session(member.guild)
         bad_roles_msg, prev_roles = await self.perform_toss(
-            message.author, message.guild.me, toss_channel
+            member, member.guild.me, toss_channel
         )
-        await toss_channel.set_permissions(message.author, read_messages=True)
+        await toss_channel.set_permissions(member, read_messages=True)
         await toss_channel.send(
             content=f"{member.mention}, you were previously rolebanned. As such, a new session has been made for you here."
         )
         os.replace(
-            f"data/servers/{member.guild.id}/toss/{session}/{member.id}",
-            f"data/servers/{member.guild.id}/toss/{toss_channel.name}/{member.id}",
+            f"data/servers/{member.guild.id}/toss/{session}/{member.id}.json",
+            f"data/servers/{member.guild.id}/toss/{toss_channel.name}/{member.id}.json",
         )
         if staff_channel:
             await staff_channel.send(

@@ -83,6 +83,10 @@ class Admin(Cog):
                 )
             except asyncio.TimeoutError:
                 embed.color = discord.Color.default()
+                try:
+                    await holder.clear_reactions()
+                except:
+                    pass
                 return await holder.edit(
                     embed=embed,
                     allowed_mentions=allowed_mentions,

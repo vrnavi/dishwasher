@@ -139,9 +139,8 @@ class Mod(Cog):
         if ctx.guild.get_member(target.id) is not None:
             dm_message = f"**You were banned** from `{ctx.guild.name}`."
             if reason:
-                dm_message += (
-                    f'\n*The given reason is:* "{reason}".\n\nThis ban does not expire'
-                )
+                dm_message += f'\n*The given reason is:* "{reason}".'
+            dm_message += "\n\nThis ban does not expire"
             dm_message += (
                 f", but you may appeal it here:\n{get_config(ctx.guild.id, 'staff', 'appeal_url')}"
                 if get_config(ctx.guild.id, "staff", "appeal_url")
