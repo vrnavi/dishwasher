@@ -329,7 +329,9 @@ class Surveyr(Cog):
             if x == 59:
                 return
             async for log in guild.audit_logs(
-                before=datetime.datetime.now() + datetime.timedelta(0, 10),
+                limit=10,
+                after=datetime.datetime.now() - datetime.timedelta(minutes=1),
+                oldest_first=False,
                 action=discord.AuditLogAction.kick,
             ):
                 if log.target.id == member.id:
@@ -372,7 +374,9 @@ class Surveyr(Cog):
             if x == 59:
                 return
             async for log in guild.audit_logs(
-                before=datetime.datetime.now() + datetime.timedelta(0, 10),
+                limit=10,
+                after=datetime.datetime.now() - datetime.timedelta(minutes=1),
+                oldest_first=False,
                 action=discord.AuditLogAction.ban,
             ):
                 if log.target.id == member.id:
@@ -434,7 +438,9 @@ class Surveyr(Cog):
             if x == 59:
                 return
             async for log in guild.audit_logs(
-                before=datetime.datetime.now() + datetime.timedelta(0, 10),
+                limit=10,
+                after=datetime.datetime.now() - datetime.timedelta(minutes=1),
+                oldest_first=False,
                 action=discord.AuditLogAction.unban,
             ):
                 if log.target.id == member.id:
@@ -486,7 +492,9 @@ class Surveyr(Cog):
                 if x == 59:
                     return
                 async for log in guild.audit_logs(
-                    before=datetime.datetime.now() + datetime.timedelta(0, 10),
+                    limit=10,
+                    after=datetime.datetime.now() - datetime.timedelta(minutes=1),
+                    oldest_first=False,
                     action=discord.AuditLogAction.member_update,
                 ):
                     if log.target.id == member_after.id and log.after.timed_out_until:
@@ -545,7 +553,9 @@ class Surveyr(Cog):
                 if x == 59:
                     return
                 async for log in guild.audit_logs(
-                    before=datetime.datetime.now() + datetime.timedelta(0, 10),
+                    limit=10,
+                    after=datetime.datetime.now() - datetime.timedelta(minutes=1),
+                    oldest_first=False,
                     action=discord.AuditLogAction.member_update,
                 ):
                     if log.target.id == member_after.id:
