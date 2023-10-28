@@ -76,6 +76,29 @@ class Basic(Cog):
         await ctx.send(f"I am incapable of hugs, but... \*hugs*")
 
     @commands.command()
+    async def roll(self, ctx, dice = None):
+        """[U] Rolls the dice!"""
+        if dice:
+            try:
+                amount, faces = [int(arg) for arg in dice.split("d")]
+            except:
+                return await ctx.reply(content="Invalid input. Try `1d6` or `3d20`.", mention_author=False)
+            if amount <= 0:
+                return await ctx.reply(content="You roll a `nothing`. Good job, idiot.", mention_author=False)
+            elif faces <= 1:
+                return await ctx.reply(content="The die fizzles out of existence for not being possible. Way to go.", mention_author=False)
+        else:
+            faces = 6
+            amount = 1
+        rolls = []
+        for roll in range(amount):
+            rolls.append(random.randint(faces) + 1)
+        if amount > 1:
+            return await ctx.reply(content="You rolled: `" + ', '.join(rolls) + "` totalling **" + sum(rolls) + "**.", mention_author=False)
+        else:
+            return await ctx.reply(content=f"You rolled a `{sum(rolls)}`.", mention_author=False)
+
+    @commands.command()
     async def baguette(self, ctx):
         """[U] hon hon hon baguette"""
         await ctx.send(f"🥖")
