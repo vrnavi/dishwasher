@@ -92,7 +92,7 @@ class Basic(Cog):
             amount = 1
         rolls = []
         for roll in range(amount):
-            rolls.append(random.randint(faces) + 1)
+            rolls.append(random.randrange(faces) + 1)
         if amount > 1:
             return await ctx.reply(content="You rolled: `" + ', '.join(rolls) + "` totalling **" + sum(rolls) + "**.", mention_author=False)
         else:
