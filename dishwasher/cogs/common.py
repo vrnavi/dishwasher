@@ -51,7 +51,7 @@ class Common(Cog):
 
     async def aioget(self, url):
         try:
-            data = await self.bot.aiosession.get(url)
+            data = await self.bot.session.get(url)
             if data.status == 200:
                 text_data = await data.text()
                 self.bot.log.info(f"Data from {url}: {text_data}")
@@ -66,7 +66,7 @@ class Common(Cog):
 
     async def aiogetbytes(self, url):
         try:
-            data = await self.bot.aiosession.get(url)
+            data = await self.bot.session.get(url)
             if data.status == 200:
                 byte_data = await data.read()
                 self.bot.log.debug(f"Data from {url}: {byte_data}")
@@ -81,7 +81,7 @@ class Common(Cog):
 
     async def aiojson(self, url):
         try:
-            data = await self.bot.aiosession.get(url)
+            data = await self.bot.session.get(url)
             if data.status == 200:
                 text_data = await data.text()
                 self.bot.log.info(f"Data from {url}: {text_data}")
@@ -155,7 +155,7 @@ class Common(Cog):
     # by link2110 (https://stackoverflow.com/users/5890923/link2110)
     # modified by Ave (https://github.com/aveao), licensed CC-BY-SA 3.0
     async def download_file(self, url, local_filename):
-        file_resp = await self.bot.aiosession.get(url)
+        file_resp = await self.bot.session.get(url)
         file = await file_resp.read()
         with open(local_filename, "wb") as f:
             f.write(file)
