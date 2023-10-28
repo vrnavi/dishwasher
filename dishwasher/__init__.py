@@ -69,9 +69,7 @@ bot.errors = []
 
 @bot.event
 async def on_ready():
-    bot.aiosession = aiohttp.ClientSession()
     bot.app_info = await bot.application_info()
-    bot.log_channel = bot.get_channel(config.bot_logchannel)
 
     log.info(
         f"\nLogged in as: {bot.user.name} - "
@@ -84,6 +82,7 @@ async def on_ready():
     )
 
     # Send "Dishwasher has started! x has y members!"
+    bot.log_channel = bot.get_channel(config.bot_logchannel)
     guild = bot.log_channel.guild
     msg = (
         f"**{bot.user.name} is now `🟢 ONLINE`.**\n"
