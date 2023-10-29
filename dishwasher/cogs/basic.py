@@ -73,21 +73,18 @@ class Basic(Cog):
     async def trivia(self, ctx):
         """[U] A quick trivia game."""
         try:
-            question = await self.bot.aioget("https://opentdb.com/api.php?amount=1")
-            question = json.loads(html.unescape(question))
+            question = await self.bot.aiojson("https://opentdb.com/api.php?amount=1")
             if question["response_code"] != 0:
                 return await ctx.reply(content="API error.", mention_author=False)
 
             answericons = ["🇦", "🇧", "🇨", "🇩"]
-            answers = random.shuffle(
-                [question["results"][0]["correct_answer"]]
-                + question["results"][0]["incorrect_answers"]
-            )
+            answers = [question["results"][0]["correct_answer"]] + question["results"][0]["incorrect_answers"]
+            random.shuffle(answers)
             post = (
                 "⬛⬜⬛⬜ **TRIVIA** ⬛⬜⬛⬜\n"
                 + f"> `Category:` {question['results'][0]['category']}\n"
                 + f"> `Difficulty:` {question['results'][0]['difficulty'].title()}\n\n"
-                + f"💬 {question['results'][0]['question']}"
+                + f"💬 {html.unescape(question['results'][0]['question'])}"
                 + "\n".join(
                     [
                         answericons[idx] + " " + answer
