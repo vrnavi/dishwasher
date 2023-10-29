@@ -12,7 +12,7 @@ from helpers.checks import check_if_staff
 from helpers.sv_config import get_config
 
 
-class Privacy(Cog):
+class Erase(Cog):
     """
     For when you want to be forgotten.
     """
@@ -30,16 +30,17 @@ class Privacy(Cog):
     async def erase(self, ctx, verify=None):
         if not verify:
             return await ctx.reply(
-                f"**THIS IS A VERY DESTRUCTIVE AND IRREVERSIBLE ACTION!**\nThe `erase` command will systematically and painstakingly wipe your post history from the current server, leaving **NOTHING** behind!\nAfter this is complete, you will be DMed a link containing all of your files and images uploaded to this server. Download it within one week, or it will be gone forever.\nI __strongly__ recommend you request your Data Package first by going to the following location on your client:\n- `Settings`\n- `Privacy & Safety`\n- `Request all of my data`\nWait for it to arrive before proceeding.\n\nIf you are SURE that you want to do this, rerun this command with the following code: `{self.verifycode}`"
+                content=f"**THIS IS A VERY DESTRUCTIVE AND IRREVERSIBLE ACTION!**\nThe `erase` command will systematically and painstakingly wipe your post history from the current server, leaving **NOTHING** behind!\nAfter this is complete, you will be DMed a link containing all of your files and images uploaded to this server. Download it within one week, or it will be gone forever.\nI __strongly__ recommend you request your Data Package first by going to the following location on your client:\n- `Settings`\n- `Privacy & Safety`\n- `Request all of my data`\nWait for it to arrive before proceeding.\n\nIf you are SURE that you want to do this, rerun this command with the following code: `{self.verifycode}`",
+                delete_after=60,
             )
         if verify != self.verifycode:
             return await ctx.reply("You specified an incorrect verification code.")
         else:
-            add_erased(guild.user)
+            add_erased(ctx.guild, ctx.author)
             hashlib.sha1().update(str(time.time()).encode("utf-8"))
             self.verifycode = hashlib.sha1().hexdigest()[:10]
             pass
 
 
 async def setup(bot):
-    await bot.add_cog(Privacy(bot))
+    await bot.add_cog(Erase(bot))

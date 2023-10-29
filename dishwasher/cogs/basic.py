@@ -13,6 +13,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 import aiohttp
 import re as ren
+import html
 
 
 class Basic(Cog):
@@ -32,7 +33,7 @@ class Basic(Cog):
 
     @commands.command(aliases=["whatsmyip", "myip"])
     async def whatismyip(self, ctx):
-        """[U] It just tells you 'you' IP."""
+        """[U] It just tells you 'your' IP."""
         await ctx.send(
             f"**Your IP is:** {random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}"
         )
@@ -55,20 +56,49 @@ class Basic(Cog):
     async def youtube(self, ctx, *, arg: str):
         """[U] Returns the first video in a YouTube search."""
         try:
-            async with aiohttp.ClientSession() as session:  # common.aioget spams info with entire reponse body, so am doing this instead
-                async with session.get(
-                    f"https://www.youtube.com/results?search_query={arg}"
-                ) as response:  # seems to be santized by aiohttp
-                    if response.status != 200:
-                        raise ConnectionError
+            html = await self.bot.aioget(
+                f"https://www.youtube.com/results?search_query={arg}"
+            )
+            # finds the first instance of watch\?=[youtube video id]
+            # that isn't an ad
+            id = ren.findall(r"watch\?v=(\S{11})", html)[1]
+            await ctx.reply(
+                content=f"https://www.youtube.com/watch?v={id}", mention_author=False
+            )
+        except:
+            await ctx.reply(content="HTML error.", mention_author=False)
 
-                    html = await response.text()
-                    id = ren.findall(r"watch\?v=(\S{11})", html)[
-                        1
-                    ]  # finds the first instance of watch\?=[youtube video id]
-                    await ctx.send(f"https://www.youtube.com/watch?v={id}")
-        except ConnectionError:
-            await ctx.send("wh? something broke?")
+    @commands.command(aliases=["yt"])
+    async def trivia(self, ctx, *, arg: str):
+        """[U] A quick trivia game."""
+        try:
+            question = await self.bot.aioget("https://opentdb.com/api.php?amount=1")
+            question = json.loads(html.unescape(question))
+            if question["response_code"] != 0:
+                return await ctx.reply(content="API error.", mention_author=False)
+
+            answericons = ["🇦", "🇧", "🇨", "🇩"]
+            answers = random.shuffle(
+                [question["results"][0]["correct_answer"]]
+                + question["results"][0]["incorrect_answers"]
+            )
+            post = (
+                "⬛⬜⬛⬜ **TRIVIA** ⬛⬜⬛⬜\n"
+                + f"> `Category:` {question['results'][0]['category']}\n"
+                + f"> `Difficulty:` {question['results'][0]['difficulty'].title()}\n\n"
+                + f"💬 {question['results'][0]['question']}"
+                + "\n".join(
+                    [
+                        answericons[idx] + " " + answer
+                        for idx, answer in enumerate(answers)
+                    ]
+                )
+                + "\n\n⏱️ The timer runs out <t:{int(datetime.datetime.now().strftime('%s')) + 10}:R>!"
+            )
+            await ctx.reply(content=post, mention_author=False)
+
+        except:
+            await ctx.send("Unspecified error.")
 
     @commands.command()
     async def hug(self, ctx):
