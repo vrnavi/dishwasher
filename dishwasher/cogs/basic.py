@@ -91,7 +91,7 @@ class Basic(Cog):
                         for idx, answer in enumerate(answers)
                     ]
                 )
-                + "\n\n⏱️ The timer runs out <t:{int(datetime.datetime.now().strftime('%s')) + 10}:R>!"
+                + f"\n\n⏱️ The timer runs out <t:{int(datetime.datetime.now().strftime('%s')) + 10}:R>!"
             )
             await ctx.reply(content=post, mention_author=False)
 
