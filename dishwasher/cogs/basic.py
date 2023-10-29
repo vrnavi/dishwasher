@@ -84,14 +84,14 @@ class Basic(Cog):
                 "⬛⬜⬛⬜ **TRIVIA** ⬛⬜⬛⬜\n"
                 + f"> `Category:` {question['results'][0]['category']}\n"
                 + f"> `Difficulty:` {question['results'][0]['difficulty'].title()}\n\n"
-                + f"💬 {html.unescape(question['results'][0]['question'])}"
+                + f"💬 {html.unescape(question['results'][0]['question'])}\n"
                 + "\n".join(
                     [
                         answericons[idx] + " " + answer
                         for idx, answer in enumerate(answers)
                     ]
                 )
-                + f"\n\n⏱️ The timer runs out <t:{int(datetime.now().strftime('%s')) + 10}:R>!"
+                + f"\n\n⏱️ The timer runs out <t:{int(datetime.now().strftime('%s')) + 60}:R>!"
             )
             await ctx.reply(content=post, mention_author=False)
 
