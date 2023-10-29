@@ -87,7 +87,7 @@ class Basic(Cog):
                 + f"💬 {html.unescape(question['results'][0]['question'])}\n"
                 + "\n".join(
                     [
-                        answericons[idx] + " " + answer
+                        answericons[idx] + " " + html.unescape(answer)
                         for idx, answer in enumerate(answers)
                     ]
                 )
