@@ -99,7 +99,7 @@ class Basic(Cog):
             msg = await ctx.reply(content=post, mention_author=False)
 
             for idx in range(len(answers)):
-                await post.add_reaction(answericons[idx])
+                await msg.add_reaction(answericons[idx])
 
             await asyncio.sleep(60)
 
