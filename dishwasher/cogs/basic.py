@@ -78,23 +78,43 @@ class Basic(Cog):
                 return await ctx.reply(content="API error.", mention_author=False)
 
             answericons = ["🇦", "🇧", "🇨", "🇩"]
-            answers = [question["results"][0]["correct_answer"]] + question["results"][0]["incorrect_answers"]
+            answers = [question["results"][0]["correct_answer"]] + question["results"][
+                0
+            ]["incorrect_answers"]
             random.shuffle(answers)
-            post = (
+            postpreamble = (
                 "⬛⬜⬛⬜ **TRIVIA** ⬛⬜⬛⬜\n"
                 + f"> `Category:` {question['results'][0]['category']}\n"
                 + f"> `Difficulty:` {question['results'][0]['difficulty'].title()}\n\n"
                 + f"💬 {html.unescape(question['results'][0]['question'])}\n"
-                + "\n".join(
-                    [
-                        answericons[idx] + " " + html.unescape(answer)
-                        for idx, answer in enumerate(answers)
-                    ]
-                )
-                + f"\n\n⏱️ The timer runs out <t:{int(datetime.now().strftime('%s')) + 60}:R>!"
             )
-            await ctx.reply(content=post, mention_author=False)
+            postanswers = "\n".join(
+                [
+                    answericons[idx] + " " + html.unescape(answer)
+                    for idx, answer in enumerate(answers)
+                ]
+            )
+            posttimer = f"\n\n⏱️ The timer runs out <t:{int(datetime.now().strftime('%s')) + 62}:R>!"
+            post = postpreamble + postanswers + posttimer
+            msg = await ctx.reply(content=post, mention_author=False)
 
+            for idx in range(len(answers)):
+                await post.add_reaction(answericons[idx])
+
+            await asyncio.sleep(60)
+
+            postanswers = "\n".join(
+                [
+                    "> " + answericons[idx] + " " + html.unescape(answer)
+                    if answer == question["results"][0]["correct_answer"]
+                    else answericons[idx] + " " + html.unescape(answer)
+                    for idx, answer in enumerate(answers)
+                ]
+            )
+            posttimer = f"\n\n⏱️ The timer ran out <t:{int(datetime.now().strftime('%s')) + 62}:R>!"
+            post = postpreamble + postanswers + posttimer
+            allowed_mentions = discord.AllowedMentions(replied_user=False)
+            await msg.edit(content=post, allowed_mentions=allowed_mentions)
         except:
             await ctx.send("Unspecified error.")
 
