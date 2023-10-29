@@ -14,6 +14,7 @@ from discord.ext.commands import Cog
 import aiohttp
 import re as ren
 import html
+import json
 
 
 class Basic(Cog):
@@ -71,33 +72,34 @@ class Basic(Cog):
     @commands.command()
     async def trivia(self, ctx):
         """[U] A quick trivia game."""
-        question = await self.bot.aioget("https://opentdb.com/api.php?amount=1")
-        question = json.loads(html.unescape(question))
-        if question["response_code"] != 0:
-            return await ctx.reply(content="API error.", mention_author=False)
+        try:
+            question = await self.bot.aioget("https://opentdb.com/api.php?amount=1")
+            question = json.loads(html.unescape(question))
+            if question["response_code"] != 0:
+                return await ctx.reply(content="API error.", mention_author=False)
 
-        answericons = ["🇦", "🇧", "🇨", "🇩"]
-        answers = random.shuffle(
-            [question["results"][0]["correct_answer"]]
-            + question["results"][0]["incorrect_answers"]
-        )
-        post = (
-            "⬛⬜⬛⬜ **TRIVIA** ⬛⬜⬛⬜\n"
-            + f"> `Category:` {question['results'][0]['category']}\n"
-            + f"> `Difficulty:` {question['results'][0]['difficulty'].title()}\n\n"
-            + f"💬 {question['results'][0]['question']}"
-            + "\n".join(
-                [
-                    answericons[idx] + " " + answer
-                    for idx, answer in enumerate(answers)
-                ]
+            answericons = ["🇦", "🇧", "🇨", "🇩"]
+            answers = random.shuffle(
+                [question["results"][0]["correct_answer"]]
+                + question["results"][0]["incorrect_answers"]
             )
-            + "\n\n⏱️ The timer runs out <t:{int(datetime.datetime.now().strftime('%s')) + 10}:R>!"
-        )
-        await ctx.reply(content=post, mention_author=False)
+            post = (
+                "⬛⬜⬛⬜ **TRIVIA** ⬛⬜⬛⬜\n"
+                + f"> `Category:` {question['results'][0]['category']}\n"
+                + f"> `Difficulty:` {question['results'][0]['difficulty'].title()}\n\n"
+                + f"💬 {question['results'][0]['question']}"
+                + "\n".join(
+                    [
+                        answericons[idx] + " " + answer
+                        for idx, answer in enumerate(answers)
+                    ]
+                )
+                + "\n\n⏱️ The timer runs out <t:{int(datetime.datetime.now().strftime('%s')) + 10}:R>!"
+            )
+            await ctx.reply(content=post, mention_author=False)
 
-        #except:
-        #await ctx.send("Unspecified error.")
+        except:
+            await ctx.send("Unspecified error.")
 
     @commands.command()
     async def hug(self, ctx):
