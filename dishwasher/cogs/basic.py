@@ -68,8 +68,8 @@ class Basic(Cog):
         except:
             await ctx.reply(content="HTML error.", mention_author=False)
 
-    @commands.command(aliases=["yt"])
-    async def trivia(self, ctx, *, arg: str):
+    @commands.command()
+    async def trivia(self, ctx):
         """[U] A quick trivia game."""
         try:
             question = await self.bot.aioget("https://opentdb.com/api.php?amount=1")
