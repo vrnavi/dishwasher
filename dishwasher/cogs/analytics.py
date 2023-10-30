@@ -23,7 +23,7 @@ class Analytics(Cog):
                 content="There are no analytics to show.", mention_author=False
             )
         contents = ""
-        for key, value in useranalytics.items()[-20:]:
+        for key, value in list(useranalytics.items())[-10:]:
             contents += f"\n`{key}` | Used **{value['success']}** times, failed **{value['failure']}** times."
         contents += f"\n\nYou have used **{len(useranalytics.keys())}**/{len(self.bot.commands)} commands.\nYour completion score is **{round(len(useranalytics.keys())/len(self.bot.commands)*100, 2)}**%."
         await ctx.reply(content=contents, mention_author=False)
