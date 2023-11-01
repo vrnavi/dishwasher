@@ -65,9 +65,9 @@ class prefixes(Cog):
     @prefixes.command()
     async def remove(self, ctx, number: int):
         """[U] Removes a prefix."""
-        profile = fill_profile(ctx.author.id)
+        userdata = fill_profile(ctx.author.id)
         try:
-            profile["prefixes"].pop(number - 1)
+            userdata["prefixes"].pop(number - 1)
             set_userfile(ctx.author.id, "profile", json.dumps(userdata))
             await ctx.reply(content="Prefix removed.", mention_author=False)
         except IndexError:
