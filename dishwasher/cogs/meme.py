@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
 import math
+import random
 import platform
 from helpers.checks import check_if_staff
 import datetime

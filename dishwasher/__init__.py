@@ -15,14 +15,21 @@ from helpers.datafiles import get_userfile
 
 # TODO: check __name__ for __main__ nerd
 
-stdout_handler = logging.StreamHandler(sys.stdout)
 log_format = logging.Formatter(
     "[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
 )
+
+stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setFormatter(log_format)
+
+logfile_handler = logging.FileHandler("logs/dishwasher.log", mode="w")
+logfile_handler.setFormatter(log_format)
+
 log = logging.getLogger("discord")
 log.setLevel(logging.INFO)
+
 log.addHandler(stdout_handler)
+log.addHandler(logfile_handler)
 
 
 def cap_permutations(s):

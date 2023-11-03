@@ -52,13 +52,12 @@ class Common(Cog):
     async def aioget(self, url):
         try:
             data = await self.bot.session.get(url)
-            if data.status == 200:
-                text_data = await data.text()
-                self.bot.log.info(f"Data from {url}: {text_data}")
-                return text_data
-            else:
+            if data.status != 200:
                 self.bot.log.error(f"HTTP Error {data.status} while getting {url}")
                 return None
+            text_data = await data.text()
+            self.bot.log.info(f"Data from {url}: {text_data}")
+            return text_data
         except:
             self.bot.log.error(
                 f"Error while getting {url} "
@@ -69,13 +68,12 @@ class Common(Cog):
     async def aiogetbytes(self, url):
         try:
             data = await self.bot.session.get(url)
-            if data.status == 200:
-                byte_data = await data.read()
-                self.bot.log.debug(f"Data from {url}: {byte_data}")
-                return byte_data
-            else:
+            if data.status != 200:
                 self.bot.log.error(f"HTTP Error {data.status} while getting {url}")
                 return None
+            byte_data = await data.read()
+            self.bot.log.debug(f"Data from {url}: {byte_data}")
+            return byte_data
         except:
             self.bot.log.error(
                 f"Error while getting {url} "
@@ -86,14 +84,13 @@ class Common(Cog):
     async def aiojson(self, url):
         try:
             data = await self.bot.session.get(url)
-            if data.status == 200:
-                text_data = await data.text()
-                self.bot.log.info(f"Data from {url}: {text_data}")
-                content_type = data.headers["Content-Type"]
-                return await data.json(content_type=content_type)
-            else:
+            if data.status != 200:
                 self.bot.log.error(f"HTTP Error {data.status} while getting {url}")
                 return None
+            text_data = await data.text()
+            self.bot.log.info(f"Data from {url}: {text_data}")
+            content_type = data.headers["Content-Type"]
+            return await data.json(content_type=content_type)
         except:
             self.bot.log.error(
                 f"Error while getting {url} "

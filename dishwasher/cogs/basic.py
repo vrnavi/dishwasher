@@ -111,7 +111,9 @@ class Basic(Cog):
                     for idx, answer in enumerate(answers)
                 ]
             )
-            posttimer = f"\n\n⏱️ The timer ran out <t:{datetime.now().strftime('%s')}:R>!"
+            posttimer = (
+                f"\n\n⏱️ The timer ran out <t:{datetime.now().strftime('%s')}:R>!"
+            )
             post = postpreamble + postanswers + posttimer
             allowed_mentions = discord.AllowedMentions(replied_user=False)
             await msg.edit(content=post, allowed_mentions=allowed_mentions)
