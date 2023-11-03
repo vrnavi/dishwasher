@@ -13,8 +13,6 @@ import itertools
 from discord.ext import commands
 from helpers.datafiles import get_userfile
 
-# TODO: check __name__ for __main__ nerd
-
 log_format = logging.Formatter(
     "[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
 )

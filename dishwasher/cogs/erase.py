@@ -6,7 +6,7 @@ import re
 import config
 import datetime
 import asyncio
-import hashlib
+import random
 import time
 from helpers.checks import check_if_staff
 from helpers.sv_config import get_config
@@ -19,8 +19,7 @@ class Erase(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        hashlib.sha1().update(str(time.time()).encode("utf-8"))
-        self.verifycode = hashlib.sha1().hexdigest()[:10]
+        self.verifycode = format(random.getrandbits(128), 'x')[:10]
 
     def add_erased(self, guild, user):
         pass
@@ -37,8 +36,7 @@ class Erase(Cog):
             return await ctx.reply("You specified an incorrect verification code.")
         else:
             add_erased(ctx.guild, ctx.author)
-            hashlib.sha1().update(str(time.time()).encode("utf-8"))
-            self.verifycode = hashlib.sha1().hexdigest()[:10]
+            self.verifycode = format(random.getrandbits(128), 'x')[:10]
             pass
 
 
