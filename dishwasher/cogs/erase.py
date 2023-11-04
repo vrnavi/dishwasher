@@ -71,14 +71,6 @@ class Erase(Cog):
                         def messagecheck(m):
                             return m.author.id == user.id
 
-                    if os.path.exists("erasedbatch.zip"):
-                        batchzip = zipfile.ZipFile(
-                            "erasedbatch.zip", "r", zipfile.ZIP_LZMA
-                        )
-                    else:
-                        batchzip = zipfile.ZipFile(
-                            "erasedbatch.zip", "w", zipfile.ZIP_LZMA
-                        )
                     # Actual processing of channels.
                     for channel in channels:
                         async for message in channel.history(oldest_first=True):
@@ -87,12 +79,14 @@ class Erase(Cog):
                             if message.attachments:
                                 for attachment in message.attachments:
                                     if (
-                                        sum([zinfo.file_size for zinfo in batchzip.infolist])
+                                        os.path.exists("data/erasedbatch.zip")
+                                        and os.path.getsize("erasedbatch.zip")
                                         + attachment.size
                                         >= 524288000
                                     ):
-                                        batchzip.close()
-                                        with open("erasedbatch.zip", "rb") as batchfile:
+                                        with open(
+                                            "data/erasedbatch.zip", "rb"
+                                        ) as batchfile:
                                             formdata = aiohttp.FormData()
                                             formdata.add_field("reqtype", "fileupload")
                                             formdata.add_field("time", "72h")
@@ -106,15 +100,16 @@ class Erase(Cog):
                                         await user.send(
                                             f"A batch of erased files from `{g.name}` has been uploaded.\nPlease download it within 72 hours.\n{url}"
                                         )
-                                        os.remove("erasedbatch.zip")
-                                        batchzip = zipfile.ZipFile(
-                                            "erasedbatch.zip",
-                                            mode="w",
-                                            compression=zipfile.ZIP_LZMA,
-                                        )
+                                        os.remove("data/erasedbatch.zip")
+                                    batchzip = zipfile.ZipFile(
+                                        "data/erasedbatch.zip",
+                                        mode="a",
+                                        compression=zipfile.ZIP_LZMA,
+                                    )
                                     batchzip.write(
                                         await attachment.read(), attachment.filename
                                     )
+                                    batchzip.close()
                             try:
                                 await message.delete()
                                 await asyncio.sleep(1)
@@ -122,10 +117,8 @@ class Erase(Cog):
                                 continue
                         erasequeue["userid"]["completed"].append(channel.id)
                         set_guildfile(g.id, "erasures", json.dumps(erasequeue))
-                    if batchzip:
-                        batchzip.close()
-                    if os.path.exists("erasedbatch.zip"):
-                        with open("erasedbatch.zip", "rb") as batchfile:
+                    if os.path.exists("data/erasedbatch.zip"):
+                        with open("data/erasedbatch.zip", "rb") as batchfile:
                             formdata = aiohttp.FormData()
                             formdata.add_field("reqtype", "fileupload")
                             formdata.add_field("time", "72h")
@@ -137,7 +130,7 @@ class Erase(Cog):
                         await user.send(
                             f"The final batch of erased files from `{g.name}` has been uploaded.\nPlease download it within 72 hours.\n{url}"
                         )
-                        os.remove("erasedbatch.zip")
+                        os.remove("data/erasedbatch.zip")
                     await user.send(
                         "All messages that could be deleted have been deleted."
                     )
