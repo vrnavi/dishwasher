@@ -33,11 +33,11 @@ class Erase(Cog):
         api_url = "https://litterbox.catbox.moe/resources/internals/api.php"
         # Main loop.
         while True:
+            await asyncio.sleep(60)
             # Guild loop.
             for g in self.bot.guilds:
                 erasequeue = get_guildfile(g.id, "erasures")
                 if not erasequeue:
-                    await asyncio.sleep(60)
                     continue
                 # User loop.
                 for userid, params in erasequeue.items():
@@ -115,6 +115,7 @@ class Erase(Cog):
                                         )
                                 try:
                                     await message.delete()
+                                    await asyncio.sleep(1)
                                 except:
                                     continue
                             erasequeue["userid"]["completed"].append(channel.id)
