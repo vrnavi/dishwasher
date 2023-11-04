@@ -17,6 +17,8 @@ class Erase(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.verifycode = format(random.getrandbits(128), "x")[:10]
+
+    async def cog_load(self):
         await self.process_erased()
 
     def add_erased(self, guild, user, keywords, channels):
