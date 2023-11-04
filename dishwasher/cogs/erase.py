@@ -40,7 +40,7 @@ class Erase(Cog):
                     continue
                 # User loop.
                 for userid, params in erasequeue.items():
-                    user = self.bot.fetch_user(int(userid))
+                    user = await self.bot.fetch_user(int(userid))
                     batchzip = None
                     if params["channels"]:
                         channels = []
