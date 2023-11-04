@@ -108,14 +108,23 @@ class Erase(Cog):
                                             attachdata,
                                         )
                                     else:
-                                        async with self.bot.session.get(attachment.url) as response:
-                                            with open (attachment.filename, "wb") as f:
+                                        async with self.bot.session.get(
+                                            attachment.url
+                                        ) as response:
+                                            with open(attachment.filename, "wb") as f:
                                                 while True:
-                                                    chunk = await response.content.readany()
+                                                    chunk = (
+                                                        await response.content.readany()
+                                                    )
                                                     if not chunk:
                                                         break
                                                     f.write(chunk)
-                                        batchzip.write(attachment.filename, arcname=f"{attachment.id}-{attachment.filename}")
+                                        self.bot.loop.run_in_executor(
+                                            None,
+                                            batchzip.write,
+                                            attachment.filename,
+                                            arcname=f"{attachment.id}-{attachment.filename}",
+                                        )
                                         os.remove(attachment.filename)
                                     batchzip.close()
                             try:
