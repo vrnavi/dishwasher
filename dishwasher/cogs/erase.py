@@ -119,7 +119,8 @@ class Erase(Cog):
                                                     if not chunk:
                                                         break
                                                     f.write(chunk)
-                                        asyncio.get_running_loop().run_in_executor(
+                                        loop = asyncio.get_running_loop()
+                                        await loop.run_in_executor(
                                             None,
                                             batchzip.write,
                                             attachment.filename,
