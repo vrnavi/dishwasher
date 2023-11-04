@@ -55,70 +55,65 @@ class Erase(Cog):
                                 erasequeue["userid"]["channels"].append(channel)
                                 set_guildfile(g.id, "erasures", json.dumps(erasequeue))
                                 continue
+                    else:
+                        channels = g.text_channels + g.voice_channels
 
-                        # Keyword setup.
-                        if params["keywords"]:
+                    # Keyword setup.
+                    if params["keywords"]:
 
-                            def messagecheck(m):
-                                return m.author.id == user.id and any(
-                                    [
-                                        keyword in m.content
-                                        for keyword in params["keywords"]
-                                    ]
-                                )
+                        def messagecheck(m):
+                            return m.author.id == user.id and any(
+                                [keyword in m.content for keyword in params["keywords"]]
+                            )
 
-                        else:
+                    else:
 
-                            def messagecheck(m):
-                                return m.author.id == user.id
+                        def messagecheck(m):
+                            return m.author.id == user.id
 
-                        # Actual processing of channels.
-                        for channel in channels:
-                            async for message in channel.history(oldest_first=True):
-                                if message.author.id != user.id:
-                                    continue
-                                if message.attachments:
-                                    for attachment in message.attachments:
-                                        if (
-                                            os.path.getsize("erasedbatch.zip")
-                                            + attachment.size
-                                            >= 524288000
-                                        ):
-                                            batchzip.close()
-                                            with open(
-                                                "erasedbatch.zip", "rb"
-                                            ) as batchfile:
-                                                formdata = aiohttp.FormData()
-                                                formdata.add_field(
-                                                    "reqtype", "fileupload"
-                                                )
-                                                formdata.add_field("time", "72h")
-                                                formdata.add_field(
-                                                    "fileToUpload", batchfile
-                                                )
-                                                async with self.bot.session.post(
-                                                    api_url, data=formdata
-                                                ) as response:
-                                                    url = await response.text()
-                                            await user.send(
-                                                f"A batch of erased files from `{g.name}` has been uploaded.\nPlease download it within 72 hours.\n{url}"
+                    # Actual processing of channels.
+                    for channel in channels:
+                        async for message in channel.history(oldest_first=True):
+                            if message.author.id != user.id:
+                                continue
+                            if message.attachments:
+                                for attachment in message.attachments:
+                                    if (
+                                        os.path.getsize("erasedbatch.zip")
+                                        + attachment.size
+                                        >= 524288000
+                                    ):
+                                        batchzip.close()
+                                        with open("erasedbatch.zip", "rb") as batchfile:
+                                            formdata = aiohttp.FormData()
+                                            formdata.add_field("reqtype", "fileupload")
+                                            formdata.add_field("time", "72h")
+                                            formdata.add_field(
+                                                "fileToUpload", batchfile
                                             )
-                                            os.remove("erasedbatch.zip")
-                                            batchzip = zipfile.ZipFile(
-                                                "erasedbatch.zip",
-                                                mode="w",
-                                                compression=zipfile.ZIP_LZMA,
-                                            )
-                                        batchzip.write(
-                                            await attachment.read(), attachment.filename
+                                            async with self.bot.session.post(
+                                                api_url, data=formdata
+                                            ) as response:
+                                                url = await response.text()
+                                        await user.send(
+                                            f"A batch of erased files from `{g.name}` has been uploaded.\nPlease download it within 72 hours.\n{url}"
                                         )
-                                try:
-                                    await message.delete()
-                                    await asyncio.sleep(1)
-                                except:
-                                    continue
-                            erasequeue["userid"]["completed"].append(channel.id)
-                            set_guildfile(g.id, "erasures", json.dumps(erasequeue))
+                                        os.remove("erasedbatch.zip")
+                                        batchzip = zipfile.ZipFile(
+                                            "erasedbatch.zip",
+                                            mode="w",
+                                            compression=zipfile.ZIP_LZMA,
+                                        )
+                                    batchzip.write(
+                                        await attachment.read(), attachment.filename
+                                    )
+                            try:
+                                await message.delete()
+                                await asyncio.sleep(1)
+                            except:
+                                continue
+                        erasequeue["userid"]["completed"].append(channel.id)
+                        set_guildfile(g.id, "erasures", json.dumps(erasequeue))
                     if batchzip:
                         batchzip.close()
                     if os.path.exists("erasedbatch.zip"):
