@@ -101,13 +101,23 @@ class Erase(Cog):
                                         mode="a",
                                         compression=zipfile.ZIP_LZMA,
                                     )
-                                    await attachment.to_file()
-                                    batchzip.write(
-                                        attachment.filename,
-                                        arcname=f"{attachment.id}-{attachment.filename}",
-                                    )
+                                    if attachment.size < 209715200:
+                                        attachdata = await attachment.read()
+                                        batchzip.writestr(
+                                            f"{attachment.id}-{attachment.filename}",
+                                            attachdata,
+                                        )
+                                    else:
+                                        async with self.bot.session.get(attachment.url) as response:
+                                            with open (attachment.filename, "wb") as f:
+                                                while True:
+                                                    chunk = await response.content.readany()
+                                                    if not chunk:
+                                                        break
+                                                    f.write(chunk)
+                                        batchzip.write(attachment.filename, arcname=f"{attachment.id}-{attachment.filename}")
+                                        os.remove(attachment.filename)
                                     batchzip.close()
-                                    os.remove(attachment.filename)
                             try:
                                 await message.delete()
                                 await asyncio.sleep(1)
