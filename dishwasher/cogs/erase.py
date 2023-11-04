@@ -87,7 +87,7 @@ class Erase(Cog):
                             if message.attachments:
                                 for attachment in message.attachments:
                                     if (
-                                        sum([zinfo.file_size for zinfo in batchzip.filelist])
+                                        sum([zinfo.file_size for zinfo in batchzip.infolist])
                                         + attachment.size
                                         >= 524288000
                                     ):
