@@ -405,11 +405,16 @@ class Admin(Cog):
             await self.bot.load_extension("cogs." + ext)
             await self.cog_load_actions(ext)
         except:
-            await ctx.message.reply(
-                content=f":x: Cog loading failed, traceback: "
-                f"```\n{traceback.format_exc()}\n```",
-                mention_author=False,
-            )
+            if len(traceback.format_exc()) > 2000:
+                parts = await self.bot.slice_message(traceback.format_exc(), prefix="```", suffix="```")
+                await ctx.send(content=":x: Cog loading failed, traceback:")
+                for x in parts:
+                    await ctx.send(content=x)
+            else:
+                await ctx.message.reply(
+                    content=f":x: Cog loading failed, traceback: ```\n{traceback.format_exc()}\n```",
+                    mention_author=False,
+                )
             return
         self.bot.log.info(f"Loaded ext {ext}")
         await ctx.message.reply(
