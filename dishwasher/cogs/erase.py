@@ -103,7 +103,7 @@ class Erase(Cog):
                                         compression=zipfile.ZIP_LZMA,
                                     )
                                     attachdata = await attachment.read()
-                                    batchzip.writestr(attachment.filename, attachdata)
+                                    batchzip.writestr(f"{attachment.id}-{attachment.filename}", attachdata)
                                     batchzip.close()
                             try:
                                 await message.delete()
