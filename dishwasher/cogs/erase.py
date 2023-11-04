@@ -87,7 +87,7 @@ class Erase(Cog):
                             if message.attachments:
                                 for attachment in message.attachments:
                                     if (
-                                        os.path.getsize("erasedbatch.zip")
+                                        sum([zinfo.file_size for zinfo in batchzip.filelist])
                                         + attachment.size
                                         >= 524288000
                                     ):
