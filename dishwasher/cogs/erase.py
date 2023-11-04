@@ -5,6 +5,7 @@ import json
 import random
 import asyncio
 import zipfile
+import os
 from helpers.sv_config import get_config
 from helpers.datafiles import get_guildfile, set_guildfile
 
@@ -58,23 +59,17 @@ class Erase(Cog):
                     else:
                         channels = g.text_channels + g.voice_channels
 
-                    # Keyword setup.
-                    if params["keywords"]:
-
-                        def messagecheck(m):
-                            return m.author.id == user.id and any(
-                                [keyword in m.content for keyword in params["keywords"]]
-                            )
-
-                    else:
-
-                        def messagecheck(m):
-                            return m.author.id == user.id
-
                     # Actual processing of channels.
                     for channel in channels:
                         async for message in channel.history(oldest_first=True):
                             if message.author.id != user.id:
+                                continue
+                            if params["keywords"] and not any(
+                                [
+                                    keyword in message.content
+                                    for keyword in params["keywords"]
+                                ]
+                            ):
                                 continue
                             if message.attachments:
                                 for attachment in message.attachments:
@@ -106,9 +101,8 @@ class Erase(Cog):
                                         mode="a",
                                         compression=zipfile.ZIP_LZMA,
                                     )
-                                    batchzip.writestr(
-                                        attachment.filename, await attachment.read()
-                                    )
+                                    attachdata = await attachment.read()
+                                    batchzip.writestr(attachment.filename, attachdata)
                                     batchzip.close()
                             try:
                                 await message.delete()
