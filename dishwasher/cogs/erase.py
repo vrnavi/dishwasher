@@ -17,7 +17,7 @@ class Erase(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.verifycode = format(random.getrandbits(128), "x")[:10]
-        await process_erased()
+        await self.process_erased()
 
     def add_erased(self, guild, user, keywords, channels):
         erasequeue = get_guildfile(ctx.guild.id, "erasures")
@@ -240,7 +240,7 @@ class Erase(Cog):
                     mention_author=False,
                 )
 
-            add_erased(ctx.guild, ctx.author, keywords, channels)
+            self.add_erased(ctx.guild, ctx.author, keywords, channels)
             return await ctx.reply(
                 content=f"You have requested to delete your messages from `{ctx.guild.name}`. This __cannot__ be undone.\nIt may take a while for the process to begin.",
                 mention_author=False,
