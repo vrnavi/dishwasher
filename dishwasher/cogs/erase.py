@@ -20,13 +20,13 @@ class Erase(Cog):
         self.bot.loop.create_task(self.process_erased())
 
     def add_erased(self, guild, user, keywords, channels):
-        erasequeue = get_guildfile(ctx.guild.id, "erasures")
+        erasequeue = get_guildfile(guild.id, "erasures")
         erasequeue[user.id] = {
             "keywords": keywords,
             "channels": channels,
             "completed": [],
         }
-        set_guildfile(ctx.guild.id, "erasures", json.dumps(erasequeue))
+        set_guildfile(guild.id, "erasures", json.dumps(erasequeue))
 
     async def process_erased(self):
         await self.bot.wait_until_ready()
