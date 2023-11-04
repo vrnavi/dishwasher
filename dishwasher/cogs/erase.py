@@ -71,6 +71,14 @@ class Erase(Cog):
                         def messagecheck(m):
                             return m.author.id == user.id
 
+                    if os.path.exists("erasedbatch.zip"):
+                        batchzip = zipfile.ZipFile(
+                            "erasedbatch.zip", "r", zipfile.ZIP_LZMA
+                        )
+                    else:
+                        batchzip = zipfile.ZipFile(
+                            "erasedbatch.zip", "w", zipfile.ZIP_LZMA
+                        )
                     # Actual processing of channels.
                     for channel in channels:
                         async for message in channel.history(oldest_first=True):
