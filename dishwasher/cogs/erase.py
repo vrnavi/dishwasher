@@ -80,7 +80,7 @@ class Erase(Cog):
                                 for attachment in message.attachments:
                                     if (
                                         os.path.exists("data/erasedbatch.zip")
-                                        and os.path.getsize("erasedbatch.zip")
+                                        and os.path.getsize("data/erasedbatch.zip")
                                         + attachment.size
                                         >= 524288000
                                     ):
@@ -106,8 +106,8 @@ class Erase(Cog):
                                         mode="a",
                                         compression=zipfile.ZIP_LZMA,
                                     )
-                                    batchzip.write(
-                                        await attachment.read(), attachment.filename
+                                    batchzip.writestr(
+                                        attachment.filename, await attachment.read()
                                     )
                                     batchzip.close()
                             try:
