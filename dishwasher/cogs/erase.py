@@ -43,7 +43,6 @@ class Erase(Cog):
                 # User loop.
                 for userid, params in erasequeue.items():
                     user = await self.bot.fetch_user(int(userid))
-                    batchzip = None
                     if params["channels"]:
                         channels = []
                         # Fill list of channels to run through.
@@ -102,9 +101,13 @@ class Erase(Cog):
                                         mode="a",
                                         compression=zipfile.ZIP_LZMA,
                                     )
-                                    attachdata = await attachment.read()
-                                    batchzip.writestr(f"{attachment.id}-{attachment.filename}", attachdata)
+                                    await attachment.to_file()
+                                    batchzip.write(
+                                        attachment.filename,
+                                        arcname=f"{attachment.id}-{attachment.filename}",
+                                    )
                                     batchzip.close()
+                                    os.remove(attachment.filename)
                             try:
                                 await message.delete()
                                 await asyncio.sleep(1)
