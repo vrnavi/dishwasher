@@ -406,7 +406,9 @@ class Admin(Cog):
             await self.cog_load_actions(ext)
         except:
             if len(traceback.format_exc()) > 2000:
-                parts = await self.bot.slice_message(traceback.format_exc(), prefix="```", suffix="```")
+                parts = await self.bot.slice_message(
+                    traceback.format_exc(), prefix="```", suffix="```"
+                )
                 await ctx.send(content=":x: Cog loading failed, traceback:")
                 for x in parts:
                     await ctx.send(content=x)

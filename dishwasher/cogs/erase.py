@@ -17,6 +17,7 @@ class Erase(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.verifycode = format(random.getrandbits(128), "x")[:10]
+        self.bot.loop.create_task(self.process_erased())
 
     def add_erased(self, guild, user, keywords, channels):
         erasequeue = get_guildfile(ctx.guild.id, "erasures")
