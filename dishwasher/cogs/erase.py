@@ -33,7 +33,6 @@ class Erase(Cog):
         api_url = "https://litterbox.catbox.moe/resources/internals/api.php"
         # Main loop.
         while True:
-            await asyncio.sleep(60)
             # Guild loop.
             for g in self.bot.guilds:
                 erasequeue = get_guildfile(g.id, "erasures")
@@ -141,6 +140,7 @@ class Erase(Cog):
                     )
                     del erasequeue["userid"]
                     set_guildfile(g.id, "erasures", json.dumps(erasequeue))
+            await asyncio.sleep(60)
 
     @commands.guild_only()
     @commands.command()
