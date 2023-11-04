@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 import json
 import random
 import asyncio
+import functools
 import zipfile
 import os
 import aiohttp
@@ -119,12 +120,13 @@ class Erase(Cog):
                                                     if not chunk:
                                                         break
                                                     f.write(chunk)
-                                        loop = asyncio.get_running_loop()
-                                        await loop.run_in_executor(
+                                        await self.bot.loop.run_in_executor(
                                             None,
-                                            batchzip.write,
-                                            attachment.filename,
-                                            arcname=f"{attachment.id}-{attachment.filename}",
+                                            functools.partial(
+                                                batchzip.write,
+                                                attachment.filename,
+                                                arcname=f"{attachment.id}-{attachment.filename}",
+                                            ),
                                         )
                                         os.remove(attachment.filename)
                                     batchzip.close()
