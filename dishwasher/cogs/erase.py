@@ -40,7 +40,7 @@ class Erase(Cog):
                     continue
                 # User loop.
                 for userid, params in erasequeue.items():
-                    user = self.bot.fetch_user(userid)
+                    user = self.bot.fetch_user(int(userid))
                     batchzip = None
                     if params["channels"]:
                         channels = []
@@ -49,7 +49,7 @@ class Erase(Cog):
                             if channel in params["completed"]:
                                 continue
                             try:
-                                channels.append(await g.fetch_channel(channel))
+                                channels.append(await g.fetch_channel(int(channel)))
                             except:
                                 # Assume channel already deleted.
                                 erasequeue["userid"]["channels"].append(channel)
