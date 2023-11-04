@@ -6,6 +6,7 @@ import random
 import asyncio
 import zipfile
 import os
+import aiohttp
 from helpers.sv_config import get_config
 from helpers.datafiles import get_guildfile, set_guildfile
 
