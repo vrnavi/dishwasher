@@ -54,7 +54,7 @@ class Erase(Cog):
                                 channels.append(await g.fetch_channel(int(channel)))
                             except:
                                 # Assume channel already deleted.
-                                erasequeue["userid"]["channels"].append(channel)
+                                erasequeue[userid]["channels"].append(channel)
                                 set_guildfile(g.id, "erasures", json.dumps(erasequeue))
                                 continue
                     else:
@@ -110,7 +110,7 @@ class Erase(Cog):
                                 await asyncio.sleep(1)
                             except:
                                 continue
-                        erasequeue["userid"]["completed"].append(channel.id)
+                        erasequeue[userid]["completed"].append(channel.id)
                         set_guildfile(g.id, "erasures", json.dumps(erasequeue))
                     if os.path.exists("data/erasedbatch.zip"):
                         with open("data/erasedbatch.zip", "rb") as batchfile:
@@ -129,7 +129,7 @@ class Erase(Cog):
                     await user.send(
                         "All messages that could be deleted have been deleted."
                     )
-                    del erasequeue["userid"]
+                    del erasequeue[userid]
                     set_guildfile(g.id, "erasures", json.dumps(erasequeue))
             await asyncio.sleep(60)
 
