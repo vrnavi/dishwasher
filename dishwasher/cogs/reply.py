@@ -170,7 +170,7 @@ class Reply(Cog):
             embed = stock_embed(self.bot)
             embed.title = "🏓 Your reply preference..."
             embed.description = (
-                f"Use `{ctx.prefix}noreply [setting]` to change your preference."
+                f"Use `{ctx.prefix}replyconfig [setting]` to change your preference."
             )
             embed.color = ctx.author.color
             author_embed(embed, ctx.author)
