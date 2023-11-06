@@ -225,7 +225,7 @@ class Reply(Cog):
                 if setting.lower() == "unconfigured"
                 else "".join(setting.lower().split())
             )
-            set_userfile(userid, "profile", json.dumps(profile))
+            set_userfile(ctx.author.id, "profile", json.dumps(profile))
             return await ctx.reply(
                 content=f"Your reply preference has been updated to `{setting.title()}`.",
                 mention_author=False,
