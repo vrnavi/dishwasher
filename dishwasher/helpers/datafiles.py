@@ -137,11 +137,11 @@ def fill_profile(userid):
 
     # Validation
     updated = False
-    for key, value in stockprofile:
+    for key, value in stockprofile.items():
         if key not in profile:
             profile[key] = [value]
             updated = True
-    for key, value in profile:
+    for key, value in profile.items():
         if key not in stockprofile:
             del profile[key]
             updated = True
