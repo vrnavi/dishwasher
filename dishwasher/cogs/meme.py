@@ -43,11 +43,6 @@ class Meme(Cog):
             f"({fahrenheit}°F, {kelvin}K)."
         )
 
-    @commands.command(hidden=True, aliases=["thank"])
-    async def gild(self, ctx, user: discord.Member):
-        """Gives a star to a user"""
-        await ctx.send(f"{user.display_name} gets a :star:, yay!")
-
     @commands.command(hidden=True)
     async def btwiuse(self, ctx):
         """btw i use arch"""
@@ -62,28 +57,6 @@ class Meme(Cog):
     async def yahaha(self, ctx):
         """secret command"""
         await ctx.send(f"🍂 you found me 🍂")
-
-    @commands.command(hidden=True)
-    async def peng(self, ctx):
-        """heck tomger"""
-        await ctx.send(f"🐧")
-
-    @commands.command(hidden=True, aliases=["outstanding"])
-    async def outstandingmove(self, ctx):
-        """Posts the outstanding move meme"""
-        await ctx.send(
-            "https://cdn.discordapp.com/attachments"
-            "/371047036348268545/528413677007929344"
-            "/image0-5.jpg"
-        )
-
-    @commands.command(hidden=True)
-    async def bones(self, ctx):
-        await ctx.send("https://cdn.discordapp.com/emojis/443501365843591169.png?v=1")
-
-    @commands.command(hidden=True)
-    async def headpat(self, ctx):
-        await ctx.send("https://cdn.discordapp.com/emojis/465650811909701642.png?v=1")
 
     @commands.check(check_if_staff)
     @commands.command(hidden=True, name="bam")

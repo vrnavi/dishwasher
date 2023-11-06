@@ -4,6 +4,7 @@ import config
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.datafiles import get_userfile, fill_profile, set_userfile
+from helpers.embeds import stock_embed, author_embed
 
 
 class prefixes(Cog):
@@ -14,25 +15,16 @@ class prefixes(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_userprefix(self, uid):
-        profile = get_userfile(uid, "profile")
-        if not profile:
-            return []
-        return profile["prefixes"]
-
     @commands.group(aliases=["prefix"], invoke_without_command=True)
     async def prefixes(self, ctx):
         """[U] Lists all prefixes."""
-        embed = discord.Embed(
-            title="Your current prefixes...",
-            description="Mentioning the bot will always be a prefix.",
-            color=ctx.author.color,
-        )
-        embed.set_author(
-            icon_url=ctx.author.display_avatar.url, name=ctx.author.display_name
-        )
-        uid = str(ctx.author.id)
-        userprefixes = self.get_userprefix(uid)
+        embed = stock_embed(self.bot)
+        embed.title = "📣 Your current prefixes..."
+        embed.description = f"Use `{ctx.prefix}prefix add/remove` to change your prefixes.\Mentioning the bot will always be a prefix."
+        embed.color = ctx.author.color
+        author_embed(embed, ctx.author)
+        profile = fill_profile(ctx.author.id)
+        userprefixes = profile["prefixes"]
 
         for i in range(
             max(config.maxprefixes, len(userprefixes))
@@ -43,18 +35,15 @@ class prefixes(Cog):
                 value = "---"
             finally:
                 embed.add_field(name=i + 1, value=f"{value}")
-        embed.set_footer(
-            text=f"Use {ctx.prefix}prefix add/remove to change your prefixes."
-        )
         await ctx.reply(embed=embed, mention_author=False)
 
     @prefixes.command()
     async def add(self, ctx, *, arg: str):
         """[U] Adds a new prefix."""
-        userdata = fill_profile(ctx.author.id)
-        if not len(userdata["prefixes"]) >= config.maxprefixes:
-            userdata["prefixes"].append(f"{arg} ")
-            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
+        profile = fill_profile(ctx.author.id)
+        if not len(profile["prefixes"]) >= config.maxprefixes:
+            profile["prefixes"].append(f"{arg} ")
+            set_userfile(ctx.author.id, "profile", json.dumps(profile))
             await ctx.reply(content="Prefix added.", mention_author=False)
         else:
             await ctx.reply(
@@ -65,10 +54,10 @@ class prefixes(Cog):
     @prefixes.command()
     async def remove(self, ctx, number: int):
         """[U] Removes a prefix."""
-        userdata = fill_profile(ctx.author.id)
+        profile = fill_profile(ctx.author.id)
         try:
-            userdata["prefixes"].pop(number - 1)
-            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
+            profile["prefixes"].pop(number - 1)
+            set_userfile(ctx.author.id, "profile", json.dumps(profile))
             await ctx.reply(content="Prefix removed.", mention_author=False)
         except IndexError:
             await ctx.reply(content="This prefix does not exist.", mention_author=False)

@@ -127,11 +127,27 @@ def fill_userlog(serverid, userid):
 
 def fill_profile(userid):
     profile = get_userfile(userid, "profile")
+    stockprofile = {
+        "prefixes": [],
+        "timezone": None,
+        "replypref": None,
+    }
     if not profile:
-        profile = {
-            "prefixes": [],
-            "timezone": None,
-        }
+        profile = stockprofile
+
+    # Validation
+    updated = False
+    for key, value in stockprofile:
+        if key not in profile:
+            profile[key] = [value]
+            updated = True
+    for key, value in profile:
+        if key not in stockprofile:
+            del profile[key]
+            updated = True
+
+    if updated:
+        set_userfile(userid, "profile", json.dumps(profile))
 
     return profile
 

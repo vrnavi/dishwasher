@@ -28,6 +28,26 @@ class Analytics(Cog):
         contents += f"\n\nYou have used **{len(useranalytics.keys())}**/{len(self.bot.commands)} commands.\nYour completion score is **{round(len(useranalytics.keys())/len(self.bot.commands)*100, 2)}**%."
         await ctx.reply(content=contents, mention_author=False)
 
+    @commands.command(aliases=["data"])
+    async def mydata(self, ctx):
+        """[U] Returns the user's data."""
+        try:
+            shutil.make_archive(
+                f"data/{ctx.author.id}", "zip", f"data/users/{ctx.author.id}"
+            )
+            sdata = discord.File(f"data/{ctx.author.id}.zip")
+            await ctx.message.reply(
+                content=f"`{ctx.author}`'s data...",
+                file=sdata,
+                mention_author=False,
+            )
+            os.remove(f"data/{ctx.author.id}.zip")
+        except FileNotFoundError:
+            await ctx.message.reply(
+                content="You don't have any data.",
+                mention_author=False,
+            )
+
     @stats.command()
     async def enable(self, ctx):
         """[U] Turns on analytics collection."""

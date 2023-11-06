@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.datafiles import add_job, get_botfile, delete_job
+from helpers.embeds import stock_embed, author_embed
 
 
 class Remind(Cog):
@@ -16,15 +17,10 @@ class Remind(Cog):
         """[U] Lists your reminders."""
         ctab = get_botfile("dishtimers")
         uid = str(ctx.author.id)
-        embed = discord.Embed(
-            title="Your current reminders...",
-            color=ctx.author.color,
-            timestamp=datetime.now(),
-        )
-        embed.set_author(
-            icon_url=ctx.author.display_avatar.url, name=ctx.author.display_name
-        )
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+        embed = stock_embed(self.bot)
+        embed.title = "⏳ Your current reminders..."
+        embed.color = ctx.author.color
+        author_embed(embed, ctx.author)
         idx = 0
         for jobtimestamp in ctab["remind"]:
             if uid not in ctab["remind"][jobtimestamp]:

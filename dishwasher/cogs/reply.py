@@ -6,9 +6,11 @@ import re
 import config
 import datetime
 import asyncio
-from helpers.datafiles import get_guildfile
+from helpers.datafiles import get_guildfile, get_userfile
 from helpers.checks import check_if_staff
 from helpers.sv_config import get_config
+from helpers.datafiles import get_userfile, fill_profile, set_userfile
+from helpers.embeds import stock_embed, author_embed
 
 
 class Reply(Cog):
@@ -158,6 +160,74 @@ class Reply(Cog):
             self.usercounts[target.id] = 0
             return await ctx.reply(
                 content="This user's reply ping counter has been reset.",
+                mention_author=False,
+            )
+
+    @commands.command()
+    async def replyconfig(self, ctx, *, setting=None):
+        profile = fill_profile(ctx.author.id)
+        if not setting:
+            embed = stock_embed(self.bot)
+            embed.title = "🏓 Your reply preference..."
+            embed.description = (
+                f"Use `{ctx.prefix}noreply [setting]` to change your preference."
+            )
+            embed.color = ctx.author.color
+            author_embed(embed, ctx.author)
+
+            unconfigured = "🔘" if profile["replypref"] == None else "⚫"
+            embed.add_field(
+                name="🤷 Unconfigured",
+                value=unconfigured + " Indicates that you have no current preference.",
+                inline=False,
+            )
+
+            pleaseping = "🔘" if profile["replypref"] == "pleasereplyping" else "⚫"
+            embed.add_field(
+                name="<:pleasereplyping:1171017026274340904> Please Reply Ping",
+                value=pleaseping
+                + " Indicates that you would like to be pinged in replies.",
+                inline=False,
+            )
+
+            waitbeforeping = (
+                "🔘" if profile["replypref"] == "waitbeforereplyping" else "⚫"
+            )
+            embed.add_field(
+                name="<:waitbeforereplyping:1171017084222832671> Wait Before Reply Ping",
+                value=waitbeforeping
+                + " Indicates that you would only like to be pinged after some time has passed.",
+                inline=False,
+            )
+
+            noping = "🔘" if profile["replypref"] == "noreplyping" else "⚫"
+            embed.add_field(
+                name="<:noreplyping:1171016972222332959> No Reply Ping",
+                value=noping
+                + " Indicates that you do not wish to be reply pinged whatsoever.",
+                inline=False,
+            )
+
+            return await ctx.reply(embed=embed, mention_author=False)
+        elif setting.lower() not in [
+            "unconfigured",
+            "please reply ping",
+            "wait before reply ping",
+            "no reply ping",
+        ]:
+            return await ctx.reply(
+                content="You specified an option which doesn't exist.\nUse the command followed by the name of the setting, including spaces.",
+                mention_author=False,
+            )
+        else:
+            profile["replypref"] = (
+                None
+                if setting.lower() == "unconfigured"
+                else "".join(setting.lower().split())
+            )
+            set_userfile(userid, "profile", json.dumps(profile))
+            return await ctx.reply(
+                content=f"Your reply preference has been updated to `{setting.title()}`.",
                 mention_author=False,
             )
 
