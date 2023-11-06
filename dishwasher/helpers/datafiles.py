@@ -139,7 +139,7 @@ def fill_profile(userid):
     updated = False
     for key, value in stockprofile.items():
         if key not in profile:
-            profile[key] = [value]
+            profile[key] = value
             updated = True
     for key, value in profile.items():
         if key not in stockprofile:

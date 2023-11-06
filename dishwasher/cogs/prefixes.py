@@ -20,7 +20,7 @@ class prefixes(Cog):
         """[U] Lists all prefixes."""
         embed = stock_embed(self.bot)
         embed.title = "📣 Your current prefixes..."
-        embed.description = f"Use `{ctx.prefix}prefix add/remove` to change your prefixes.\Mentioning the bot will always be a prefix."
+        embed.description = f"Use `{ctx.prefix}prefix add/remove` to change your prefixes.\nMentioning the bot will always be a prefix."
         embed.color = ctx.author.color
         author_embed(embed, ctx.author)
         profile = fill_profile(ctx.author.id)
