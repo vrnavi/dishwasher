@@ -173,7 +173,7 @@ class Admin(Cog):
         if os.path.exists(f"data/servers/{server.id}"):
             shutil.rmtree(f"data/servers/{server.id}")
         shutil.unpack_archive(f"data/{server.id}.zip", f"data/servers/{server.id}")
-        os.remove(f"data/servers/{server.id}")
+        os.remove(f"data/{server.id}.zip")
         await ctx.reply(content=f"{server.name}'s data saved.", mention_author=False)
 
     @commands.check(check_if_bot_manager)
