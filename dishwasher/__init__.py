@@ -86,16 +86,6 @@ async def on_ready():
         tzinfo=datetime.timezone.utc
     )
 
-    # Send "Dishwasher has started! x has y members!"
-    bot.log_channel = bot.get_channel(config.bot_logchannel)
-    guild = bot.log_channel.guild
-    msg = (
-        f"**{bot.user.name} is now `🟢 ONLINE`.**\n"
-        f"`{guild.name}` has `{guild.member_count}` members."
-    )
-
-    await bot.log_channel.send(msg)
-
 
 @bot.event
 async def on_command(ctx):

@@ -198,10 +198,11 @@ class ModReport(Cog):
         # water go down the hole x2
         for g in self.bot.guilds:
             reportlog = get_guildfile(g.id, "reportlog")
+            newreportlog = get_guildfile(g.id, "reportlog")
             for instance, user in reportlog.items():
                 if int(datetime.datetime.now().strftime("%s")) - 259200 > int(instance):
-                    del reportlog[instance]
-        set_guildfile(g.id, "reportlog", json.dumps(reportlog))
+                    del newreportlog[instance]
+        set_guildfile(g.id, "reportlog", json.dumps(newreportlog))
 
 
 async def setup(bot):
