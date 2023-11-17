@@ -34,7 +34,7 @@ class ModLocks(Cog):
     async def unlock_for_bots(self, channel: discord.TextChannel, issuer):
         await self.set_sendmessage(
             channel,
-            int(get_config(channel.guild.id, "staff", "bot_roles")[0]),
+            int(get_config(channel.guild.id, "misc", "bot_roles")[0]),
             True,
             issuer,
         )
