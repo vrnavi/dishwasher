@@ -31,6 +31,14 @@ class ModLocks(Cog):
             issuer,
         )
 
+    async def unlock_for_bots(self, channel: discord.TextChannel, issuer):
+        await self.set_sendmessage(
+            channel,
+            int(get_config(channel.guild.id, "staff", "bot_roles")[0]),
+            True,
+            issuer,
+        )
+
     @commands.guild_only()
     @commands.check(check_if_staff)
     @commands.command(aliases=["lockdown"])
@@ -42,7 +50,7 @@ class ModLocks(Cog):
             channel = ctx.channel
         mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
         staff_role_id = get_config(ctx.guild.id, "staff", "staff_role")
-        bot_role_ids = get_config(ctx.guild.id, "misc", "bot_roles")
+        bot_role_id = int(get_config(ctx.guild.id, "misc", "bot_roles")[0])
 
         # Take a snapshot of current channel state before making any changes
         if ctx.guild.id not in self.snapshots:
@@ -54,32 +62,37 @@ class ModLocks(Cog):
         self.snapshots[ctx.guild.id][channel.id] = channel.overwrites
 
         roles = []
-        if (
-            not channel.permissions_for(ctx.guild.default_role).read_messages
-            or not channel.permissions_for(ctx.guild.default_role).send_messages
-        ):
-            ids = [y.id for y in list(channel.overwrites.keys())]
-            for x in get_config(ctx.guild.id, "misc", "authorized_roles"):
+        if not channel.permissions_for(ctx.guild.default_role).read_messages:
+            for role, overwrite in list(channel.overwrites.items()):
+                if channel.permissions_for(role).read_messages:
+                    roles.append(r.id)
+        elif not channel.permissions_for(ctx.guild.default_role).send_messages:
+            for role, overwrite in list(channel.overwrites.items()):
                 if (
-                    x in ids
-                    and channel.permissions_for(ctx.guild.get_role(x)).send_messages
+                    channel.permissions_for(role).send_messages
+                    and channel.permissions_for(role).read_messages
                 ):
-                    roles.append(x)
-            if not roles:
-                for r in channel.changed_roles:
-                    if r.id == staff_role_id:
-                        continue
-                    if bot_role_ids and r.id in bot_role_ids:
-                        continue
-                    if channel.permissions_for(r).send_messages:
-                        roles.append(r.id)
+                    roles.append(r.id)
         else:
             roles.append(ctx.guild.default_role.id)
+            for r in channel.changed_roles:
+                if (
+                    not channel.permissions_for(r).send_messages
+                    or not channel.permissions_for(r).read_messages
+                ):
+                    continue
+                roles.append(r.id)
+
+        if staff_role_id in roles:
+            roles.remove(staff_role_id)
+        if bot_role_id in roles:
+            roles.remove(bot_role_id)
 
         for role in roles:
             await self.set_sendmessage(channel, role, False, ctx.author)
 
         await self.unlock_for_staff(channel, ctx.author)
+        await self.unlock_for_bots(channel, ctx.author)
 
         public_msg = "🔒 Channel locked down. "
         if not soft:
