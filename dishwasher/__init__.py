@@ -11,7 +11,7 @@ import datetime
 import traceback
 import itertools
 from discord.ext import commands
-from helpers.datafiles import get_userfile
+from helpers.datafiles import get_userfile, get_botfile
 
 log_format = logging.Formatter(
     "[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
@@ -229,8 +229,13 @@ async def on_command_error(ctx, error):
 @bot.event
 async def on_message(message):
     await bot.wait_until_ready()
-    # Insert botban stuff here.
+
     if message.author.bot:
+        return
+    if (
+        "botban" in get_botfile("dishusers")
+        and message.author.id in get_botfile("dishusers")["botban"]
+    ):
         return
 
     ctx = await bot.get_context(message)
