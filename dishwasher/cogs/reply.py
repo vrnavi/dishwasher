@@ -171,7 +171,7 @@ class Reply(Cog):
         embed.description = (
             f"Use `{ctx.prefix}replyconfig [setting]` to change your preference."
         )
-        embed.color = discord.color.red()
+        embed.color = discord.Color.red()
         author_embed(embed, ctx.author)
         allowed_mentions = discord.AllowedMentions(replied_user=False)
 
@@ -220,7 +220,7 @@ class Reply(Cog):
         configmsg = await ctx.reply(embed=embed, mention_author=False)
         for react in reacts:
             await configmsg.add_reaction(react)
-        embed.color = discord.color.green()
+        embed.color = discord.Color.green()
         await configmsg.edit(embed=embed, allowed_mentions=allowed_mentions)
 
         def reactioncheck(r, u):
@@ -231,7 +231,7 @@ class Reply(Cog):
                 "reaction_add", timeout=30.0, check=reactioncheck
             )
         except asyncio.TimeoutError:
-            embed.color = discord.color.default()
+            embed.color = discord.Color.default()
             for react in reacts:
                 await configmsg.remove_reaction(react, ctx.bot.user)
             return await configmsg.edit(
@@ -250,7 +250,7 @@ class Reply(Cog):
             set_userfile(ctx.author.id, "profile", json.dumps(profile))
             embed.clear_fields()
             fieldadd()
-            embed.color = discord.color.gold()
+            embed.color = discord.Color.gold()
             for react in reacts:
                 await configmsg.remove_reaction(react, ctx.bot.user)
             await configmsg.edit(embed=embed, allowed_mentions=allowed_mentions)
