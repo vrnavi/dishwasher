@@ -166,96 +166,94 @@ class Reply(Cog):
     @commands.command()
     async def replyconfig(self, ctx):
         profile = fill_profile(ctx.author.id)
-        if not setting:
-            embed = stock_embed(self.bot)
-            embed.title = "🏓 Your reply preference..."
-            embed.description = (
-                f"Use `{ctx.prefix}replyconfig [setting]` to change your preference."
+        embed = stock_embed(self.bot)
+        embed.title = "🏓 Your reply preference..."
+        embed.description = (
+            f"Use `{ctx.prefix}replyconfig [setting]` to change your preference."
+        )
+        embed.color = discord.color.red()
+        author_embed(embed, ctx.author)
+        allowed_mentions = discord.AllowedMentions(replied_user=False)
+
+        def fieldadd():
+            unconfigured = "🔘" if not profile["replypref"] else "⚫"
+            embed.add_field(
+                name="🤷 Unconfigured",
+                value=unconfigured + " Indicates that you have no current preference.",
+                inline=False,
             )
-            embed.color = discord.color.red()
-            author_embed(embed, ctx.author)
-            allowed_mentions = discord.AllowedMentions(replied_user=False)
 
-            def fieldadd():
-                unconfigured = "🔘" if not profile["replypref"] else "⚫"
-                embed.add_field(
-                    name="🤷 Unconfigured",
-                    value=unconfigured
-                    + " Indicates that you have no current preference.",
-                    inline=False,
-                )
+            pleaseping = "🔘" if profile["replypref"] == "pleasereplyping" else "⚫"
+            embed.add_field(
+                name="<:pleasereplyping:1171017026274340904> Please Reply Ping",
+                value=pleaseping
+                + " Indicates that you would like to be pinged in replies.",
+                inline=False,
+            )
 
-                pleaseping = "🔘" if profile["replypref"] == "pleasereplyping" else "⚫"
-                embed.add_field(
-                    name="<:pleasereplyping:1171017026274340904> Please Reply Ping",
-                    value=pleaseping
-                    + " Indicates that you would like to be pinged in replies.",
-                    inline=False,
-                )
+            waitbeforeping = (
+                "🔘" if profile["replypref"] == "waitbeforereplyping" else "⚫"
+            )
+            embed.add_field(
+                name="<:waitbeforereplyping:1171017084222832671> Wait Before Reply Ping",
+                value=waitbeforeping
+                + " Indicates that you would only like to be pinged after some time has passed.",
+                inline=False,
+            )
 
-                waitbeforeping = (
-                    "🔘" if profile["replypref"] == "waitbeforereplyping" else "⚫"
-                )
-                embed.add_field(
-                    name="<:waitbeforereplyping:1171017084222832671> Wait Before Reply Ping",
-                    value=waitbeforeping
-                    + " Indicates that you would only like to be pinged after some time has passed.",
-                    inline=False,
-                )
+            noping = "🔘" if profile["replypref"] == "noreplyping" else "⚫"
+            embed.add_field(
+                name="<:noreplyping:1171016972222332959> No Reply Ping",
+                value=noping
+                + " Indicates that you do not wish to be reply pinged whatsoever.",
+                inline=False,
+            )
 
-                noping = "🔘" if profile["replypref"] == "noreplyping" else "⚫"
-                embed.add_field(
-                    name="<:noreplyping:1171016972222332959> No Reply Ping",
-                    value=noping
-                    + " Indicates that you do not wish to be reply pinged whatsoever.",
-                    inline=False,
-                )
+        fieldadd()
 
-            fieldadd()
+        reacts = [
+            "🤷",
+            "<:pleasereplyping:1171017026274340904>",
+            "<:waitbeforereplyping:1171017084222832671>",
+            "<:noreplyping:1171016972222332959>",
+        ]
+        configmsg = await ctx.reply(embed=embed, mention_author=False)
+        for react in reacts:
+            await configmsg.add_reaction(react)
+        embed.color = discord.color.green()
+        await configmsg.edit(embed=embed, allowed_mentions=allowed_mentions)
 
-            reacts = [
-                "🤷",
-                "<:pleasereplyping:1171017026274340904>",
-                "<:waitbeforereplyping:1171017084222832671>",
-                "<:noreplyping:1171016972222332959>",
-            ]
-            configmsg = await ctx.reply(embed=embed, mention_author=False)
+        def reactioncheck(r, u):
+            return u.id == ctx.author.id and str(r.emoji) in reacts
+
+        try:
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", timeout=30.0, check=reactioncheck
+            )
+        except asyncio.TimeoutError:
+            embed.color = discord.color.default()
             for react in reacts:
-                await configmsg.add_reaction(react)
-            embed.color = discord.color.green()
+                await configmsg.remove_reaction(react, ctx.bot.user)
+            return await configmsg.edit(
+                embed=embed,
+                allowed_mentions=allowed_mentions,
+            )
+        else:
+            if str(reaction) == reacts[0]:
+                profile["replypref"] = None
+            elif str(reaction) == reacts[1]:
+                profile["replypref"] = "pleasereplyping"
+            elif str(reaction) == reacts[2]:
+                profile["replypref"] = "waitbeforereplyping"
+            elif str(reaction) == reacts[3]:
+                profile["replypref"] = "noreplyping"
+            set_userfile(ctx.author.id, "profile", json.dumps(profile))
+            embed.clear_fields()
+            fieldadd()
+            embed.color = discord.color.gold()
+            for react in reacts:
+                await configmsg.remove_reaction(react, ctx.bot.user)
             await configmsg.edit(embed=embed, allowed_mentions=allowed_mentions)
-
-            def reactioncheck(r, u):
-                return u.id == ctx.author.id and str(r.emoji) in reacts
-
-            try:
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", timeout=30.0, check=reactioncheck
-                )
-            except asyncio.TimeoutError:
-                embed.color = discord.color.default()
-                for react in reacts:
-                    await configmsg.remove_reaction(react, ctx.bot.user)
-                return await configmsg.edit(
-                    embed=embed,
-                    allowed_mentions=allowed_mentions,
-                )
-            else:
-                if str(reaction) == reacts[0]:
-                    profile["replypref"] = None
-                elif str(reaction) == reacts[1]:
-                    profile["replypref"] = "pleasereplyping"
-                elif str(reaction) == reacts[2]:
-                    profile["replypref"] = "waitbeforereplyping"
-                elif str(reaction) == reacts[3]:
-                    profile["replypref"] = "noreplyping"
-                set_userfile(ctx.author.id, "profile", json.dumps(profile))
-                embed.clear_fields()
-                fieldadd()
-                embed.color = discord.color.gold()
-                for react in reacts:
-                    await configmsg.remove_reaction(react, ctx.bot.user)
-                await configmsg.edit(embed=embed, allowed_mentions=allowed_mentions)
 
     @Cog.listener()
     async def on_message(self, message):
