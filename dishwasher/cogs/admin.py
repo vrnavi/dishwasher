@@ -14,6 +14,7 @@ import os
 from helpers.embeds import stock_embed
 from helpers.checks import check_if_bot_manager
 from helpers.sv_config import get_config
+from helpers.datafiles import get_botfile, set_botfile
 
 
 class Admin(Cog):
@@ -278,7 +279,7 @@ class Admin(Cog):
     @commands.check(check_if_bot_manager)
     @commands.command()
     async def threadlock(self, ctx, channel: discord.TextChannel):
-        """[O] Locks all threads in a given channel.."""
+        """[O] Locks all threads in a given channel."""
         msg = await ctx.reply(content="Locking threads...", mention_author=False)
         # Pull old archvied threads from the grave.
         async for t in channel.archived_threads():
@@ -292,6 +293,40 @@ class Admin(Cog):
             await t.edit(locked=True)
             await t.edit(archived=True)
         await msg.edit(content="Done.")
+
+    @commands.check(check_if_bot_manager)
+    @commands.command()
+    async def botban(self, ctx, user: discord.User):
+        """[O] Bars a user from using the bot."""
+        dishusers = get_botfile("dishusers")
+        if "botban" not in dishusers:
+            dishusers["botban"] = []
+        if user.id in dishusers["botban"]:
+            return await ctx.reply(
+                content="This user is already botbanned.", mention_author=False
+            )
+        dishusers["botban"].append(user.id)
+        set_botfile("dishusers", json.dumps(dishusers))
+        return await ctx.reply(
+            content="This user is now botbanned.", mention_author=False
+        )
+
+    @commands.check(check_if_bot_manager)
+    @commands.command()
+    async def unbotban(self, ctx, user: discord.User):
+        """[O] Unbars a user from using the bot."""
+        dishusers = get_botfile("dishusers")
+        if "botban" not in dishusers:
+            dishusers["botban"] = []
+        if user.id not in dishusers["botban"]:
+            return await ctx.reply(
+                content="This user is not already botbanned.", mention_author=False
+            )
+        dishusers["botban"].remove(user.id)
+        set_botfile("dishusers", json.dumps(dishusers))
+        return await ctx.reply(
+            content="This user is now unbotbanned.", mention_author=False
+        )
 
     @commands.check(check_if_bot_manager)
     @commands.command(name="eval")
