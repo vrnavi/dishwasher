@@ -51,44 +51,6 @@ class AutoApps(Cog):
                     + f"Until it can be coded to automatically appear here, use `pws logs {user.id}`.\nRemember to post ban context if available (ban record, modmail logs, etc.)."
                     + "\n"
                 )
-            elif message.guild.id == 363821745590763520:
-                if message.embeds:
-                    char = message.embeds[0].title.split()[-1]
-                    embedapp = message.embeds[0]
-                    fileapp = None
-                elif message.attachments:
-                    embedapp = None
-                    fileapp = io.BytesIO()
-                    await message.attachments[0].save(fileapp)
-                    char = str(message.attachments[0].filename.split("-")[-1][:-4])
-                else:
-                    return
-                user = await self.bot.fetch_user(message.content.split()[-1][:-1])
-                if user.id not in [
-                    r.id for r in staff_role.members
-                ] and "#" + char not in [
-                    t.name
-                    for t in message.guild.get_channel(1117253103700430868).threads
-                ]:
-                    thread = await message.guild.get_channel(
-                        1117253103700430868
-                    ).create_thread(
-                        name="#" + char,
-                        type=discord.ChannelType.private_thread,
-                        reason=f"Automatic Applications by {self.bot.user.name}.",
-                        invitable=False,
-                    )
-                    await thread.add_user(user)
-                    await thread.send(
-                        content=f"This thread is for the discussion of your submitted character `#{char}` with the {staff_role.mention}s.",
-                        embed=embedapp,
-                        file=discord.File(
-                            fp=fileapp, filename=message.attachments[0].filename
-                        )
-                        if fileapp
-                        else None,
-                    )
-                minreq = 2
             else:
                 user = message.author
 
