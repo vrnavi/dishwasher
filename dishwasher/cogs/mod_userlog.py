@@ -159,7 +159,7 @@ class ModUserlog(Cog):
     @commands.command(aliases=["clearwarns"])
     async def clearevent(self, ctx, target: discord.User, event="warns"):
         """[S] Clears all events of given type for a user."""
-        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
+        mlog = get_config(ctx.guild.id, "logging", "modlog")
         msg = self.clear_event_from_id(ctx.guild.id, str(target.id), event)
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -181,7 +181,7 @@ class ModUserlog(Cog):
     @commands.command(aliases=["delwarn"])
     async def delevent(self, ctx, target: discord.User, idx: int, event="warns"):
         """[S] Removes a specific event from a user."""
-        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
+        mlog = get_config(ctx.guild.id, "logging", "modlog")
         del_event = self.delete_event_from_id(ctx.guild.id, str(target.id), idx, event)
         event_name = userlog_event_types[event].lower()
         # This is hell.

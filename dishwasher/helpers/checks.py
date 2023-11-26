@@ -12,7 +12,7 @@ def check_if_staff(ctx):
     return any(
         (
             any(
-                r.id == get_config(ctx.guild.id, "staff", "staff_role")
+                r.id == get_config(ctx.guild.id, "staff", "staffrole")
                 for r in ctx.author.roles
             ),
             any(m == ctx.author.id for m in config.bot_managers),

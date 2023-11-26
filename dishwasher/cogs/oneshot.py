@@ -20,7 +20,7 @@ class OneShot(Cog):
     @commands.command()
     async def staff(self, ctx):
         """[U] Shows currently active staff."""
-        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staff_role"))
+        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staffrole"))
         embed = discord.Embed(
             color=staff_role.color,
             title="🛠️ Staff List",
@@ -75,7 +75,7 @@ class OneShot(Cog):
     async def pingmod(self, ctx):
         """[U] Pings mods, only use when there's an emergency."""
         await ctx.reply(
-            f"<@&{get_config(ctx.guild.id, 'staff', 'staff_role')}>, {ctx.author.display_name} is requesting assistance.",
+            f"<@&{get_config(ctx.guild.id, 'staff', 'staffrole')}>, {ctx.author.display_name} is requesting assistance.",
             mention_author=False,
         )
 
@@ -85,9 +85,9 @@ class OneShot(Cog):
         """[S] Toggles your Staff role.
 
         If you have Staff, it will replace it with Ex-Staff, and vice versa."""
-        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staff_role"))
+        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staffrole"))
         exstaff_role = ctx.guild.get_role(
-            get_config(ctx.guild.id, "staff", "exstaff_role")
+            get_config(ctx.guild.id, "staff", "exstaffrole")
         )
 
         if staff_role in ctx.author.roles:

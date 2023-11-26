@@ -31,7 +31,7 @@ class CogBurstReacts(commands.Cog, name="Burst reactions handler"):
             return
 
         # Ignore not configured guilds
-        if not get_config(guild_id, "misc", "burstreacts_enable"):
+        if not get_config(guild_id, "reaction", "burstreactsenable"):
             return
 
         guild = self.bot.get_guild(int(guild_id))
@@ -43,7 +43,7 @@ class CogBurstReacts(commands.Cog, name="Burst reactions handler"):
         await message.remove_reaction(emoji, author)
 
         # Send information to log channel
-        mlog = await self.bot.fetch_channel(get_config(guild.id, "logs", "mlog_thread"))
+        mlog = await self.bot.fetch_channel(get_config(guild.id, "logging", "modlog"))
 
         embed = stock_embed(self.bot)
         embed.title = "🗑️ Autoremoved a Super Reaction"

@@ -12,11 +12,13 @@ matplotlib = "*"
 oauth2client = "*"
 parsedatetime = "*"
 pillow = "*"
-pluralkit = "*"
 pydrive = "*"
 skyfield = "*"
 deepl = "*"
 unidecode = "*"
+PyYAML = "*"
+googletrans = {git = "https://github.com/c-goosen/py-googletrans.git"}
+pluralkit = "*"
 
 [dev-packages]
 

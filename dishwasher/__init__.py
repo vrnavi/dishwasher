@@ -13,19 +13,17 @@ import itertools
 from discord.ext import commands
 from helpers.datafiles import get_userfile, get_botfile
 
+
+# File and stdout logs.
 log_format = logging.Formatter(
     "[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
 )
-
 stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setFormatter(log_format)
-
 logfile_handler = logging.FileHandler("logs/dishwasher.log", mode="w")
 logfile_handler.setFormatter(log_format)
-
 log = logging.getLogger("discord")
 log.setLevel(logging.INFO)
-
 log.addHandler(stdout_handler)
 log.addHandler(logfile_handler)
 
@@ -62,7 +60,7 @@ intents.typing = False
 
 bot = commands.Bot(
     command_prefix=get_prefix,
-    description=config.bot_description,
+    description=config.short_desc,
     intents=intents,
     enable_debug_events=True,  # for raw events (e.g. super reactions handler)
 )
@@ -70,6 +68,7 @@ bot.help_command = None
 bot.log = log
 bot.config = config
 bot.errors = []
+bot.version = "0.1.0"
 
 
 @bot.event
@@ -79,12 +78,11 @@ async def on_ready():
     log.info(
         f"\nLogged in as: {bot.user.name} - "
         f"{bot.user.id}\ndpy version: {discord.__version__}\n"
+        f"bot version: {bot.version}\n"
     )
 
     bot.session = aiohttp.ClientSession()
-    bot.start_timestamp = datetime.datetime.utcnow().replace(
-        tzinfo=datetime.timezone.utc
-    )
+    bot.start_timestamp = int(datetime.datetime.now().strftime("%s"))
 
 
 @bot.event
@@ -165,6 +163,14 @@ async def on_command_error(ctx, error):
 
     if isinstance(error, commands.NoPrivateMessage):
         return await ctx.send("This command doesn't work in DMs.")
+    elif isinstance(error, commands.PrivateMessageOnly):
+        return await ctx.send("This command doesn't work in servers.")
+    elif (
+        isinstance(error, commands.InvalidEndOfQuotedStringError)
+        or isinstance(error, commands.ExpectedClosingQuoteError)
+        or isinstance(error, commands.UnexpectedQuoteError)
+    ):
+        return await ctx.send("Your quotes are off.")
     elif isinstance(error, commands.MissingPermissions):
         roles_needed = "\n- ".join(error.missing_perms)
         return await ctx.send(
@@ -267,7 +273,11 @@ for wanted_json in wanted_jsons:
 
 async def main():
     async with bot:
-        for cog in config.initial_cogs:
+        for cog in [
+            "cogs." + f[:-3]
+            for f in os.listdir("cogs/")
+            if os.path.isfile("cogs/" + f) and f[-3:] == ".py"
+        ]:
             try:
                 await bot.load_extension(cog)
             except:

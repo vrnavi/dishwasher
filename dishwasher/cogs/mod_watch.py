@@ -1,7 +1,5 @@
 import discord
-import config
 import datetime
-import random
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff
@@ -21,7 +19,7 @@ class ModWatch(Cog):
     @commands.command()
     async def watch(self, ctx, target: discord.User, *, note: str = ""):
         """[S] Puts a user under watch."""
-        if not get_config(ctx.guild.id, "staff", "tracker_channel"):
+        if not get_config(ctx.guild.id, "staff", "watchchannel"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if target == ctx.author:
             return await ctx.send(random_self_msg(ctx.author.name))
@@ -33,7 +31,7 @@ class ModWatch(Cog):
                 return await ctx.send("I cannot watch Staff members.")
 
         trackerlog = await self.bot.fetch_channel(
-            get_config(ctx.guild.id, "staff", "tracker_channel")
+            get_config(ctx.guild.id, "staff", "watchchannel")
         )
         trackerthread = await trackerlog.create_thread(name=f"{target.name} Watchlog")
         embed = stock_embed(self.bot)
@@ -58,7 +56,7 @@ class ModWatch(Cog):
     @commands.command()
     async def unwatch(self, ctx, target: discord.User, *, note: str = ""):
         """[S] Removes a user from watch."""
-        if not get_config(ctx.guild.id, "staff", "tracker_channel"):
+        if not get_config(ctx.guild.id, "staff", "watchchannel"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if target == ctx.author:
             return await ctx.send(random_self_msg(ctx.author.name))
@@ -76,7 +74,7 @@ class ModWatch(Cog):
             )
             await trackerthread.edit(archived=True)
             trackerlog = await self.bot.fetch_channel(
-                get_config(ctx.guild.id, "staff", "tracker_channel")
+                get_config(ctx.guild.id, "staff", "watchchannel")
             )
             trackermsg = await trackerlog.fetch_message(
                 userlog[str(target.id)]["watch"]["message"]
@@ -95,7 +93,7 @@ class ModWatch(Cog):
         if (
             not message.content
             or not message.guild
-            or not get_config(message.guild.id, "staff", "tracker_channel")
+            or not get_config(message.guild.id, "staff", "watchchannel")
         ):
             return
         userlog = get_guildfile(message.guild.id, "userlog")
@@ -105,7 +103,7 @@ class ModWatch(Cog):
                     userlog[str(message.author.id)]["watch"]["thread"]
                 )
                 trackermsg = await self.bot.get_channel(
-                    get_config(message.guild.id, "staff", "tracker_channel")
+                    get_config(message.guild.id, "staff", "watchchannel")
                 ).fetch_message(userlog[str(message.author.id)]["watch"]["message"])
 
                 threadembed = stock_embed(self.bot)
@@ -133,7 +131,7 @@ class ModWatch(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         await self.bot.wait_until_ready()
-        if not get_config(member.guild.id, "staff", "tracker_channel"):
+        if not get_config(member.guild.id, "staff", "watchchannel"):
             return
         userlog = get_guildfile(member.guild.id, "userlog")
         try:
@@ -142,7 +140,7 @@ class ModWatch(Cog):
                     userlog[str(member.id)]["watch"]["thread"]
                 )
                 trackermsg = await self.bot.get_channel(
-                    get_config(member.guild.id, "staff", "tracker_channel")
+                    get_config(member.guild.id, "staff", "watchchannel")
                 ).fetch_message(userlog[str(member.id)]["watch"]["message"])
                 invite_used = await self.bot.get_used_invites(member)
 
@@ -175,7 +173,7 @@ class ModWatch(Cog):
     @Cog.listener()
     async def on_member_remove(self, member):
         await self.bot.wait_until_ready()
-        if not get_config(member.guild.id, "staff", "tracker_channel"):
+        if not get_config(member.guild.id, "staff", "watchchannel"):
             return
         userlog = get_guildfile(member.guild.id, "userlog")
         try:
@@ -184,7 +182,7 @@ class ModWatch(Cog):
                     userlog[str(member.id)]["watch"]["thread"]
                 )
                 trackermsg = await self.bot.get_channel(
-                    get_config(member.guild.id, "staff", "tracker_channel")
+                    get_config(member.guild.id, "staff", "watchchannel")
                 ).fetch_message(userlog[str(member.id)]["watch"]["message"])
 
                 threadembed = stock_embed(self.bot)

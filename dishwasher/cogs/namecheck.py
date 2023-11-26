@@ -47,7 +47,7 @@ class NameCheck(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         await self.bot.wait_until_ready()
-        if not get_config(member.guild.id, "misc", "autoreadable_enable"):
+        if not get_config(member.guild.id, "reaction", "autoreadableenable"):
             return
 
         name = member.display_name
@@ -70,7 +70,7 @@ class NameCheck(Cog):
     @Cog.listener()
     async def on_member_update(self, member_before, member_after):
         await self.bot.wait_until_ready()
-        if not get_config(member_after.guild.id, "misc", "autoreadable_enable"):
+        if not get_config(member_after.guild.id, "reaction", "autoreadableenable"):
             return
 
         name = member_after.display_name

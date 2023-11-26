@@ -26,7 +26,7 @@ class ModLocks(Cog):
     async def unlock_for_staff(self, channel: discord.TextChannel, issuer):
         await self.set_sendmessage(
             channel,
-            get_config(channel.guild.id, "staff", "staff_role"),
+            get_config(channel.guild.id, "staff", "staffrole"),
             True,
             issuer,
         )
@@ -34,7 +34,7 @@ class ModLocks(Cog):
     async def unlock_for_bots(self, channel: discord.TextChannel, issuer):
         await self.set_sendmessage(
             channel,
-            int(get_config(channel.guild.id, "misc", "bot_roles")[0]),
+            get_config(channel.guild.id, "staff", "botrole"),
             True,
             issuer,
         )
@@ -48,9 +48,9 @@ class ModLocks(Cog):
         Defaults to current channel."""
         if not channel:
             channel = ctx.channel
-        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
-        staff_role_id = get_config(ctx.guild.id, "staff", "staff_role")
-        bot_role_id = int(get_config(ctx.guild.id, "misc", "bot_roles")[0])
+        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        staff_role_id = get_config(ctx.guild.id, "staff", "staffrole")
+        bot_role_id = get_config(ctx.guild.id, "staf", "botrole")
 
         # Take a snapshot of current channel state before making any changes
         if ctx.guild.id not in self.snapshots:
@@ -114,7 +114,7 @@ class ModLocks(Cog):
         """[S] Unlocks speaking in current channel."""
         if not channel:
             channel = ctx.channel
-        mlog = get_config(ctx.guild.id, "logs", "mlog_thread")
+        mlog = get_config(ctx.guild.id, "logging", "modlog")
 
         # Restore from snapshot state.
         overwrites = self.snapshots[ctx.guild.id][channel.id]

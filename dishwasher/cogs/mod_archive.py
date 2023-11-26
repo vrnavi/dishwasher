@@ -32,7 +32,7 @@ class ModArchive(Cog):
     @commands.check(check_if_staff)
     @commands.command(aliases=["archives"])
     async def archive(self, ctx, *, args=None):
-        if not get_config(ctx.guild.id, "archive", "enable"):
+        if not get_config(ctx.guild.id, "toss", "drivefolder"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
             "data/service_account.json", "https://www.googleapis.com/auth/drive"
@@ -41,14 +41,14 @@ class ModArchive(Cog):
         gauth = GoogleAuth()
         gauth.credentials = credentials
         drive = GoogleDrive(gauth)
-        folder = get_config(ctx.guild.id, "archive", "drive_folder")
+        folder = get_config(ctx.guild.id, "toss", "drivefolder")
 
         try:
             await ctx.channel.typing()
         except:
             pass
 
-        if ctx.channel.name in get_config(ctx.guild.id, "toss", "toss_channels"):
+        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
             out = await log_whole_channel(self.bot, ctx.channel, zip_files=True)
             zipped_files = out[1]
             out = out[0]
@@ -99,7 +99,7 @@ class ModArchive(Cog):
             f.Upload()
 
             modch = self.bot.get_channel(
-                get_config(ctx.guild.id, "staff", "staff_channel")
+                get_config(ctx.guild.id, "staff", "staffchannel")
             )
 
             embed = discord.Embed(

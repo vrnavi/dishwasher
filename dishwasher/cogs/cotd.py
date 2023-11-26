@@ -27,8 +27,8 @@ class Cotd(Cog):
 
     async def roll_colors(self, guild):
         color = random.choice(self.colors)
-        cotd_name = get_config(guild.id, "cotd", "cotd_name")
-        cotd_role = guild.get_role(get_config(guild.id, "cotd", "cotd_role"))
+        cotd_name = get_config(guild.id, "cotd", "cotdname")
+        cotd_role = guild.get_role(get_config(guild.id, "cotd", "cotdrole"))
         await cotd_role.edit(
             name=f'{cotd_name} - {color["name"]}',
             color=discord.Colour.from_str(color["hex"]),
@@ -44,9 +44,11 @@ class Cotd(Cog):
     @commands.guild_only()
     @commands.command()
     async def cotd(self, ctx):
-        if not get_config(ctx.guild.id, "cotd", "enable"):
+        if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(
+            ctx.guild.id, "cotd", "cotdname"
+        ):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
-        cotd_role = ctx.guild.get_role(get_config(ctx.guild.id, "cotd", "cotd_role"))
+        cotd_role = ctx.guild.get_role(get_config(ctx.guild.id, "cotd", "cotdrole"))
         inlist = False
         cotdlist = ""
         for i in self.colors:
@@ -72,7 +74,9 @@ class Cotd(Cog):
     @commands.guild_only()
     @commands.command()
     async def voteskip(self, ctx):
-        if not get_config(ctx.guild.id, "cotd", "enable"):
+        if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(
+            ctx.guild.id, "cotd", "cotdname"
+        ):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
 
         if ctx.guild.id in self.voteskip_cooldown:
@@ -120,7 +124,9 @@ class Cotd(Cog):
     @commands.check(check_if_staff)
     @commands.command()
     async def reroll(self, ctx):
-        if not get_config(ctx.guild.id, "cotd", "enable"):
+        if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(
+            ctx.guild.id, "cotd", "cotdname"
+        ):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         color = await self.roll_colors(ctx.guild)
         embed = discord.Embed(
@@ -145,7 +151,9 @@ class Cotd(Cog):
     async def colortimer(self):
         await self.bot.wait_until_ready()
         for g in self.bot.guilds:
-            if get_config(g.id, "cotd", "enable"):
+            if get_config(g.id, "cotd", "cotdrole") and get_config(
+                g.id, "cotd", "cotdname"
+            ):
                 if g.id not in self.voteskip:
                     self.voteskip[g.id] = []
                 if self.voteskip[g.id] and self.precedence_check(g):

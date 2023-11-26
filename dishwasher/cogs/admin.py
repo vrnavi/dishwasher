@@ -15,6 +15,7 @@ from helpers.embeds import stock_embed
 from helpers.checks import check_if_bot_manager
 from helpers.sv_config import get_config
 from helpers.datafiles import get_botfile, set_botfile
+from helpers.placeholders import death_messages
 
 
 class Admin(Cog):
@@ -28,7 +29,7 @@ class Admin(Cog):
     async def _exit(self, ctx):
         """[O] Shuts down (or restarts) the bot."""
         await ctx.message.reply(
-            content=random.choice(self.bot.config.death_messages), mention_author=False
+            content=random.choice(death_messages), mention_author=False
         )
         await self.bot.close()
 
@@ -119,7 +120,7 @@ class Admin(Cog):
             )
         except:
             await ctx.reply(content="I can't DM you, dumbass.", mention_author=False)
-        os.remove("data_backup.zip")
+        os.remove("data_export.zip")
 
     @commands.dm_only()
     @commands.check(check_if_bot_manager)
@@ -155,7 +156,7 @@ class Admin(Cog):
             os.remove(f"data/{server.id}.zip")
         except FileNotFoundError:
             await ctx.message.reply(
-                content="That server doesn't have any data.",
+                content="That server doesn't have any data yet.",
                 mention_author=False,
             )
 
@@ -200,7 +201,7 @@ class Admin(Cog):
 
     @commands.check(check_if_bot_manager)
     @commands.command(aliases=["setuserdata"])
-    async def setudata(self, ctx, server: discord.User = None):
+    async def setudata(self, ctx, user: discord.User = None):
         """[O] Replaces user data files. This is destructive behavior!"""
         if not user:
             user = ctx.author
@@ -265,11 +266,11 @@ class Admin(Cog):
         if not channel:
             channel = ctx.channel
         await ctx.reply(
-            content=f"{target}'s permissions for the current channel...\n```diff\n"
+            content=f"{target}'s permissions for {channel.name}...\n```diff\n"
             + "\n".join(
                 [
                     f"{'-' if not y else '+'} " + x
-                    for x, y in iter(channel.permissions_for(ctx.guild.me))
+                    for x, y in iter(channel.permissions_for(target))
                 ]
             )
             + "```",
@@ -384,10 +385,6 @@ class Admin(Cog):
             for msg in sliced_message:
                 await ctx.send(msg)
 
-    async def cog_load_actions(self, cog_name):
-        # Used for specific cog actions, tore out the verification cog since don't need it.
-        pass
-
     @commands.check(check_if_bot_manager)
     @commands.command()
     async def pull(self, ctx, auto=False):
@@ -412,8 +409,6 @@ class Admin(Cog):
             cogs_to_reload = re.findall(r"cogs/([a-z_]*).py[ ]*\|", git_output)
             for cog in cogs_to_reload:
                 cog_name = "cogs." + cog
-                if cog_name not in config.initial_cogs:
-                    continue
 
                 try:
                     await self.bot.unload_extension(cog_name)
@@ -423,7 +418,6 @@ class Admin(Cog):
                         content=f":white_check_mark: `{cog}` successfully reloaded.",
                         mention_author=False,
                     )
-                    await self.cog_load_actions(cog)
                 except:
                     await ctx.message.reply(
                         content=f":x: Cog reloading failed, traceback: "
@@ -437,8 +431,7 @@ class Admin(Cog):
     async def load(self, ctx, ext: str):
         """[O] Loads a cog."""
         try:
-            await self.bot.load_extension("cogs." + ext)
-            await self.cog_load_actions(ext)
+            await self.bot.load_extension(ext)
         except:
             if len(traceback.format_exc()) > 2000:
                 parts = await self.bot.slice_message(
@@ -463,7 +456,7 @@ class Admin(Cog):
     @commands.command()
     async def unload(self, ctx, ext: str):
         """[O] Unloads a cog."""
-        await self.bot.unload_extension("cogs." + ext)
+        await self.bot.unload_extension(ext)
         self.bot.log.info(f"Unloaded ext {ext}")
         await ctx.message.reply(
             content=f":white_check_mark: `{ext}` successfully unloaded.",
@@ -480,9 +473,8 @@ class Admin(Cog):
             self.lastreload = ext
 
         try:
-            await self.bot.unload_extension("cogs." + ext)
-            await self.bot.load_extension("cogs." + ext)
-            await self.cog_load_actions(ext)
+            await self.bot.unload_extension(ext)
+            await self.bot.load_extension(ext)
         except:
             await ctx.message.reply(
                 content=f":x: Cog reloading failed, traceback: "

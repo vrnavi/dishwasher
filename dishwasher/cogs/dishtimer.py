@@ -10,6 +10,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 from helpers.datafiles import get_botfile, delete_job
 from helpers.checks import check_if_staff
+from helpers.placeholders import game_type, game_names
 
 
 class Dishtimer(Cog):
@@ -103,23 +104,6 @@ class Dishtimer(Cog):
                     f"{traceback.format_exc()}```"
                 )
 
-    async def clean_channel(self, channel_id):
-        log_channel = self.bot.get_channel(config.bot_logchannel)
-        channel = self.bot.get_channel(channel_id)
-        try:
-            done_cleaning = False
-            count = 0
-            while not done_cleaning:
-                purge_res = await channel.purge(limit=100)
-                count += len(purge_res)
-                if len(purge_res) != 100:
-                    done_cleaning = True
-        except:
-            # Don't kill cronjobs if something goes wrong.
-            await log_channel.send(
-                f"Cronclean has errored: ```{traceback.format_exc()}```"
-            )
-
     @tasks.loop(minutes=1)
     async def minutely(self):
         await self.bot.wait_until_ready()
@@ -131,10 +115,6 @@ class Dishtimer(Cog):
                 for jobtimestamp in ctab[jobtype]:
                     if timestamp > int(jobtimestamp):
                         await self.do_jobs(ctab, jobtype, jobtimestamp)
-
-            # Handle clean channels
-            for clean_channel in config.minutely_clean_channels:
-                await self.clean_channel(clean_channel)
         except:
             # Don't kill cronjobs if something goes wrong.
             await log_channel.send(
@@ -146,13 +126,8 @@ class Dishtimer(Cog):
         await self.bot.wait_until_ready()
         log_channel = self.bot.get_channel(config.bot_logchannel)
         try:
-            # Handle clean channels
-            for clean_channel in config.hourly_clean_channels:
-                await self.clean_channel(clean_channel)
             # Change playing status.
-            activity = discord.Activity(
-                name=random.choice(config.game_names), type=config.game_type
-            )
+            activity = discord.Activity(name=random.choice(game_names), type=game_type)
             await self.bot.change_presence(activity=activity)
         except:
             # Don't kill cronjobs if something goes wrong.

@@ -8,7 +8,7 @@ from discord.ext.commands import Cog
 from helpers.checks import check_if_staff, check_if_bot_manager
 from helpers.datafiles import get_guildfile
 from helpers.embeds import stock_embed
-from helpers.sv_config import fill_config, set_config
+from helpers.datafiles import get_guildfile, set_guildfile
 
 
 class TSAR(Cog):
@@ -22,14 +22,14 @@ class TSAR(Cog):
     @commands.guild_only()
     @commands.command()
     async def role(self, ctx, *, role):
-        configs = fill_config(ctx.guild.id)
-        if not configs["tsar"]["roles"]:
+        tsars = get_guildfile(ctx.guild.id, "tsar")
+        if not tsars:
             return await ctx.reply(
                 content="You cannot get a role when no roles are configured.",
                 mention_author=False,
             )
         try:
-            for name, tsar in list(configs["tsar"]["roles"].items()):
+            for name, tsar in list(tsars.items()):
                 if name.lower() == role.lower():
                     roledata = tsar
                     rolename = name
@@ -95,7 +95,7 @@ class TSAR(Cog):
     @commands.guild_only()
     @commands.command()
     async def roles(self, ctx):
-        configs = fill_config(ctx.guild.id)
+        tsars = get_guildfile(ctx.guild.id, "tsar")
         embed = stock_embed(self.bot)
         embed.title = "🎫 Assignable Roles"
         embed.description = (
@@ -103,14 +103,14 @@ class TSAR(Cog):
         )
         embed.color = discord.Color.gold()
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if not configs["tsar"]["roles"]:
+        if not tsars:
             embed.add_field(
                 name="None",
                 value="There are no assignable roles.",
                 inline=False,
             )
         else:
-            for name, tsar in list(configs["tsar"]["roles"].items()):
+            for name, tsar in list(tsars.items()):
                 fieldval = (
                     f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
                     + f"> **Minimum Days:** `{tsar['mindays']}`\n"
@@ -146,7 +146,7 @@ class TSAR(Cog):
     @commands.check(check_if_staff)
     @commands.command()
     async def tsar(self, ctx):
-        configs = fill_config(ctx.guild.id)
+        tsars = get_guildfile(ctx.guild.id, "tsar")
 
         navigation_reactions = ["⏹", "✨", "❌", "💣"]
 
@@ -154,14 +154,14 @@ class TSAR(Cog):
         embed.title = "⚙️ TSAR Configuration Editor"
         embed.color = ctx.author.color
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
-        if not configs["tsar"]["roles"]:
+        if not tsars:
             embed.add_field(
                 name="Currently empty!",
                 value="Click the sparkle icon to get started.",
                 inline=False,
             )
         else:
-            for name, tsar in list(configs["tsar"]["roles"].items()):
+            for name, tsar in list(tsars.items()):
                 fieldval = (
                     f"> **Role:** {ctx.guild.get_role(tsar['roleid']).mention}\n"
                     + f"> **Minimum Days:** `{tsar['mindays']}`\n"
@@ -235,7 +235,7 @@ class TSAR(Cog):
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         elif str(reaction) == "✨":
-            if len(configs["tsar"]["roles"]) == 20:
+            if len(tsars) == 20:
                 return await ctx.reply(
                     content="Unable to create new TSAR: Maximum of 20 reached.",
                     mention_author=False,
@@ -243,7 +243,7 @@ class TSAR(Cog):
             namemsg = await ctx.send(content="**Making new TSAR.**\nName of this TSAR?")
             nameresp = await waitformsg()
             if nameresp.content.lower() in dict(
-                (k.lower(), v) for k, v in configs["tsar"]["roles"].items()
+                (k.lower(), v) for k, v in tsars.items()
             ):
                 await configmsg.delete()
                 return await namemsg.edit(
@@ -292,7 +292,7 @@ class TSAR(Cog):
                 content=content,
                 delete_after=5,
             )
-            configs["tsar"]["roles"][nameresp.content] = {
+            tsars[nameresp.content] = {
                 "roleid": int(IDresp.content),
                 "mindays": int(mindaysresp.content),
                 "blacklisted": [int(r) for r in blacklistedrolesresp.content.split()]
@@ -302,9 +302,7 @@ class TSAR(Cog):
                 if requiredrolesresp.content.lower() != "none"
                 else None,
             }
-            configs = set_config(
-                ctx.guild.id, "tsar", "roles", configs["tsar"]["roles"]
-            )
+            set_guildfile(ctx.guild.id, "tsar", json.dumps(tsars))
             return await configmsg.edit(
                 content="TSAR list updated.",
                 embed=None,
@@ -315,10 +313,8 @@ class TSAR(Cog):
             namemsg = await ctx.send(content="**Removing a TSAR.**\nName of this TSAR?")
             nameresp = await waitformsg()
             await namemsg.delete()
-            del configs["tsar"]["roles"][nameresp.content]
-            configs = set_config(
-                ctx.guild.id, "tsar", "roles", configs["tsar"]["roles"]
-            )
+            del tsars[nameresp.content]
+            set_guildfile(ctx.guild.id, "tsar", json.dumps(tsars))
             return await configmsg.edit(
                 content="TSAR list updated.",
                 embed=None,
@@ -330,10 +326,8 @@ class TSAR(Cog):
             confirmresp = await waitformsg()
             await confirmmsg.delete()
             if confirmresp.content.lower() == "yes":
-                configs["tsar"]["roles"] = {}
-                configs = set_config(
-                    ctx.guild.id, "tsar", "roles", configs["tsar"]["roles"]
-                )
+                tsars = {}
+                set_guildfile(ctx.guild.id, "tsar", json.dumps(tsars))
                 return await configmsg.edit(
                     content="TSAR list nuked.",
                     embed=None,

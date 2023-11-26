@@ -27,7 +27,7 @@ class ModReport(Cog):
                 mention_author=False,
             )
         for guild in guilds:
-            if not get_config(guild.id, "staff", "staff_channel"):
+            if not get_config(guild.id, "staff", "staffchannel"):
                 guilds.remove(guild)
         if not guilds:
             return await ctx.reply(
@@ -64,7 +64,7 @@ class ModReport(Cog):
             )
         guild = guilds[int(response.content) - 1]
         channel = guild.get_channel_or_thread(
-            get_config(guild.id, "staff", "staff_channel")
+            get_config(guild.id, "staff", "staffchannel")
         )
         await message.edit(
             content=f"**Guild:** {guild.name}",
@@ -120,8 +120,8 @@ class ModReport(Cog):
             allowed_mentions=discord.AllowedMentions(replied_user=False),
         )
         ping = False
-        if get_config(guild.id, "staff", "staff_role"):
-            role = guild.get_role(get_config(guild.id, "staff", "staff_role"))
+        if get_config(guild.id, "staff", "staffrole"):
+            role = guild.get_role(get_config(guild.id, "staff", "staffrole"))
             message = await ctx.send(
                 content="**Would you like ping the Staff?**\nPlease use this for urgent matters!"
             )
@@ -198,11 +198,12 @@ class ModReport(Cog):
         # water go down the hole x2
         for g in self.bot.guilds:
             reportlog = get_guildfile(g.id, "reportlog")
-            newreportlog = get_guildfile(g.id, "reportlog")
-            for instance, user in reportlog.items():
-                if int(datetime.datetime.now().strftime("%s")) - 259200 > int(instance):
-                    del newreportlog[instance]
-        set_guildfile(g.id, "reportlog", json.dumps(newreportlog))
+            for instance, user in get_guildfile(g.id, "reportlog").items():
+                if int(datetime.datetime.now().strftime("%s")) - 259200 <= int(
+                    instance
+                ):
+                    del reportlog[instance]
+        set_guildfile(g.id, "reportlog", json.dumps(reportlog))
 
 
 async def setup(bot):

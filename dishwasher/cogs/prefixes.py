@@ -25,9 +25,10 @@ class prefixes(Cog):
         author_embed(embed, ctx.author)
         profile = fill_profile(ctx.author.id)
         userprefixes = profile["prefixes"]
+        maxprefixes = config.maxprefixes if config.maxprefixes <= 25 else 25
 
         for i in range(
-            max(config.maxprefixes, len(userprefixes))
+            max(maxprefixes, len(userprefixes))
         ):  # max of 24 prefixes as discord does not allow more than 25 fields in embeds
             try:
                 value = userprefixes[i]
@@ -41,7 +42,8 @@ class prefixes(Cog):
     async def add(self, ctx, *, arg: str):
         """[U] Adds a new prefix."""
         profile = fill_profile(ctx.author.id)
-        if not len(profile["prefixes"]) >= config.maxprefixes:
+        maxprefixes = config.maxprefixes if config.maxprefixes <= 25 else 25
+        if not len(profile["prefixes"]) >= maxprefixes:
             profile["prefixes"].append(f"{arg} ")
             set_userfile(ctx.author.id, "profile", json.dumps(profile))
             await ctx.reply(content="Prefix added.", mention_author=False)

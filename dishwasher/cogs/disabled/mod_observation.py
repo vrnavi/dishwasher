@@ -59,7 +59,7 @@ class ModObserve(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         await self.bot.wait_until_ready()
-        if not get_config(member.guild.id, "staff", "staff_channel"):
+        if not get_config(member.guild.id, "staff", "staffchannel"):
             return
         ts = datetime.datetime.now(datetime.timezone.utc)
         cutoff_ts = ts - datetime.timedelta(hours=24)
@@ -83,7 +83,7 @@ class ModObserve(Cog):
                 name="🔍 First message:", value="Currently watching...", inline=False
             )
             callout = await member.guild.get_channel(
-                get_config(member.guild.id, "staff", "staff_channel")
+                get_config(member.guild.id, "staff", "staffchannel")
             ).send(embed=embed)
 
             def check(m):

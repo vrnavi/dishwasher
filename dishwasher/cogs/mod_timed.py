@@ -1,10 +1,10 @@
 import discord
-import config
 from datetime import datetime
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff
 from helpers.datafiles import add_userlog, add_job
+from helpers.sv_config import get_config
 from helpers.placeholders import random_self_msg, random_bot_msg
 
 
@@ -72,9 +72,7 @@ class ModTimed(Cog):
 
         add_job("unban", target.id, {"guild": ctx.guild.id}, expiry_timestamp)
 
-        mlog = await self.bot.fetch_channel(
-            config.guild_configs[ctx.guild.id]["logs"]["mlog_thread"]
-        )
+        mlog = await self.bot.fetch_channel(get_config(guild.id, "logging", "modlog"))
         await mlog.send(chan_message)
         await ctx.send(
             f"{safe_name} is now BANNED. It will expire <t:{expiry_timestamp}:R> on <t:{expiry_timestamp}:f>. 👍"

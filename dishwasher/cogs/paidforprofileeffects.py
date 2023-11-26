@@ -38,7 +38,7 @@ class AvyDecorations(Cog):
             return
 
         # Ignore not configured guilds
-        if not get_config(guild_id, "misc", "burstreacts_enable"):
+        if not get_config(guild_id, "reaction", "paidforprofileeffectsenable"):
             return
 
         guild = self.bot.get_guild(int(guild_id))

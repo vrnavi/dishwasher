@@ -4,6 +4,7 @@ import discord
 import datetime
 import asyncio
 import deepl
+import googletrans
 from discord.ext.commands import Cog, Context, Bot
 from discord.ext import commands
 from helpers.checks import check_if_staff, check_if_bot_manager
@@ -33,37 +34,37 @@ class Messagescan(Cog):
         self.prevedit_before = {}
         self.prevedit_after = {}
         self.langs = {
-            "🇧🇬": {"name": "Bulgarian", "code": "BG"},
-            "🇨🇿": {"name": "Czech", "code": "CS"},
-            "🇩🇰": {"name": "Danish", "code": "DA"},
-            "🇩🇪": {"name": "German", "code": "DE"},
-            "🇬🇷": {"name": "Greek", "code": "EL"},
-            "🇬🇧": {"name": "British English", "code": "EN-GB"},
-            "🇺🇸": {"name": "American English", "code": "EN-US"},
-            "🇪🇸": {"name": "Spanish", "code": "ES"},
-            "🇪🇪": {"name": "Estonian", "code": "ET"},
-            "🇫🇮": {"name": "Finnish", "code": "FI"},
-            "🇫🇷": {"name": "French", "code": "FR"},
-            "🇭🇺": {"name": "Hungarian", "code": "HU"},
-            "🇮🇩": {"name": "Indonesian", "code": "ID"},
-            "🇮🇹": {"name": "Italian", "code": "IT"},
-            "🇯🇵": {"name": "Japanese", "code": "JA"},
-            "🇰🇷": {"name": "Korean", "code": "KO"},
-            "🇱🇹": {"name": "Lithuanian", "code": "LT"},
-            "🇱🇻": {"name": "Latvian", "code": "LV"},
-            "🇳🇴": {"name": "Norwegian", "code": "NB"},
-            "🇳🇱": {"name": "Dutch", "code": "NL"},
-            "🇵🇱": {"name": "Polish", "code": "PL"},
-            "🇧🇷": {"name": "Brazilian Portugese", "code": "PT-BR"},
-            "🇵🇹": {"name": "Portugese", "code": "PT-PT"},
-            "🇷🇴": {"name": "Romanian", "code": "RO"},
-            "🇷🇺": {"name": "Russian", "code": "RU"},
-            "🇸🇰": {"name": "Slovak", "code": "SK"},
-            "🇸🇮": {"name": "Slovenian", "code": "SL"},
-            "🇸🇪": {"name": "Swedish", "code": "SV"},
-            "🇹🇷": {"name": "Turkish", "code": "TR"},
-            "🇺🇦": {"name": "Ukrainian", "code": "UK"},
-            "🇨🇳": {"name": "Simplified Chinese", "code": "ZH"},
+            "🇧🇬": {"name": "Bulgarian", "deeplcode": "BG", "gtcode": "bg"},
+            "🇨🇿": {"name": "Czech", "deeplcode": "CS", "gtcode": "cs"},
+            "🇩🇰": {"name": "Danish", "deeplcode": "DA", "gtcode": "da"},
+            "🇩🇪": {"name": "German", "deeplcode": "DE", "gtcode": "de"},
+            "🇬🇷": {"name": "Greek", "deeplcode": "EL", "gtcode": "el"},
+            "🇬🇧": {"name": "British English", "deeplcode": "EN-GB", "gtcode": "en"},
+            "🇺🇸": {"name": "American English", "deeplcode": "EN-US", "gtcode": "en"},
+            "🇪🇸": {"name": "Spanish", "deeplcode": "ES", "gtcode": "es"},
+            "🇪🇪": {"name": "Estonian", "deeplcode": "ET", "gtcode": "et"},
+            "🇫🇮": {"name": "Finnish", "deeplcode": "FI", "gtcode": "fi"},
+            "🇫🇷": {"name": "French", "deeplcode": "FR", "gtcode": "fr"},
+            "🇭🇺": {"name": "Hungarian", "deeplcode": "HU", "gtcode": "hu"},
+            "🇮🇩": {"name": "Indonesian", "deeplcode": "ID", "gtcode": "id"},
+            "🇮🇹": {"name": "Italian", "deeplcode": "IT", "gtcode": "it"},
+            "🇯🇵": {"name": "Japanese", "deeplcode": "JA", "gtcode": "ja"},
+            "🇰🇷": {"name": "Korean", "deeplcode": "KO", "gtcode": "ko"},
+            "🇱🇹": {"name": "Lithuanian", "deeplcode": "LT", "gtcode": "lt"},
+            "🇱🇻": {"name": "Latvian", "deeplcode": "LV", "gtcode": "lv"},
+            "🇳🇴": {"name": "Norwegian", "deeplcode": "NB", "gtcode": "no"},
+            "🇳🇱": {"name": "Dutch", "deeplcode": "NL", "gtcode": "nl"},
+            "🇵🇱": {"name": "Polish", "deeplcode": "PL", "gtcode": "pl"},
+            "🇧🇷": {"name": "Brazilian Portugese", "deeplcode": "PT-BR", "gtcode": "pt"},
+            "🇵🇹": {"name": "Portugese", "deeplcode": "PT-PT", "gtcode": "pt"},
+            "🇷🇴": {"name": "Romanian", "deeplcode": "RO", "gtcode": "ro"},
+            "🇷🇺": {"name": "Russian", "deeplcode": "RU", "gtcode": "ru"},
+            "🇸🇰": {"name": "Slovak", "deeplcode": "SK", "gtcode": "sk"},
+            "🇸🇮": {"name": "Slovenian", "deeplcode": "SL", "gtcode": "sl"},
+            "🇸🇪": {"name": "Swedish", "deeplcode": "SV", "gtcode": "sv"},
+            "🇹🇷": {"name": "Turkish", "deeplcode": "TR", "gtcode": "tr"},
+            "🇺🇦": {"name": "Ukrainian", "deeplcode": "UK", "gtcode": "uk"},
+            "🇨🇳": {"name": "Simplified Chinese", "deeplcode": "ZH", "gtcode": "zh-cn"},
         }
 
     @commands.guild_only()
@@ -191,7 +192,7 @@ class Messagescan(Cog):
             or message.author.bot
             or not message.guild
             or not message.channel.permissions_for(message.author).embed_links
-            or not get_config(message.guild.id, "misc", "embed_enable")
+            or not get_config(message.guild.id, "reaction", "embedenable")
         ):
             return
 
@@ -354,49 +355,91 @@ class Messagescan(Cog):
             or str(reaction) not in self.langs
             or reaction.count != 1
             or not reaction.message.channel.permissions_for(user).send_messages
-            or not get_config(reaction.message.guild.id, "misc", "translate_enable")
+            or not get_config(reaction.message.guild.id, "reaction", "translateenable")
         ):
             return
 
-        translation = deepl.Translator(config.deepl_key, send_platform_info=False)
-        usage = translation.get_usage()
+        # DeepL
+        if config.deepl_key:
+            deepltranslation = deepl.Translator(
+                config.deepl_key, send_platform_info=False
+            )
+            usage = deepltranslation.get_usage()
+            if usage.character.valid:
+                dloutput = deepltranslation.translate_text(
+                    reaction.message.clean_content,
+                    target_lang=self.langs[str(reaction)]["deeplcode"],
+                )
 
-        if usage.any_limit_reached:
-            await reaction.message.reply(
-                content="Unable to translate message: monthly limit reached.",
+                if dloutput.detected_source_lang == "EN":
+                    dloutflag = "🇺🇸"
+                    dloutname = "English"
+                elif dloutput.detected_source_lang == "PT":
+                    dloutflag = "🇵🇹"
+                    dloutname = "Portuguese"
+                else:
+                    for v in self.langs:
+                        if self.langs[v]["deeplcode"] == dloutput.detected_source_lang:
+                            dloutflag = v
+                            dloutname = self.langs[v]["name"]
+            else:
+                dloutput = None
+        else:
+            dloutput = None
+
+        # Google Translate
+        try:
+            googletranslation = googletrans.Translator()
+            gtoutput = googletranslation.translate(
+                reaction.message.clean_content, dest=self.langs[str(reaction)]["gtcode"]
+            )
+
+            if gtoutput.src == "en":
+                gtoutflag = "🇺🇸"
+                gtoutname = "English"
+            elif gtoutput.src == "pt":
+                gtoutflag = "🇵🇹"
+                gtoutname = "Portuguese"
+            else:
+                for v in self.langs:
+                    if self.langs[v]["gtcode"] == gtoutput.src:
+                        gtoutflag = v
+                        gtoutname = self.langs[v]["name"]
+        except:
+            gtoutput = None
+
+        if not dloutput and not gtoutput:
+            return await reaction.message.reply(
+                content="Unable to translate message: neither DeepL or Google Translate responded.",
                 mention_author=False,
             )
-            return
-        output = translation.translate_text(
-            reaction.message.clean_content,
-            target_lang=self.langs[str(reaction)]["code"],
-        )
-        if output.detected_source_lang == "EN":
-            out_flag = "🇺🇸"
-            out_name = "English"
-        elif output.detected_source_lang == "PT":
-            out_flag = "🇵🇹"
-            out_name = "Portuguese"
-        else:
-            for v in self.langs:
-                if self.langs[v]["code"] == output.detected_source_lang:
-                    out_flag = v
-                    out_name = self.langs[v]["name"]
+
+        reacts = ["🚫" if not dloutput else "<:deepl:1177134874021347378>"] + [
+            "🚫" if not gtoutput else "<:googletrans:1177134340778500146>"
+        ]
+        state = 0 if dloutput else 1
+
+        def content():
+            outflag = dloutflag if not state else gtoutflag
+            outname = dloutname if not state else gtoutname
+            method = "DeepL" if not state else "Google"
+            embed.description = dloutput.text if not state else gtoutput.text
+            embed.set_footer(
+                text=f"{method} Translated from {outflag} {outname} by {user}",
+                icon_url=user.display_avatar.url,
+            )
 
         embed = discord.Embed(
             color=reaction.message.author.color,
-            description=output.text,
             timestamp=reaction.message.created_at,
         )
-        embed.set_footer(
-            text=f"Translated from {out_flag} {out_name} by {user}",
-            icon_url=user.display_avatar.url,
-        )
+        content()
         embed.set_author(
             name=f"💬 {reaction.message.author} said in #{reaction.message.channel.name}...",
             icon_url=reaction.message.author.display_avatar.url,
             url=reaction.message.jump_url,
         )
+        allowed_mentions = discord.AllowedMentions(replied_user=False)
         # Use a single image from post for now.
         if (
             reaction.message.attachments
@@ -405,7 +448,40 @@ class Messagescan(Cog):
             embed.set_image(url=reaction.message.attachments[0].url)
         elif reaction.message.embeds and reaction.message.embeds[0].image:
             embed.set_image(url=reaction.message.embeds[0].image.url)
-        await reaction.message.reply(embed=embed, mention_author=False)
+        holder = await reaction.message.reply(embed=embed, mention_author=False)
+        for e in reacts:
+            await holder.add_reaction(e)
+
+        def reactioncheck(r, u):
+            return u.id == user.id and str(r.emoji) in reacts
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=30.0, check=reactioncheck
+                )
+            except asyncio.TimeoutError:
+                for react in reacts:
+                    await holder.remove_reaction(react, self.bot.user)
+                return
+            if str(reaction) == "<:deepl:1177134874021347378>":
+                if state != 0:
+                    state = 0
+                try:
+                    await holder.remove_reaction("<:deepl:1177134874021347378>", user)
+                except:
+                    pass
+            elif str(reaction) == "<:googletrans:1177134340778500146>":
+                if state != 1:
+                    state = 1
+                try:
+                    await holder.remove_reaction(
+                        "<:googletrans:1177134340778500146>", user
+                    )
+                except:
+                    pass
+            content()
+            await holder.edit(embed=embed, allowed_mentions=allowed_mentions)
 
 
 async def setup(bot: Bot):

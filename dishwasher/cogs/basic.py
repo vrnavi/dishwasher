@@ -1,5 +1,4 @@
 import time
-import config
 import discord
 import os
 import io
@@ -8,6 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import typing
 import random
+import platform
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
@@ -60,14 +60,53 @@ class Basic(Cog):
             html = await self.bot.aioget(
                 f"https://www.youtube.com/results?search_query={arg}"
             )
-            # finds the first instance of watch\?=[youtube video id]
-            # that isn't an ad
-            id = ren.findall(r"watch\?v=(\S{11})", html)[1]
-            await ctx.reply(
-                content=f"https://www.youtube.com/watch?v={id}", mention_author=False
-            )
         except:
             await ctx.reply(content="HTML error.", mention_author=False)
+        allowed_mentions = discord.AllowedMentions(replied_user=False)
+        navigation_reactions = ["⏹", "⬅️", "➡"]
+        idx = 0
+
+        def content():
+            return ren.findall(r"watch\?v=(\S{11})", html)[idx + 1]
+
+        holder = await ctx.reply(
+            content=f"https://www.youtube.com/watch?v={content()}", mention_author=False
+        )
+        for e in navigation_reactions:
+            await holder.add_reaction(e)
+
+        def reactioncheck(r, u):
+            return u.id == ctx.author.id and str(r.emoji) in navigation_reactions
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=30.0, check=reactioncheck
+                )
+            except asyncio.TimeoutError:
+                for react in navigation_reactions:
+                    await holder.remove_reaction(react, ctx.bot.user)
+                return
+            if str(reaction) == "⏹":
+                return await holder.delete()
+            if str(reaction) == "⬅️":
+                if idx != 0:
+                    idx -= 1
+                try:
+                    await holder.remove_reaction("⬅️", ctx.author)
+                except:
+                    pass
+            elif str(reaction) == "➡":
+                if idx != 10:
+                    idx += 1
+                try:
+                    await holder.remove_reaction("➡", ctx.author)
+                except:
+                    pass
+            await holder.edit(
+                content=f"https://www.youtube.com/watch?v={content()}",
+                allowed_mentions=allowed_mentions,
+            )
 
     @commands.command()
     async def trivia(self, ctx):
@@ -188,21 +227,23 @@ class Basic(Cog):
         msg = await ctx.channel.send(content=ctx.author.mention)
         await msg.edit(content="⌛", delete_after=5)
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def avy(self, ctx, target: discord.User = None):
-        """[U] Gets an avy."""
+        """[U] Gets a user's avy."""
         if target is not None:
-            if ctx.guild and target == "server":
-                await ctx.send(content=ctx.guild.icon.url)
-                return
             if ctx.guild and ctx.guild.get_member(target.id):
                 target = ctx.guild.get_member(target.id)
         else:
             target = ctx.author
         await ctx.send(content=target.display_avatar.url)
 
+    @avy.command(name="server")
+    async def _server(self, ctx):
+        """[U] Gets a server's avy."""
+        return await ctx.send(content=ctx.guild.icon.url)
+
     @commands.command(aliases=["bigtimerush"])
-    async def btr(self, ctx: commands.Context):
+    async def btr(self, ctx):
         await ctx.send(files=[discord.File("assets/bigtimerush.mp3")])
 
     @commands.command()
@@ -216,7 +257,7 @@ class Basic(Cog):
     async def _hex(self, ctx, num: int):
         """[U] Converts base 10 to 16."""
         hex_val = hex(num).upper().replace("0X", "0x")
-        await ctx.send(f"{ctx.author.mention}: {hex_val}")
+        await ctx.reply(content=f"{hex_val}", mention_author=False)
 
     @commands.command(aliases=["catbox", "imgur"])
     async def rehost(self, ctx, links=None):
@@ -231,8 +272,8 @@ class Basic(Cog):
         for r in [f.url for f in ctx.message.attachments] + links:
             formdata = aiohttp.FormData()
             formdata.add_field("reqtype", "urlupload")
-            if config.catbox_key:
-                formdata.add_field("userhash", config.catbox_key)
+            if self.bot.config.catbox_key:
+                formdata.add_field("userhash", self.bot.config.catbox_key)
             formdata.add_field("url", r)
             async with self.bot.session.post(api_url, data=formdata) as response:
                 output = await response.text()
@@ -241,14 +282,14 @@ class Basic(Cog):
     @commands.command(name="dec")
     async def _dec(self, ctx, num):
         """[U] Converts base 16 to 10."""
-        await ctx.send(f"{ctx.author.mention}: {int(num, 16)}")
+        await ctx.reply(content=f"{int(num, 16)}", mention_author=False)
 
     @commands.guild_only()
     @commands.command()
     async def membercount(self, ctx):
         """[U] Prints the member count of the server."""
         await ctx.reply(
-            f"{ctx.guild.name} has {ctx.guild.member_count} members!",
+            f"{ctx.guild.name} has {ctx.guild.member_count} members.",
             mention_author=False,
         )
 
@@ -257,11 +298,26 @@ class Basic(Cog):
         """[U] Shows a quick embed with bot info."""
         embed = discord.Embed(
             title=self.bot.user.name,
-            url=config.source_url,
-            description=config.embed_desc,
+            url=self.bot.config.source_url,
+            description=self.bot.config.long_desc,
             color=ctx.guild.me.color if ctx.guild else self.bot.user.color,
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
+        embed.add_field(
+            name=f"📊 Usage",
+            value=f"**Guilds:** {len(self.bot.guilds)}\n**Users:** {len(self.bot.users)}",
+            inline=True,
+        )
+        embed.add_field(
+            name=f"⏱️ Uptime",
+            value=f"{self.bot.user.name} started on <t:{self.bot.start_timestamp}:F>, or <t:{self.bot.start_timestamp}:R>.",
+            inline=True,
+        )
+        embed.add_field(
+            name=f"📡 Unit",
+            value=f"Running {platform.python_implementation()} {platform.python_version()} on {platform.platform(aliased=True, terse=True)} {platform.architecture()[0]}.",
+            inline=True,
+        )
         await ctx.reply(embed=embed, mention_author=False)
 
     @commands.command(name="server", aliases=["invite"])
@@ -351,29 +407,17 @@ class Basic(Cog):
         ]
         optionlines = ""
         if not options:
-            await ctx.reply(
+            return await ctx.reply(
                 content="**No options specified.** Add some and try again.",
                 mention_author=False,
             )
-            return
         elif len(options) > 10:
-            await ctx.reply(
+            return await ctx.reply(
                 content="**Too many options.** Remove some and try again.",
                 mention_author=False,
             )
         for i, l in enumerate(options):
-            if l[-1:] == '"' and l[:1] == '"':
-                optionlines = f"{optionlines}\n`#{i+1}:` {l[1:-1]}"
-            elif (l[-1:] == '"' or l[:1] == '"') and not (
-                l[-1:] == '"' and l[:1] == '"'
-            ):
-                await ctx.reply(
-                    content="**Malformed poll options.** Check your quotes.",
-                    mention_author=False,
-                )
-                return
-            else:
-                optionlines = f"{optionlines}\n`#{i+1}:` {l}"
+            optionlines = f"{optionlines}\n`#{i+1}:` {l}"
         poll = await ctx.reply(
             content=f"**{poll_title}**{optionlines}", mention_author=False
         )
