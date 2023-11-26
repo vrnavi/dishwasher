@@ -48,7 +48,7 @@ class Reply(Cog):
             if profile["replypref"] != "pleasereplyping":
                 return
             await message.add_reaction("<:pleasereplyping:1171017026274340904>")
-            return await message.reply(content=reference_author.mention)
+            return await message.reply(content=reference_author.mention, delete_after=10)
 
         if reference_author in message.mentions:
             profile = fill_profile(reference_author.id)
