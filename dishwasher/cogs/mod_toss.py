@@ -539,8 +539,7 @@ class ModToss(Cog):
                 gauth = GoogleAuth()
                 gauth.credentials = credentials
                 drive = GoogleDrive(gauth)
-                folder = get_config(ctx.guild.id, "archive", "drivefolder")
-
+                folder = get_config(ctx.guild.id, "toss", "drivefolder")
                 f = drive.CreateFile(
                     {
                         "parents": [{"kind": "drive#fileLink", "id": folder}],
