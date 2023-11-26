@@ -117,7 +117,7 @@ class ModRaidmode(Cog):
         await self.bot.wait_until_ready()
         if not get_config(member.guild.id, "staff", "staffchannel"):
             return
-        raidmode = get_guildfile(ctx.guild.id, "raidmode")
+        raidmode = get_guildfile(member.guild.id, "raidmode")
         if "setting" not in raidmode:
             return
 
