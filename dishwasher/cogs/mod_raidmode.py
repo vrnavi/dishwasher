@@ -138,7 +138,7 @@ class ModRaidmode(Cog):
             ).send(embed=embed)
 
             def check(m):
-                return m.author.id == member.id and m.guild.id == member.guild
+                return m.author.id == member.id and m.guild.id == member.guild.id
 
             try:
                 msg = await self.bot.wait_for("message", timeout=7200, check=check)
