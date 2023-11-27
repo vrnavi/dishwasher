@@ -29,7 +29,7 @@ class Surveyr(Cog):
     def enabled(self, gid):
         if (
             not get_config(gid, "surveyr", "surveychannel")
-            or not get_config(gid, "surveyr", "startingcase")
+            or type(get_config(gid, "surveyr", "startingcase")) != int
             or not get_config(gid, "surveyr", "loggingtypes")
         ):
             return False
