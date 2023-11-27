@@ -18,6 +18,7 @@ model_config = {
         "staffrole": "roleid",
         "exstaffrole": "roleid",
         "botrole": "roleid",
+        "raidrole": "roleid",
         "staffchannel": "channelid",
         "rulesurl": str,
         "appealurl": str,
