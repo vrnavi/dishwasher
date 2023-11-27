@@ -107,23 +107,10 @@ class Reply(Cog):
                     self.violations[message.guild.id][message.author.id] = 0
                     return
 
-                try:
-                    await message.add_reaction(
-                        counts[self.violations[message.guild.id][message.author.id]]
-                    )
-                    await message.add_reaction("🛑")
-                except discord.errors.Forbidden:
-                    await message.reply(
-                        content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
-                        mention_author=True,
-                    )
-                    return await message.author.timeout(datetime.timedelta(minutes=10))
-                except discord.errors.NotFound:
-                    return await message.reply(
-                        content=f"Immediately deleting your message won't hide you from your sin, {message.author.mention}.\n"
-                        + f"You now have `{self.violations[message.guild.id][message.author.id]}` violation(s).",
-                        mention_author=True,
-                    )
+                await message.add_reaction(
+                    counts[self.violations[message.guild.id][message.author.id]]
+                )
+                await message.add_reaction("🛑")
 
                 def check(r, u):
                     return (
@@ -140,34 +127,50 @@ class Reply(Cog):
                     return
                 else:
                     self.violations[message.guild.id][message.author.id] -= 1
-                    try:
-                        await message.clear_reaction("🗞️")
-                        await message.clear_reaction(
-                            counts[
-                                self.violations[message.guild.id][message.author.id] + 1
-                            ]
-                        )
-                        await message.clear_reaction("🛑")
-                        await message.add_reaction("👍")
-                        await message.add_reaction(
-                            counts[self.violations[message.guild.id][message.author.id]]
-                        )
-                        await asyncio.sleep(5)
-                        await message.clear_reaction("👍")
-                        await message.clear_reaction(
-                            counts[self.violations[message.guild.id][message.author.id]]
-                        )
-                    except discord.errors.NotFound:
-                        return await message.reply(
-                            content=f"Come on, I'm trying to put reactions here. Let me do so instead of immediately deleting your message, thanks?",
-                            mention_author=True,
-                        )
+                    await message.clear_reaction("🗞️")
+                    await message.clear_reaction(
+                        counts[self.violations[message.guild.id][message.author.id] + 1]
+                    )
+                    await message.clear_reaction("🛑")
+                    await message.add_reaction("👍")
+                    await message.add_reaction(
+                        counts[self.violations[message.guild.id][message.author.id]]
+                    )
+                    await asyncio.sleep(5)
+                    await message.clear_reaction("👍")
+                    await message.clear_reaction(
+                        counts[self.violations[message.guild.id][message.author.id]]
+                    )
                     return
 
             # If reply pinged at all
             if profile["replypref"] == "noreplyping":
-                await message.add_reaction("<:noreplyping:1171016972222332959>")
-                await violation()
+                try:
+                    await message.add_reaction("<:noreplyping:1171016972222332959>")
+                    await violation()
+                except discord.errors.Forbidden:
+                    if (
+                        message.channel.permissions_for(
+                            message.guild.me
+                        ).add_reactions()
+                        and message.channel.permissions_for(
+                            message.guild.me
+                        ).manage_messages()
+                    ):
+                        await message.reply(
+                            content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
+                            mention_author=True,
+                        )
+                        return await message.author.timeout(
+                            datetime.timedelta(minutes=10)
+                        )
+                    else:
+                        return
+                except discord.errors.NotFound:
+                    return await message.reply(
+                        content=f"{message.author.mention} immediately deleted their own message.\n{message.author.displayname} now has `{self.violations[message.guild.id][message.author.id]}` violation(s).",
+                        mention_author=True,
+                    )
 
             # If reply pinged in a window of time
             elif profile["replypref"] == "waitbeforereplyping":
@@ -180,10 +183,34 @@ class Reply(Cog):
                     int(message.created_at.strftime("%s")) - 30
                     <= self.timers[message.guild.id][reference_author.id]
                 ):
-                    await message.add_reaction(
-                        "<:waitbeforereplyping:1171017084222832671>"
-                    )
-                    await violation()
+                    try:
+                        await message.add_reaction(
+                            "<:waitbeforereplyping:1171017084222832671>"
+                        )
+                        await violation()
+                    except discord.errors.Forbidden:
+                        if (
+                            message.channel.permissions_for(
+                                message.guild.me
+                            ).add_reactions()
+                            and message.channel.permissions_for(
+                                message.guild.me
+                            ).manage_messages()
+                        ):
+                            await message.reply(
+                                content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
+                                mention_author=True,
+                            )
+                            return await message.author.timeout(
+                                datetime.timedelta(minutes=10)
+                            )
+                        else:
+                            return
+                    except discord.errors.NotFound:
+                        return await message.reply(
+                            content=f"{message.author.mention} immediately deleted their own message.\n{message.author.displayname} now has `{self.violations[message.guild.id][message.author.id]}` violation(s).",
+                            mention_author=True,
+                        )
                 return
 
     @commands.guild_only()
