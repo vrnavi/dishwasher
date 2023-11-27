@@ -209,9 +209,6 @@ class Reply(Cog):
         profile = fill_profile(ctx.author.id)
         embed = stock_embed(self.bot)
         embed.title = "🏓 Your reply preference..."
-        embed.description = (
-            f"Use `{ctx.prefix}replyconfig [setting]` to change your preference."
-        )
         embed.color = discord.Color.red()
         author_embed(embed, ctx.author)
         allowed_mentions = discord.AllowedMentions(replied_user=False)
