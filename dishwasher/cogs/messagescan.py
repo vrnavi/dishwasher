@@ -290,6 +290,8 @@ class Messagescan(Cog):
                 ):
                     embed.set_image(url=rcvmessage.attachments[0].url)
                     if len(rcvmessage.attachments) > 1:
+                        if not embed.description:
+                            embed.description = ""
                         embed.description += f"\n\n🖼️ __Original post has `{len(rcvmessage.attachments)}` images.__"
                 elif rcvmessage.embeds and rcvmessage.embeds[0].image:
                     embed.set_image(url=rcvmessage.embeds[0].image.url)
