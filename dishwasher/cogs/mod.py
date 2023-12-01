@@ -836,34 +836,34 @@ class Mod(Cog):
         async with channel.typing():
             await asyncio.sleep(duration)
 
-    @commands.guild_only()
-    @commands.check(check_if_staff)
-    @commands.command(aliases=["setplaying", "setgame"])
-    async def playing(self, ctx, *, game: str = ""):
-        """[S] Sets the bot's currently played game name.
+    # @commands.guild_only()
+    # @commands.check(check_if_staff)
+    # @commands.command(aliases=["setplaying", "setgame"])
+    # async def playing(self, ctx, *, game: str = ""):
+    #     """[S] Sets the bot's currently played game name.
 
-        Just send pws playing to wipe the playing state."""
-        if game:
-            await self.bot.change_presence(activity=discord.Game(name=game))
-        else:
-            await self.bot.change_presence(activity=None)
+    #     Just send pws playing to wipe the playing state."""
+    #     if game:
+    #         await self.bot.change_presence(activity=discord.Game(name=game))
+    #     else:
+    #         await self.bot.change_presence(activity=None)
 
-        await ctx.send("Successfully set game.")
+    #     await ctx.send("Successfully set game.")
 
-    @commands.guild_only()
-    @commands.check(check_if_staff)
-    @commands.command(aliases=["setbotnick", "botnick", "robotnick"])
-    async def botnickname(self, ctx, *, nick: str = ""):
-        """[S] Sets the bot's nickname.
+    # @commands.guild_only()
+    # @commands.check(check_if_staff)
+    # @commands.command(aliases=["setbotnick", "botnick", "robotnick"])
+    # async def botnickname(self, ctx, *, nick: str = ""):
+    #     """[S] Sets the bot's nickname.
 
-        Just send pws botnickname to wipe the nickname."""
+    #    Just send pws botnickname to wipe the nickname."""
 
-        if nick:
-            await ctx.guild.me.edit(nick=nick, reason=str(ctx.author))
-        else:
-            await ctx.guild.me.edit(nick=None, reason=str(ctx.author))
+    #     if nick:
+    #         await ctx.guild.me.edit(nick=nick, reason=str(ctx.author))
+    #     else:
+    #         await ctx.guild.me.edit(nick=None, reason=str(ctx.author))
 
-        await ctx.send("Successfully set bot nickname.")
+    #     await ctx.send("Successfully set bot nickname.")
 
 
 async def setup(bot):
