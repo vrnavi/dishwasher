@@ -6,9 +6,7 @@ import asyncio
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 from helpers.checks import check_if_staff, check_if_bot_manager
-from helpers.datafiles import get_guildfile
 from helpers.embeds import stock_embed
-from helpers.datafiles import get_guildfile, set_guildfile
 
 
 class Experiments(Cog):
@@ -21,7 +19,7 @@ class Experiments(Cog):
 
     @commands.command()
     async def fahstats(self, ctx, teamid: int = 1065045):
-        stats = self.bot.aiojson(f"https://api.foldingathome.org/team/{teamid}")
+        stats = await self.bot.aiojson(f"https://api.foldingathome.org/team/{teamid}")
         embed = stock_embed(self.bot)
         embed.set_author(
             name="Folding@Home",
