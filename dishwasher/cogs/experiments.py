@@ -22,7 +22,7 @@ class Experiments(Cog):
     @commands.command()
     async def fahstats(self, ctx, teamid: int = 1065045):
         stats = self.bot.aiojson(f"https://api.foldingathome.org/team/{teamid}")
-        embed = stock_embed()
+        embed = stock_embed(self.bot)
         embed.set_author(
             name="Folding@Home",
             icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/FAH_Logo.svg/1894px-FAH_Logo.svg.png",
