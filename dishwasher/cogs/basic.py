@@ -238,9 +238,11 @@ class Basic(Cog):
         await ctx.send(content=target.display_avatar.url)
 
     @avy.command(name="server")
-    async def _server(self, ctx):
+    async def _server(self, ctx, target: discord.Guild = None):
         """[U] Gets a server's avy."""
-        return await ctx.send(content=ctx.guild.icon.url)
+        if target is None:
+            target = ctx.guild
+        return await ctx.send(content=target.icon.url)
 
     @commands.command(aliases=["bigtimerush"])
     async def btr(self, ctx):
