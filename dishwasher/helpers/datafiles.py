@@ -213,12 +213,10 @@ def new_survey(sid, uid, mid, iid, reason, event):
 def edit_survey(sid, cid, iid, reason, event):
     surveys = get_guildfile(sid, "surveys")
 
-    sv_data = {
-        "type": event,
-        "reason": reason,
-        "issuer_id": iid,
-    }
-    surveys[str(cid)] = sv_data
+    surveys[str(cid)]["type"] = event
+    surveys[str(cid)]["reason"] = reason
+    surveys[str(cid)]["issuer_id"] = iid
+
     set_guildfile(sid, "surveys", json.dumps(surveys))
     return cid
 
