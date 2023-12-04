@@ -165,6 +165,11 @@ class Basic(Cog):
         await ctx.send(f"I am incapable of hugs, but... \*hugs*")
 
     @commands.command()
+    async def choose(self, ctx, *options):
+        """[U] Chooses something for you."""
+        return await ctx.send(f"You should `{random.choice(options)}`!")
+        
+    @commands.command()
     async def roll(self, ctx, dice=None):
         """[U] Rolls the dice!"""
         if dice:
