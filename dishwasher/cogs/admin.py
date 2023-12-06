@@ -14,7 +14,7 @@ import os
 from helpers.embeds import stock_embed
 from helpers.checks import check_if_bot_manager
 from helpers.sv_config import get_config
-from helpers.datafiles import get_botfile, set_botfile
+from helpers.datafiles import get_botfile, set_botfile, get_guildfile
 from helpers.placeholders import death_messages
 
 
