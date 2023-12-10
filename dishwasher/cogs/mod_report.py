@@ -199,9 +199,7 @@ class ModReport(Cog):
         for g in self.bot.guilds:
             reportlog = get_guildfile(g.id, "reportlog")
             for instance, user in get_guildfile(g.id, "reportlog").items():
-                if int(datetime.datetime.now().timestamp()) - 259200 <= int(
-                    instance
-                ):
+                if int(datetime.datetime.now().timestamp()) - 259200 <= int(instance):
                     del reportlog[instance]
         set_guildfile(g.id, "reportlog", json.dumps(reportlog))
 

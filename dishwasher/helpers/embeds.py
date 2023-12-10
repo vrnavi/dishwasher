@@ -88,17 +88,22 @@ def stock_embed(bot):
     embed.set_footer(text=bot.user.name, icon_url=bot.user.display_avatar)
     return embed
 
+
 async def sympage(bot, ctx, embeds, symbols):
     index = 0
-    
+
     embeds[index].color = discord.Color.red()
     message = await ctx.reply(embed=embeds[index], mention_author=False)
     allowed_mentions = discord.AllowedMentions(replied_user=False)
     for symbol in symbols:
         await message.add_reaction(symbol)
-    
+
     def reactioncheck(r, u):
-        return u.id == ctx.author.id and str(r.emoji) in symbols and r.message.id == message.id
+        return (
+            u.id == ctx.author.id
+            and str(r.emoji) in symbols
+            and r.message.id == message.id
+        )
 
     async def close():
         for symbol in symbols:
@@ -112,7 +117,8 @@ async def sympage(bot, ctx, embeds, symbols):
     while True:
         try:
             reaction, user = await bot.wait_for(
-                "reaction_add", timeout=30.0, check=reactioncheck)
+                "reaction_add", timeout=30.0, check=reactioncheck
+            )
         except asyncio.TimeoutError:
             return await close()
         else:

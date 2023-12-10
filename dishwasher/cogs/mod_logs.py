@@ -72,9 +72,7 @@ class ModLogs(Cog):
             for event in events:
                 for instance in userlog[uid][event]:
                     timestamps.append(instance["timestamp"])
-            days = dayrange(
-                timestamps
-            )
+            days = dayrange(timestamps)
             embed.add_field(
                 name="🗃️ Total",
                 value=f"`{len(timestamps)}` in `{days}` day"

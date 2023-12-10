@@ -89,10 +89,10 @@ class Cotd(Cog):
             self.voteskip[ctx.guild.id] = []
 
         if ctx.author.id in self.voteskip[ctx.guild.id]:
-            timestamp = (
-                int(datetime.datetime.now()
+            timestamp = int(
+                datetime.datetime.now()
                 .replace(hour=24 - len(self.voteskip[ctx.guild.id]), minute=0, second=0)
-                .timestamp())
+                .timestamp()
             )
             return await ctx.reply(
                 content=f"You have already voted to skip this CoTD.\nRerolling will occur `{len(self.voteskip[ctx.guild.id])}` hours earlier on <t:{timestamp}:t>, or <t:{timestamp}:R>.",
@@ -110,10 +110,10 @@ class Cotd(Cog):
                 mention_author=False,
             )
         else:
-            timestamp = (
-                int(datetime.datetime.now()
+            timestamp = int(
+                datetime.datetime.now()
                 .replace(hour=24 - len(self.voteskip[ctx.guild.id]), minute=0, second=0)
-                .timestamp())
+                .timestamp()
             )
             await ctx.reply(
                 content=f"Your vote to skip has been recorded.\nRerolling will occur `{len(self.voteskip[ctx.guild.id])}` hours earlier on <t:{timestamp}:t>, or <t:{timestamp}:R>.",
