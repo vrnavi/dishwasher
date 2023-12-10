@@ -43,7 +43,7 @@ class ModLogs(Cog):
         def dayrange(timestamps):
             if not timestamps:
                 return 0
-            return round((sorted(timestamps)[-1]) - sorted(timestamps)[0]/ 86400)
+            return round((sorted(timestamps)[-1]) - sorted(timestamps)[0] / 86400)
 
         # Summary
         embed = stock_embed(self.bot)
