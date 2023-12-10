@@ -261,8 +261,8 @@ class ModLogs(Cog):
     async def delevent(self, ctx, target: discord.User, eventtype, index: int):
         """[S] Removes a specific event from a user."""
         types = ["notes", "tosses", "warns", "kicks", "bans"]
-        eventtype = event.lower()
-        if event not in types:
+        eventtype = eventtype.lower()
+        if eventtype not in types:
             return await ctx.reply(
                 content=f"{eventtype} is not a valid event type.", mention_author=False
             )
