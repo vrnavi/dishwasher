@@ -39,7 +39,7 @@ def author_embed(embed, obj, thumbnail=False):
         if thumbnail:
             embed.set_thumbnail(url=obj.display_avatar.url)
 
-    elif type(obj).__name__ == "Member":
+    elif type(obj).__name__ == "Member" or type(obj).__name__ == "User":
         embed.set_author(
             name=obj.global_name + f" [{obj}]" if obj.global_name else str(obj),
             icon_url=obj.display_avatar.url,
