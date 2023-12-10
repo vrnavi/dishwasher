@@ -158,12 +158,11 @@ def fill_profile(userid):
 def add_userlog(sid, uid, issuer, reason, event_type):
     userlogs, uid = fill_userlog(sid, uid)
 
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     log_data = {
         "issuer_id": issuer.id,
         "issuer_name": f"{issuer}",
         "reason": reason,
-        "timestamp": timestamp,
+        "timestamp": int(datetime.datetime.now().timestamp()),
     }
     if event_type not in userlogs[uid]:
         userlogs[uid][event_type] = []

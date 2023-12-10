@@ -161,7 +161,7 @@ class ModWatch(Cog):
 
                 msgembed = stock_embed(self.bot)
                 msgembed.title = "🔍 User on watch..."
-                msgembed.description = f"**ID:** `{member.id}`\n**Thread:** {trackerthread.mention}\n**Last Update:** <t:{datetime.datetime.now().strftime('%s')}:f>"
+                msgembed.description = f"**ID:** `{member.id}`\n**Thread:** {trackerthread.mention}\n**Last Update:** <t:{int(datetime.datetime.now().timestamp())}:f>"
                 msgembed.set_author(
                     name=f"{self.bot.escape_message(member)}",
                     icon_url=member.display_avatar.url,
@@ -200,7 +200,7 @@ class ModWatch(Cog):
 
                 msgembed = stock_embed(self.bot)
                 msgembed.title = "🔍 User on watch..."
-                msgembed.description = f"**ID:** `{member.id}`\n**Thread:** {trackerthread.mention}\n**Last Update:** <t:{datetime.datetime.now().strftime('%s')}:f>"
+                msgembed.description = f"**ID:** `{member.id}`\n**Thread:** {trackerthread.mention}\n**Last Update:** <t:{int(datetime.datetime.now().timestamp())}:f>"
                 msgembed.set_author(
                     name=f"{self.bot.escape_message(member)}",
                     icon_url=member.display_avatar.url,

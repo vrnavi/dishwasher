@@ -157,7 +157,7 @@ class ModRaidmode(Cog):
                 embed.set_field_at(
                     index=2,
                     name="🔍 First message:",
-                    value=f"[Sent]({msg.jump_url}) in {msg.channel.mention} on <t:{msg.created_at.astimezone().strftime('%s')}:f> (<t:{msg.created_at.astimezone().strftime('%s')}:R>):\n```{msg.clean_content}```",
+                    value=f"[Sent]({msg.jump_url}) in {msg.channel.mention} on <t:{int(msg.created_at.astimezone().timestamp())}:f> (<t:{int(msg.created_at.astimezone().timestamp())}:R>):\n```{msg.clean_content}```",
                     inline=False,
                 )
             await callout.edit(embed=embed)

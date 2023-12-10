@@ -133,7 +133,7 @@ class Basic(Cog):
                     for idx, answer in enumerate(answers)
                 ]
             )
-            posttimer = f"\n\n⏱️ The timer runs out <t:{int(datetime.now().strftime('%s')) + 62}:R>!"
+            posttimer = f"\n\n⏱️ The timer runs out <t:{int(datetime.now().timestamp())) + 62}:R>!"
             post = postpreamble + postanswers + posttimer
             msg = await ctx.reply(content=post, mention_author=False)
 
@@ -151,7 +151,7 @@ class Basic(Cog):
                 ]
             )
             posttimer = (
-                f"\n\n⏱️ The timer ran out <t:{datetime.now().strftime('%s')}:R>!"
+                f"\n\n⏱️ The timer ran out <t:{int(datetime.now().timestamp())}:R>!"
             )
             post = postpreamble + postanswers + posttimer
             allowed_mentions = discord.AllowedMentions(replied_user=False)
@@ -168,7 +168,7 @@ class Basic(Cog):
     async def choose(self, ctx, *options):
         """[U] Chooses something for you."""
         return await ctx.send(f"You should `{random.choice(options)}`!")
-        
+
     @commands.command()
     async def roll(self, ctx, dice=None):
         """[U] Rolls the dice!"""
@@ -537,13 +537,13 @@ class Basic(Cog):
         embed.set_thumbnail(url=f"{target.display_avatar.url}")
         embed.add_field(
             name="⏰ Account created:",
-            value=f"<t:{target.created_at.astimezone().strftime('%s')}:f>\n<t:{target.created_at.astimezone().strftime('%s')}:R>",
+            value=f"<t:{int(target.created_at.astimezone().timestamp())}:f>\n<t:{int(target.created_at.astimezone().timestamp())}:R>",
             inline=True,
         )
         if ctx.guild.get_member(target.id):
             embed.add_field(
                 name="⏱️ Account joined:",
-                value=f"<t:{target.joined_at.astimezone().strftime('%s')}:f>\n<t:{target.joined_at.astimezone().strftime('%s')}:R>",
+                value=f"<t:{int(target.joined_at.astimezone().timestamp())}:f>\n<t:{int(target.joined_at.astimezone().timestamp())}:R>",
                 inline=True,
             )
             embed.add_field(
@@ -599,7 +599,7 @@ class Basic(Cog):
         embed.set_thumbnail(url=(role.icon.url if role.icon else None))
         embed.add_field(
             name="⏰ Role created:",
-            value=f"<t:{role.created_at.astimezone().strftime('%s')}:f>\n<t:{role.created_at.astimezone().strftime('%s')}:R>",
+            value=f"<t:{int(role.created_at.astimezone().timestamp())}:f>\n<t:{int(role.created_at.astimezone().timestamp())}:R>",
             inline=True,
         )
         embed.add_field(
@@ -632,7 +632,7 @@ class Basic(Cog):
         embed.set_thumbnail(url=(server.icon.url if server.icon else None))
         embed.add_field(
             name="⏰ Server created:",
-            value=f"<t:{server.created_at.astimezone().strftime('%s')}:f>\n<t:{server.created_at.astimezone().strftime('%s')}:R>",
+            value=f"<t:{int(server.created_at.astimezone().timestamp())}:f>\n<t:{int(server.created_at.astimezone().timestamp())}:R>",
             inline=True,
         )
         embed.add_field(

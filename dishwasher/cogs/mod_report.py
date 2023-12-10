@@ -178,7 +178,7 @@ class ModReport(Cog):
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         reportlog = get_guildfile(guild.id, "reportlog")
-        reportlog[datetime.datetime.now().strftime("%s")] = ctx.author.id
+        reportlog[int(datetime.datetime.now().timestamp())] = ctx.author.id
         set_guildfile(guild.id, "reportlog", json.dumps(reportlog))
         await channel.send(content=role.mention if ping else "", embed=embed)
         await message.delete()
@@ -199,7 +199,7 @@ class ModReport(Cog):
         for g in self.bot.guilds:
             reportlog = get_guildfile(g.id, "reportlog")
             for instance, user in get_guildfile(g.id, "reportlog").items():
-                if int(datetime.datetime.now().strftime("%s")) - 259200 <= int(
+                if int(datetime.datetime.now().timestamp()) - 259200 <= int(
                     instance
                 ):
                     del reportlog[instance]

@@ -54,9 +54,7 @@ class Logs2(Cog):
                 embed.color = discord.Color.red()
                 embed.title = "⚠️ This user has warnings!"
                 for idx, warn in enumerate(warns[str(member.id)]["warns"]):
-                    timestamp = datetime.datetime.strptime(
-                        warn["timestamp"], "%Y-%m-%d %H:%M:%S"
-                    ).strftime("%s")
+                    timestamp = warn["timestamp"]
                     embed.add_field(
                         name=f"Warn {idx + 1}: <t:{timestamp}:f> (<t:{timestamp}:R>)",
                         value=f"__Issuer:__ <@{warn['issuer_id']}> ({warn['issuer_id']})\n"
@@ -90,7 +88,7 @@ class Logs2(Cog):
         author_embed(embed, after.author)
 
         beforename = (
-            f"❌ Before on <t:{before.created_at.astimezone().strftime('%s')}:f>"
+            f"❌ Before on <t:{int(before.created_at.astimezone().timestamp())}:f>"
         )
         if len(before.clean_content) > 1024:
             slice_embed(embed, before.clean_content, beforename)
@@ -100,7 +98,7 @@ class Logs2(Cog):
                 value=f">>> {before.clean_content}",
                 inline=False,
             )
-        aftername = f"⭕ After on <t:{after.edited_at.astimezone().strftime('%s')}:f>"
+        aftername = f"⭕ After on <t:{int(after.edited_at.astimezone().timestamp())}:f>"
         if len(after.clean_content) > 1024:
             slice_embed(embed, after.clean_content, aftername)
         else:
@@ -130,7 +128,7 @@ class Logs2(Cog):
         embed.title = "🗑️ Message Delete"
         embed.description = f"{message.author.mention} ({message.author.id}) in {message.channel.mention}"
         author_embed(embed, message.author)
-        name = f"🧾 Sent on <t:{message.created_at.astimezone().strftime('%s')}:f>:"
+        name = f"🧾 Sent on <t:{int(message.created_at.astimezone().timestamp())}:f>:"
         if len(message.clean_content) > 1024:
             slice_embed(embed, message.clean_content, name)
         else:

@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import datetime
 
@@ -69,7 +70,7 @@ def mod_embed(embed, target, staff, reason=None):
 def createdat_embed(embed, member):
     embed.add_field(
         name="⏰ Account created:",
-        value=f"<t:{member.created_at.astimezone().strftime('%s')}:f>\n<t:{member.created_at.astimezone().strftime('%s')}:R>",
+        value=f"<t:{int(member.created_at.astimezone().timestamp())}:f>\n<t:{int(member.created_at.astimezone().timestamp())}:R>",
         inline=True,
     )
 
@@ -77,7 +78,7 @@ def createdat_embed(embed, member):
 def joinedat_embed(embed, member):
     embed.add_field(
         name="⏱️ Account joined:",
-        value=f"<t:{member.joined_at.astimezone().strftime('%s')}:f>\n<t:{member.joined_at.astimezone().strftime('%s')}:R>",
+        value=f"<t:{int(member.joined_at.astimezone().timestamp())}:f>\n<t:{int(member.joined_at.astimezone().timestamp())}:R>",
         inline=True,
     )
 
@@ -86,3 +87,39 @@ def stock_embed(bot):
     embed = discord.Embed(timestamp=datetime.datetime.now())
     embed.set_footer(text=bot.user.name, icon_url=bot.user.display_avatar)
     return embed
+
+async def sympage(bot, ctx, embeds, symbols):
+    index = 0
+    
+    embeds[index].color = discord.Color.red()
+    message = await ctx.reply(embed=embeds[index], mention_author=False)
+    allowed_mentions = discord.AllowedMentions(replied_user=False)
+    for symbol in symbols:
+        await message.add_reaction(symbol)
+    
+    def reactioncheck(r, u):
+        return u.id == ctx.author.id and str(r.emoji) in symbols and r.message.id == message.id
+
+    async def close():
+        for symbol in symbols:
+            await message.remove_reaction(symbol, ctx.bot.user)
+        embeds[index].color = discord.Color.default()
+        await message.edit(embed=embeds[index], allowed_mentions=allowed_mentions)
+
+    embeds[index].color = discord.Color.green()
+    await message.edit(embed=embeds[index], allowed_mentions=allowed_mentions)
+
+    while True:
+        try:
+            reaction, user = await bot.wait_for(
+                "reaction_add", timeout=30.0, check=reactioncheck)
+        except asyncio.TimeoutError:
+            return await close()
+        else:
+            try:
+                await message.remove_reaction(reaction, ctx.author)
+            except:
+                pass
+            index = symbols.index(reaction.emoji)
+            embeds[index].color = discord.Color.green()
+            await message.edit(embed=embeds[index], allowed_mentions=allowed_mentions)

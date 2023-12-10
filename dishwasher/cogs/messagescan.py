@@ -124,7 +124,7 @@ class Messagescan(Cog):
                     ]
                 )
                 embed.add_field(
-                    name=f"❌ Before on <t:{lastbeforemsg.created_at.astimezone().strftime('%s')}:f>",
+                    name=f"❌ Before on <t:{int(lastbeforemsg.created_at.astimezone().timestamp())}:f>",
                     value=f"**Message was too long to post!** Split into fragments below.",
                     inline=False,
                 )
@@ -138,7 +138,7 @@ class Messagescan(Cog):
                     ctr = ctr + 1
             else:
                 embed.add_field(
-                    name=f"❌ Before on <t:{lastbeforemsg.created_at.astimezone().strftime('%s')}:f>",
+                    name=f"❌ Before on <t:{int(lastbeforemsg.created_at.astimezone().timestamp())}:f>",
                     value=f">>> {lastbeforemsg.clean_content}",
                     inline=False,
                 )
@@ -150,7 +150,7 @@ class Messagescan(Cog):
                     ]
                 )
                 embed.add_field(
-                    name=f"⭕ After on <t:{lastaftermsg.edited_at.astimezone().strftime('%s')}:f>",
+                    name=f"⭕ After on <t:{int(lastaftermsg.edited_at.astimezone().timestamp())}:f>",
                     value=f"**Message was too long to post!** Split into fragments below.",
                     inline=False,
                 )
@@ -164,7 +164,7 @@ class Messagescan(Cog):
                     ctr = ctr + 1
             else:
                 embed.add_field(
-                    name=f"⭕ After on <t:{lastaftermsg.edited_at.astimezone().strftime('%s')}:f>",
+                    name=f"⭕ After on <t:{int(lastaftermsg.edited_at.astimezone().timestamp())}:f>",
                     value=f">>> {lastaftermsg.clean_content}",
                     inline=False,
                 )

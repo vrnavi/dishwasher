@@ -19,6 +19,7 @@ unidecode = "*"
 PyYAML = "*"
 googletrans = {git = "https://github.com/c-goosen/py-googletrans.git"}
 pluralkit = "*"
+yt-dlp = "*"
 
 [dev-packages]
 

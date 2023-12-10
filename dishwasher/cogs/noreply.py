@@ -177,10 +177,10 @@ class Reply(Cog):
                 if message.guild.id not in self.timers:
                     self.timers[message.guild.id] = {}
                 self.timers[message.guild.id][reference_author.id] = int(
-                    reference_message.created_at.strftime("%s")
+                    reference_message.created_at.timestamp()
                 )
                 if (
-                    int(message.created_at.strftime("%s")) - 30
+                    int(message.created_at.timestamp()) - 30
                     <= self.timers[message.guild.id][reference_author.id]
                 ):
                     try:
