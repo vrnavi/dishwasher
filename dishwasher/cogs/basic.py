@@ -133,7 +133,7 @@ class Basic(Cog):
                     for idx, answer in enumerate(answers)
                 ]
             )
-            posttimer = f"\n\n⏱️ The timer runs out <t:{int(datetime.now().timestamp())) + 62}:R>!"
+            posttimer = f"\n\n⏱️ The timer runs out <t:{int(datetime.now().timestamp()) + 62}:R>!"
             post = postpreamble + postanswers + posttimer
             msg = await ctx.reply(content=post, mention_author=False)
 
