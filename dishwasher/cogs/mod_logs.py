@@ -275,7 +275,7 @@ class ModLogs(Cog):
             return await ctx.reply(
                 content=f"{target.mention} has no {event}!", mention_author=False
             )
-        if not 1 <= index <= len(userlog[str(target.id)[eventtype]]):
+        if not 1 <= index <= len(userlog[str(target.id)][eventtype]):
             return await ctx.reply(
                 content=f"Your index is out of bounds!", mention_author=False
             )
