@@ -133,7 +133,7 @@ class ModLogs(Cog):
 
         # Individual
         embed.title = (
-            ["📝", "🚷", "⚠️", "👢", "⛔"][index] + " Recorded " + events[index] + "..."
+            ["📝", "🚷", "⚠️", "👢", "⛔"][index] + " Recorded " + event + "..."
         )
         if not userlog[uid][event]:
             embed.description = "> This section is empty!"
