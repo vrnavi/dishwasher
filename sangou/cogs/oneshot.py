@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import ismod
 from helpers.sv_config import get_config
+from helpers.embeds import stock_embed
 
 
 class OneShot(Cog):
@@ -21,19 +22,34 @@ class OneShot(Cog):
     @commands.command()
     async def staff(self, ctx):
         """[U] Shows currently active staff."""
-        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staffrole"))
-        embed = discord.Embed(
-            color=staff_role.color,
-            title="🛠️ Staff List",
-            description=f"Voting requirement is `{int(len(staff_role.members)/2//1+1)}`.",
-            timestamp=datetime.datetime.now(),
-        )
-        embed.set_footer(text="Dishwasher")
+        adminrole = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "adminrole"))
+        modrole = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "modrole"))
+
+        if not adminrole and not modrole:
+            return await ctx.reply(
+                content="Neither an `adminrole` or a `modrole` are configured...",
+                mention_author=False,
+            )
+        elif not adminrole:
+            members = modrole.members
+            color = modrole.color
+        elif not modrole:
+            members = adminrole.members
+            color = adminrole.color
+        else:
+            members = list(dict.fromkeys(adminrole.members + modrole.members))
+            color = modrole.color
+
+        embed = stock_embed(self.bot)
+        embed.color = color
+        embed.title = "🛠️ Staff List"
+        embed.description = f"Voting requirement is `{int(len(members)/2//1+1)}`."
+
         online = []
         away = []
         dnd = []
         offline = []
-        for m in staff_role.members:
+        for m in members:
             u = f"{m.mention}"
             if m.is_on_mobile():
                 u = f"{m.mention} 📱"
@@ -47,25 +63,25 @@ class OneShot(Cog):
                 away.append(u)
         if online:
             embed.add_field(
-                name=f"🟢 Online [`{len(online)}`/`{len(staff_role.members)}`]",
+                name=f"🟢 Online [`{len(online)}`/`{len(members)}`]",
                 value=f"{','.join(online)}",
                 inline=False,
             )
         if away:
             embed.add_field(
-                name=f"🟡 Idle [`{len(away)}`/`{len(staff_role.members)}`]",
+                name=f"🟡 Idle [`{len(away)}`/`{len(members)}`]",
                 value=f"{','.join(away)}",
                 inline=False,
             )
         if dnd:
             embed.add_field(
-                name=f"🔴 Do Not Disturb [`{len(dnd)}`/`{len(staff_role.members)}`]",
+                name=f"🔴 Do Not Disturb [`{len(dnd)}`/`{len(members)}`]",
                 value=f"{','.join(dnd)}",
                 inline=False,
             )
         if offline:
             embed.add_field(
-                name=f"⚫ Offline [`{len(offline)}`/`{len(staff_role.members)}`]",
+                name=f"⚫ Offline [`{len(offline)}`/`{len(members)}`]",
                 value=f"{','.join(offline)}",
                 inline=False,
             )
@@ -76,7 +92,7 @@ class OneShot(Cog):
     async def pingmod(self, ctx):
         """[U] Pings mods, only use when there's an emergency."""
         await ctx.reply(
-            f"<@&{get_config(ctx.guild.id, 'staff', 'staffrole')}>, {ctx.author.display_name} is requesting assistance.",
+            f"<@&{get_config(ctx.guild.id, 'staff', 'modrole') if get_config(ctx.guild.id, 'staff', 'modrole') else get_config(ctx.guild.id, 'staff', 'adminrole')}>, {ctx.author.display_name} is requesting assistance.",
             mention_author=False,
         )
 
@@ -86,7 +102,11 @@ class OneShot(Cog):
         """[S] Toggles your Staff role.
 
         If you have Staff, it will replace it with Ex-Staff, and vice versa."""
-        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staffrole"))
+        staff_role = ctx.guild.get_role(
+            get_config(ctx.guild.id, "staff", "modrole")
+            if get_config(ctx.guild.id, "staff", "modrole")
+            else get_config(ctx.guild.id, "staff", "adminrole")
+        )
         exstaff_role = ctx.guild.get_role(
             get_config(ctx.guild.id, "staff", "exstaffrole")
         )
