@@ -120,8 +120,14 @@ class ModReport(Cog):
             allowed_mentions=discord.AllowedMentions(replied_user=False),
         )
         ping = False
-        if get_config(guild.id, "staff", "staffrole"):
-            role = guild.get_role(get_config(guild.id, "staff", "staffrole"))
+        if get_config(guild.id, "staff", "adminrole") or get_config(
+            guild.id, "staff", "modrole"
+        ):
+            role = guild.get_role(
+                get_config(guild.id, "staff", "modrole")
+                if get_config(guild.id, "staff", "modrole")
+                else get_config(guild.id, "staff", "adminrole")
+            )
             message = await ctx.send(
                 content="**Would you like ping the Staff?**\nPlease use this for urgent matters!"
             )

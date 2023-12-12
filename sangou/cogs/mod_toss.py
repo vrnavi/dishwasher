@@ -94,7 +94,11 @@ class ModToss(Cog):
                 return True
 
     async def new_session(self, guild):
-        staff_role = guild.get_role(get_config(guild.id, "staff", "staffrole"))
+        staff_role = guild.get_role(
+            get_config(guild.id, "staff", "modrole")
+            if get_config(guild.id, "staff", "modrole")
+            else get_config(guild.id, "staff", "adminrole")
+        )
         bot_role = guild.get_role(get_config(guild.id, "staff", "botrole"))
         for c in get_config(guild.id, "toss", "tosschannels"):
             if c not in [g.name for g in guild.channels]:
@@ -221,7 +225,11 @@ class ModToss(Cog):
 
         staff_channel = get_config(ctx.guild.id, "staff", "staffchannel")
         modlog_channel = get_config(ctx.guild.id, "logging", "modlog")
-        staff_role = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "staffrole"))
+        staff_role = ctx.guild.get_role(
+            get_config(ctx.guild.id, "staff", "modrole")
+            if get_config(guild.id, "staff", "modrole")
+            else get_config(guild.id, "staff", "admirole")
+        )
         toss_role = ctx.guild.get_role(get_config(ctx.guild.id, "toss", "tossrole"))
 
         output = ""
@@ -605,8 +613,10 @@ class ModToss(Cog):
             or message.author.bot
             or not self.enabled(message.guild.id)
             or self.is_rolebanned(message.author)
+            or message.guild.get_role(get_config(message.guild.id, "staff", "modrole"))
+            in message.author.roles
             or message.guild.get_role(
-                get_config(message.guild.id, "staff", "staffrole")
+                get_config(message.guild.id, "staff", "adminrole")
             )
             in message.author.roles
         ):
@@ -616,7 +626,9 @@ class ModToss(Cog):
             get_config(message.guild.id, "staff", "staffchannel")
         )
         staff_role = message.guild.get_role(
-            get_config(message.guild.id, "staff", "staffrole")
+            get_config(message.guild.id, "staff", "modrole")
+            if get_config(message.guild.id, "staff", "modrole")
+            else get_config(message.guild.id, "staff", "adminrole")
         )
 
         if message.author.id not in self.spamcounter:

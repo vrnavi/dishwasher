@@ -26,7 +26,13 @@ class ModLocks(Cog):
     async def unlock_for_staff(self, channel: discord.TextChannel, issuer):
         await self.set_sendmessage(
             channel,
-            get_config(channel.guild.id, "staff", "staffrole"),
+            get_config(channel.guild.id, "staff", "adminrole"),
+            True,
+            issuer,
+        )
+        await self.set_sendmessage(
+            channel,
+            get_config(channel.guild.id, "staff", "modrole"),
             True,
             issuer,
         )
@@ -49,9 +55,17 @@ class ModLocks(Cog):
         Defaults to current channel."""
         if not channel:
             channel = ctx.channel
+        adminroleid = get_config(ctx.guild.id, "staff", "adminrole")
+        modroleid = get_config(ctx.guild.id, "staff", "modrole")
+        botroleid = get_config(ctx.guild.id, "staff", "botrole")
+
+        if not adminroleid and not modroleid:
+            return await ctx.reply(
+                content="Neither an `adminrole` or a `modrole` are configured...",
+                mention_author=False,
+            )
+
         mlog = get_config(ctx.guild.id, "logging", "modlog")
-        staff_role_id = get_config(ctx.guild.id, "staff", "staffrole")
-        bot_role_id = get_config(ctx.guild.id, "staf", "botrole")
 
         # Take a snapshot of current channel state before making any changes
         if ctx.guild.id not in self.snapshots:
@@ -84,10 +98,12 @@ class ModLocks(Cog):
                     continue
                 roles.append(r.id)
 
-        if staff_role_id in roles:
-            roles.remove(staff_role_id)
-        if bot_role_id in roles:
-            roles.remove(bot_role_id)
+        if adminroleid in roles:
+            roles.remove(adminroleid)
+        if modroleid in roles:
+            roles.remove(modroleid)
+        if botroleid in roles:
+            roles.remove(botroleid)
 
         for role in roles:
             await self.set_sendmessage(channel, role, False, ctx.author)

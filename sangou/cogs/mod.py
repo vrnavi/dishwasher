@@ -22,7 +22,8 @@ class Mod(Cog):
 
     def check_if_target_is_staff(self, target):
         return any(
-            r.id == get_config(target.guild.id, "staff", "staffrole")
+            r.id == get_config(target.guild.id, "staff", "modrole")
+            or get_config(message.guild.id, "staff", "adminrole")
             for r in target.roles
         )
 
