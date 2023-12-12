@@ -58,8 +58,8 @@ class Reply(Cog):
             async def violation():
                 staff_role = (
                     get_config(message.guild.id, "staff", "modrole")
-                    if get_config(guild.id, "staff", "modrole")
-                    else get_config(guild.id, "staff", "adminrole")
+                    if get_config(message.guild.id, "staff", "modrole")
+                    else get_config(message.guild.id, "staff", "adminrole")
                 )
                 if (
                     not staff_role
