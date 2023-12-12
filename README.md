@@ -1,18 +1,18 @@
 <p align="center">
-    <a href="https://kitchen.0ccu.lt"><picture><img width="300px" src="https://github.com/vrnavi/dishwasher/blob/663ba0cadf34629f567112c77e606a90b93587db/dishwasher/assets/dishwasher.png"></picture></a>
+    <a href="https://3gou.0ccu.lt"><picture><img width="300px" src="https://github.com/vrnavi/dishwasher/blob/663ba0cadf34629f567112c77e606a90b93587db/dishwasher/assets/dishwasher.png"></picture></a>
 </p>
-<p align="center"><i>食器洗い機。 - Dishwasher.</i></p>
+<p align="center"><i>3号 - Sangou</i></p>
 
-<p align="center"><img alt="Version" src="https://img.shields.io/badge/version-0.1.0-white"><img alt="GitHub commit activity (branch)" src="https://img.shields.io/github/commit-activity/w/vrnavi/dishwasher?logo=github&color=red"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/vrnavi/dishwasher"><img alt="GitHub License" src="https://img.shields.io/github/license/vrnavi/dishwasher"></p>
+<p align="center"><img alt="Version" src="https://img.shields.io/badge/version-0.1.1-white"><img alt="GitHub commit activity (branch)" src="https://img.shields.io/github/commit-activity/w/vrnavi/dishwasher?logo=github&color=red"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/vrnavi/sangou"><img alt="GitHub License" src="https://img.shields.io/github/license/vrnavi/sangou"></p>
 
 
-Dishwasher is a fork of [robocop-ng](https://github.com/reswitched/robocop-ng) with heavy tweaks, ran on a Dishwasher. It was made for the OneShot Discord, but is free to use. 
+Sangou is a fork of [robocop-ng](https://github.com/reswitched/robocop-ng) with heavy tweaks. It was made for the OneShot Discord, but is free to use. 
 
 ---
 
 # Usage
 
-To use the publicly available Dishwasher bot, please ask in the Support Server, findable in the [Documentation](https://kitchen.0ccu.lt/).
+To use the publicly available Sangou bot, please ask in the Support Server, findable in the [Documentation](https://3gou.0ccu.lt/).
 
 To host the bot yourself, follow these simple instructions.
 
