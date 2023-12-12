@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://3gou.0ccu.lt"><picture><img width="300px" src="https://github.com/vrnavi/dishwasher/blob/e9712991eb5711918f3602b0322a97245965601f/sangou/assets/sangou.png"></picture></a>
+    <a href="https://3gou.0ccu.lt"><picture><img width="150px" src="https://github.com/vrnavi/dishwasher/blob/e9712991eb5711918f3602b0322a97245965601f/sangou/assets/sangou.png"></picture></a>
 </p>
 <p align="center"><i>3号 - Sangou</i></p>
 
