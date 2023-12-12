@@ -63,7 +63,7 @@ class Remind(Cog):
             expiry_timestamp = int(when)
         else:
             expiry_timestamp = self.bot.parse_time(when)
-        current_timestamp = datetime.now().timestamp()
+        current_timestamp = int(datetime.now().timestamp())
 
         if current_timestamp + 59 > expiry_timestamp:
             await ctx.message.reply(
