@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://3gou.0ccu.lt"><picture><img width="300px" src="https://github.com/vrnavi/dishwasher/blob/663ba0cadf34629f567112c77e606a90b93587db/dishwasher/assets/dishwasher.png"></picture></a>
+    <a href="https://3gou.0ccu.lt"><picture><img width="300px" src="https://github.com/vrnavi/dishwasher/blob/e9712991eb5711918f3602b0322a97245965601f/sangou/assets/sangou.png"></picture></a>
 </p>
 <p align="center"><i>3号 - Sangou</i></p>
 
@@ -20,7 +20,7 @@ To host the bot yourself, follow these simple instructions.
 - Install [pipenv](https://pipenv.pypa.io/en/latest/).
 - Use `pipenv install` in the root folder, where `Pipfile` is.
 - Copy `config.example.py` to `config.py`, and fill it out with your bot information.
-- Enter `pipenv shell`, `cd dishwasher`, then `python __init__.py`.
+- Enter `pipenv shell`, `cd sangou`, then `python __init__.py`.
 - Congratulations.
 
 I will not help you if you wish to use a `requirements.txt`.

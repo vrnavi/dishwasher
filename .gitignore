@@ -113,3 +113,4 @@ arbitlogs/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.fuse*
