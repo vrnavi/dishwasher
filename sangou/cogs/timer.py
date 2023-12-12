@@ -59,7 +59,7 @@ class Timer(Cog):
         await ctx.send(f"{ctx.author.mention}: Deleted!")
 
     async def do_jobs(self, ctab, jobtype, timestamp):
-        log_channel = self.bot.get_channel(config.bot_logchannel)
+        log_channel = self.bot.get_channel(config.logchannel)
         for job_name in ctab[jobtype][timestamp]:
             try:
                 job_details = ctab[jobtype][timestamp][job_name]
