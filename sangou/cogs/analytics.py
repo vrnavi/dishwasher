@@ -53,7 +53,7 @@ class Analytics(Cog):
     @stats.command()
     async def enable(self, ctx):
         """[U] Turns on analytics collection."""
-        userdata = get_botfile("dishusers")
+        userdata = get_botfile("botusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
         if ctx.author.id not in userdata["nostats"]:
@@ -61,7 +61,7 @@ class Analytics(Cog):
                 content="You already have analytics toggled on.", mention_author=False
             )
         userdata["nostats"].remove(ctx.author.id)
-        set_botfile("dishusers", json.dumps(userdata))
+        set_botfile("botusers", json.dumps(userdata))
         return await ctx.reply(
             content="**Analytics for you have been toggled on.**",
             mention_author=False,
@@ -70,7 +70,7 @@ class Analytics(Cog):
     @stats.command()
     async def disable(self, ctx):
         """[U] Turns off analytics collection and deletes analytics data."""
-        userdata = get_botfile("dishusers")
+        userdata = get_botfile("botusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
         if ctx.author.id in userdata["nostats"]:
@@ -78,7 +78,7 @@ class Analytics(Cog):
                 content="You already have analytics toggled off.", mention_author=False
             )
         userdata["nostats"].append(ctx.author.id)
-        set_botfile("dishusers", json.dumps(userdata))
+        set_botfile("botusers", json.dumps(userdata))
         useranalytics = get_userfile(ctx.author.id, "analytics")
         if not useranalytics:
             return await ctx.reply(
@@ -94,7 +94,7 @@ class Analytics(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx, error):
         await self.bot.wait_until_ready()
-        userdata = get_botfile("dishusers")
+        userdata = get_botfile("botusers")
         if (
             ctx.author.bot
             or "nostats" in userdata
@@ -124,7 +124,7 @@ class Analytics(Cog):
     @Cog.listener()
     async def on_command_completion(self, ctx):
         await self.bot.wait_until_ready()
-        userdata = get_botfile("dishusers")
+        userdata = get_botfile("botusers")
         if (
             ctx.author.bot
             or "nostats" in userdata
