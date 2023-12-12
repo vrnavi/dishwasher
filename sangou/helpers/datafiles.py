@@ -226,7 +226,7 @@ def edit_survey(sid, cid, iid, reason, event):
 def add_job(job_type, job_name, job_details, timestamp):
     timestamp = str(math.floor(timestamp))
     job_name = str(job_name)
-    ctab = get_botfile("dishtimers")
+    ctab = get_botfile("timers")
 
     if job_type not in ctab:
         ctab[job_type] = {}
@@ -235,13 +235,13 @@ def add_job(job_type, job_name, job_details, timestamp):
         ctab[job_type][timestamp] = {}
 
     ctab[job_type][timestamp][job_name] = job_details
-    set_botfile("dishtimers", json.dumps(ctab))
+    set_botfile("timers", json.dumps(ctab))
 
 
 def delete_job(timestamp, job_type, job_name):
     timestamp = str(timestamp)
     job_name = str(job_name)
-    ctab = get_botfile("dishtimers")
+    ctab = get_botfile("timers")
 
     del ctab[job_type][timestamp][job_name]
 
@@ -249,4 +249,4 @@ def delete_job(timestamp, job_type, job_name):
     if not ctab[job_type][timestamp]:
         del ctab[job_type][timestamp]
 
-    set_botfile("dishtimers", json.dumps(ctab))
+    set_botfile("timers", json.dumps(ctab))
