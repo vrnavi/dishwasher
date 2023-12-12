@@ -12,7 +12,7 @@ class Experiments(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def fahstats(self, ctx, teamid: int = 1065045):
         stats = await self.bot.aiojson(f"https://api.foldingathome.org/team/{teamid}")

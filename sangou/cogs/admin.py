@@ -28,13 +28,11 @@ class Admin(Cog):
     @commands.command(name="exit", aliases=["quit", "bye"])
     async def _exit(self, ctx):
         """[O] Shuts down (or restarts) the bot."""
-        await ctx.message.reply(
-            content=random_msg("deaths", ctx), mention_author=False
-        )
+        await ctx.message.reply(content=random_msg("deaths", ctx), mention_author=False)
         await self.bot.close()
 
     @commands.check(ismanager)
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command(name="errors")
     async def _errors(self, ctx):
         """[O] Shows bot command errors."""
@@ -110,7 +108,7 @@ class Admin(Cog):
                     pass
 
     @commands.check(ismanager)
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def getdata(self, ctx):
         """[O] Returns data files."""
@@ -137,7 +135,7 @@ class Admin(Cog):
         await ctx.reply(content=f"Data saved.", mention_author=False)
 
     @commands.check(ismanager)
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command(aliases=["getserverdata"])
     async def getsdata(self, ctx, server: discord.Guild = None):
         """[O] Returns server data."""
@@ -160,7 +158,9 @@ class Admin(Cog):
 
     @commands.check(ismanager)
     @commands.command(aliases=["setserverdata"])
-    async def setsdata(self, ctx, attachment: discord.Attachment, server: discord.Guild = None):
+    async def setsdata(
+        self, ctx, attachment: discord.Attachment, server: discord.Guild = None
+    ):
         """[O] Replaces server data files. This is destructive behavior!"""
         if not server:
             server = ctx.guild
@@ -172,7 +172,7 @@ class Admin(Cog):
         await ctx.reply(content=f"{server.name}'s data saved.", mention_author=False)
 
     @commands.check(ismanager)
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command(aliases=["getuserdata"])
     async def getudata(self, ctx, user: discord.User = None):
         """[O] Returns user data."""
@@ -195,7 +195,9 @@ class Admin(Cog):
 
     @commands.check(ismanager)
     @commands.command(aliases=["setuserdata"])
-    async def setudata(self, ctx, attachment: discord.Attachment, user: discord.User = None):
+    async def setudata(
+        self, ctx, attachment: discord.Attachment, user: discord.User = None
+    ):
         """[O] Replaces user data files. This is destructive behavior!"""
         if not user:
             user = ctx.author
@@ -207,7 +209,7 @@ class Admin(Cog):
         await ctx.reply(content=f"{user}'s data saved.", mention_author=False)
 
     @commands.check(ismanager)
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def getlogs(self, ctx):
         """[O] Returns the log file."""
@@ -268,7 +270,7 @@ class Admin(Cog):
         )
 
     @commands.check(ismanager)
-    @commands.bot_has_permissions(manage_threads=True) 
+    @commands.bot_has_permissions(manage_threads=True)
     @commands.command()
     async def threadlock(self, ctx, channel: discord.TextChannel):
         """[O] Locks all threads in a given channel."""

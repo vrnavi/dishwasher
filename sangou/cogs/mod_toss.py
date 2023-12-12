@@ -325,13 +325,12 @@ class ModToss(Cog):
                 f"{toss_pings}\nYou were tossed by {self.pacify_name(ctx.author.global_name) if ctx.author.global_name else self.pacify_name(ctx.author.name)}.\n"
                 '> *For your reference, a "toss" is where a Staff member wishes to speak with you, one on one.*'
             )
+
             def check(m):
                 return m.author in user_id_list and m.channel == toss_channel
 
             try:
-                msg = await self.bot.wait_for(
-                    "message", timeout=300, check=check
-                )
+                msg = await self.bot.wait_for("message", timeout=300, check=check)
             except asyncio.TimeoutError:
                 pokemsg = await toss_channel.send(ctx.author.mention)
                 await pokemsg.edit(content="⏰", delete_after=5)

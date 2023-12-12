@@ -67,9 +67,7 @@ class Timer(Cog):
                     target_user = await self.bot.fetch_user(job_name)
                     target_guild = self.bot.get_guild(job_details["guild"])
                     delete_job(timestamp, jobtype, job_name)
-                    await target_guild.unban(
-                        target_user, reason="Timed ban expired."
-                    )
+                    await target_guild.unban(target_user, reason="Timed ban expired.")
                 elif jobtype == "remind":
                     text = job_details["text"]
                     original_timestamp = job_details["added"]

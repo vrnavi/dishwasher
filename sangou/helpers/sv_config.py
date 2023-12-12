@@ -77,7 +77,7 @@ def fill_config(sid):
 
     if configs["metadata"]["version"] < stock_config["metadata"]["version"]:
         # Version update code.
-        
+
         # * to 3.
         if configs["metadata"]["version"] < 3:
             configs["staff"]["adminrole"] = None

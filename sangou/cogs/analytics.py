@@ -29,7 +29,7 @@ class Analytics(Cog):
         contents += f"\n\nYou have used **{len(useranalytics.keys())}**/{len(self.bot.commands)} commands.\nYour completion score is **{round(len(useranalytics.keys())/len(self.bot.commands)*100, 2)}**%."
         await ctx.reply(content=contents, mention_author=False)
 
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def mydata(self, ctx):
         """[U] Returns the user's data."""

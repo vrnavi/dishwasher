@@ -130,7 +130,9 @@ class sv_config(Cog):
     @commands.guild_only()
     @commands.check(isadmin)
     @configs.command()
-    async def set(self, ctx, attachment: discord.Attachment, guild: discord.Guild = None):
+    async def set(
+        self, ctx, attachment: discord.Attachment, guild: discord.Guild = None
+    ):
         """[S] Sets the configuration for a guild."""
         if not guild:
             guild = ctx.guild

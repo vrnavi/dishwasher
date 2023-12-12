@@ -41,7 +41,7 @@ class ModLocks(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(manage_channels=True) 
+    @commands.bot_has_permissions(manage_channels=True)
     @commands.command(aliases=["lockdown"])
     async def lock(self, ctx, soft: bool = False, channel: discord.TextChannel = None):
         """[S] Prevents people from speaking in a channel.
@@ -110,7 +110,7 @@ class ModLocks(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(manage_channels=True) 
+    @commands.bot_has_permissions(manage_channels=True)
     @commands.command()
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         """[S] Unlocks speaking in current channel."""
@@ -143,7 +143,7 @@ class ModLocks(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(manage_channels=True) 
+    @commands.bot_has_permissions(manage_channels=True)
     @commands.command()
     async def lockout(self, ctx, target: discord.Member):
         if target == ctx.author:
@@ -164,7 +164,7 @@ class ModLocks(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(manage_channels=True) 
+    @commands.bot_has_permissions(manage_channels=True)
     @commands.command()
     async def unlockout(self, ctx, target: discord.Member):
         if target == ctx.author:

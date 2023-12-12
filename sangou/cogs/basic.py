@@ -53,7 +53,7 @@ class Basic(Cog):
             )
         )
 
-    @commands.bot_has_permissions(add_reactions=True, embed_links=True) 
+    @commands.bot_has_permissions(add_reactions=True, embed_links=True)
     @commands.command(aliases=["yt"])
     async def youtube(self, ctx, *, arg: str):
         """[U] Returns the first video in a YouTube search."""
@@ -109,7 +109,7 @@ class Basic(Cog):
                 allowed_mentions=allowed_mentions,
             )
 
-    @commands.bot_has_permissions(add_reactions=True) 
+    @commands.bot_has_permissions(add_reactions=True)
     @commands.command()
     async def trivia(self, ctx):
         """[U] A quick trivia game."""
@@ -221,7 +221,7 @@ class Basic(Cog):
         """[U] Kills someone."""
         await ctx.send(f"{the_text} got an anime addiction.")
 
-    @commands.bot_has_permissions(add_reactions=True) 
+    @commands.bot_has_permissions(add_reactions=True)
     @commands.command(aliases=["timer"])
     async def eggtimer(self, ctx, minutes: int = 5):
         """[S] Posts a timer."""
@@ -235,7 +235,7 @@ class Basic(Cog):
         msg = await ctx.channel.send(content=ctx.author.mention)
         await msg.edit(content="⌛", delete_after=5)
 
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.group(invoke_without_command=True)
     async def avy(self, ctx, target: discord.User = None):
         """[U] Gets a user's avy."""
@@ -246,7 +246,7 @@ class Basic(Cog):
             target = ctx.author
         await ctx.send(content=target.display_avatar.url)
 
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @avy.command(name="server")
     async def _server(self, ctx, target: discord.Guild = None):
         """[U] Gets a server's avy."""
@@ -254,7 +254,7 @@ class Basic(Cog):
             target = ctx.guild
         return await ctx.send(content=target.icon.url)
 
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command(aliases=["bigtimerush"])
     async def btr(self, ctx):
         await ctx.send(files=[discord.File("assets/bigtimerush.mp3")])
@@ -306,7 +306,7 @@ class Basic(Cog):
             mention_author=False,
         )
 
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def about(self, ctx):
         """[U] Shows a quick embed with bot info."""
@@ -364,7 +364,7 @@ class Basic(Cog):
             mention_author=False,
         )
 
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command(aliases=["showcolor"])
     async def color(self, ctx, color):
         """Shows a color in chat."""
@@ -406,7 +406,7 @@ class Basic(Cog):
         await tmp.edit(content=message_text)
 
     @commands.guild_only()
-    @commands.bot_has_permissions(add_reactions=True) 
+    @commands.bot_has_permissions(add_reactions=True)
     @commands.command()
     async def poll(self, ctx, poll_title: str, *options: str):
         poll_emoji = [
@@ -442,7 +442,7 @@ class Basic(Cog):
 
     @commands.cooldown(1, 5, type=commands.BucketType.default)
     @commands.guild_only()
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command(aliases=["loadingbar"])
     async def progressbar(self, ctx):
         """[U] Creates a progress bar of the current year."""
@@ -477,7 +477,7 @@ class Basic(Cog):
 
     @commands.cooldown(1, 5, type=commands.BucketType.default)
     @commands.guild_only()
-    @commands.bot_has_permissions(attach_files=True) 
+    @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def joingraph(self, ctx):
         """[U] Shows the graph of users that joined."""
@@ -521,7 +521,7 @@ class Basic(Cog):
         await ctx.reply(content=message, mention_author=False)
 
     @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.group(invoke_without_command=True)
     async def info(self, ctx, *, target: discord.User = None):
         """[S] Gets full user info."""
@@ -595,7 +595,7 @@ class Basic(Cog):
         await ctx.reply(embed=embed, mention_author=False)
 
     @commands.guild_only()
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @info.command()
     async def role(self, ctx, *, role: discord.Role = None):
         """[S] Gets full role info."""

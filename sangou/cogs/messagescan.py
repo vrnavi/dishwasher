@@ -69,7 +69,7 @@ class Messagescan(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def snipe(self, ctx):
         if ctx.channel.id in self.prevmessages:
@@ -97,7 +97,7 @@ class Messagescan(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def snipf(self, ctx):
         if ctx.channel.id in self.prevedit_before:

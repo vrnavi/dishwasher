@@ -159,7 +159,7 @@ class Erase(Cog):
             await asyncio.sleep(60)
 
     @commands.guild_only()
-    @commands.bot_has_permissions(manage_messages=True) 
+    @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
     async def erase(self, ctx, verify=None):
         erasequeue = get_guildfile(ctx.guild.id, "erasures")

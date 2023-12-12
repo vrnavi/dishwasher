@@ -22,7 +22,7 @@ class ModRaidmode(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(embed_links=True) 
+    @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def raidmode(self, ctx):
         raidmode = get_guildfile(ctx.guild.id, "raidmode")

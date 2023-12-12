@@ -122,7 +122,7 @@ class Cotd(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(embed_links=True, manage_roles=True) 
+    @commands.bot_has_permissions(embed_links=True, manage_roles=True)
     @commands.command()
     async def reroll(self, ctx):
         if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(

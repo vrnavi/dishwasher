@@ -149,7 +149,9 @@ class ModLogs(Cog):
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.bot_has_permissions(embed_links=True, add_reactions=True, manage_messages=True)
+    @commands.bot_has_permissions(
+        embed_links=True, add_reactions=True, manage_messages=True
+    )
     @commands.command(name="logs")
     async def logs_cmd(self, ctx, target: discord.User):
         """[S] The full User Logs command."""
