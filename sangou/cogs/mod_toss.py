@@ -227,8 +227,8 @@ class ModToss(Cog):
         modlog_channel = get_config(ctx.guild.id, "logging", "modlog")
         staff_role = ctx.guild.get_role(
             get_config(ctx.guild.id, "staff", "modrole")
-            if get_config(guild.id, "staff", "modrole")
-            else get_config(guild.id, "staff", "admirole")
+            if get_config(ctx.guild.id, "staff", "modrole")
+            else get_config(ctx.guild.id, "staff", "admirole")
         )
         toss_role = ctx.guild.get_role(get_config(ctx.guild.id, "toss", "tossrole"))
 
