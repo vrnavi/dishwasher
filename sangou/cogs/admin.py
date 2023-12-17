@@ -429,7 +429,7 @@ class Admin(Cog):
             self.previous_exec_code = code
 
             sliced_message = await self.bot.slice_message(
-                repr(result), prefix="```", suffix="```"
+                result, prefix="```", suffix="```"
             )
             for msg in sliced_message:
                 await ctx.send(msg)
