@@ -189,9 +189,10 @@ class Messagescan(Cog):
     @Cog.listener()
     async def on_message(self, message):
         await self.bot.wait_until_ready()
+        ctx = await self.bot.get_context(message)
         if (
             not message.content
-            or await self.bot.get_context(message).valid
+            or ctx.valid
             or message.author.bot
             or not message.guild
             or not message.channel.permissions_for(message.author).embed_links
