@@ -23,6 +23,8 @@ class Admin(Cog):
         self.bot = bot
         self.last_eval_result = None
         self.previous_eval_code = None
+        self.last_exec_result = None
+        self.previous_exec_code = None
 
     @commands.check(ismanager)
     @commands.command(name="exit", aliases=["quit", "bye"])
@@ -365,6 +367,60 @@ class Admin(Cog):
                 self.last_eval_result = result
 
             self.previous_eval_code = code
+
+            sliced_message = await self.bot.slice_message(
+                repr(result), prefix="```", suffix="```"
+            )
+            for msg in sliced_message:
+                await ctx.send(msg)
+        except:
+            sliced_message = await self.bot.slice_message(
+                traceback.format_exc(), prefix="```", suffix="```"
+            )
+            for msg in sliced_message:
+                await ctx.send(msg)
+
+    @commands.check(ismanager)
+    @commands.command(name="exec")
+    async def _exec(self, ctx, *, code: str):
+        """[O] Executes some code."""
+        try:
+            code = code.strip("` ")
+
+            env = {
+                "bot": self.bot,
+                "ctx": ctx,
+                "message": ctx.message,
+                "server": ctx.guild,
+                "guild": ctx.guild,
+                "channel": ctx.message.channel,
+                "author": ctx.message.author,
+                "config": config,
+                # modules
+                "discord": discord,
+                "commands": commands,
+                "datetime": datetime,
+                "json": json,
+                "asyncio": asyncio,
+                "random": random,
+                "os": os,
+                "get_config": get_config,
+                # utilities
+                "_get": discord.utils.get,
+                "_find": discord.utils.find,
+                # last result
+                "_": self.last_exec_result,
+                "_p": self.previous_exec_code,
+            }
+            env.update(globals())
+
+            self.bot.log.info(f"Execing {repr(code)}:")
+            result = exec(code, env)
+
+            if result is not None:
+                self.last_exec_result = result
+
+            self.previous_exec_code = code
 
             sliced_message = await self.bot.slice_message(
                 repr(result), prefix="```", suffix="```"

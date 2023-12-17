@@ -356,13 +356,23 @@ class Basic(Cog):
                 mention_author=False,
             )
 
-    @commands.command(aliases=["commands"])
-    async def help(self, ctx):
-        """Posts a help command."""
-        await ctx.reply(
-            "[Press F1 For] HELP\nhttps://3gou.0ccu.lt/",
-            mention_author=False,
-        )
+    @commands.command()
+    async def help(self, ctx, command=None):
+        """This is Sangou's help command.
+        You can give it a `command`.
+        It will give you information on the command you specify."""
+        if not command:
+            return await ctx.reply(
+                "For my documentation and command list, please see my documentation:\nhttps://3gou.0ccu.lt/.",
+                mention_author=False,
+            )
+        else:
+            botcommand = self.bot.get_command(command)
+            if not botcommand:
+                return await ctx.reply(
+                    "This isn't a command.",
+                    mention_author=False,
+                )
 
     @commands.bot_has_permissions(embed_links=True)
     @commands.command(aliases=["showcolor"])
