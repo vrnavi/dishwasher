@@ -191,6 +191,7 @@ class Messagescan(Cog):
         await self.bot.wait_until_ready()
         if (
             not message.content
+            or self.bot.get_context(message).valid
             or message.author.bot
             or not message.guild
             or not message.channel.permissions_for(message.author).embed_links
