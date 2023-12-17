@@ -745,14 +745,14 @@ class Mod(Cog):
     async def note(self, ctx, target: discord.User, *, note: str = ""):
         """[S] Adds a note to a user."""
         add_userlog(ctx.guild.id, target.id, ctx.author, note, "notes")
-        await ctx.send(f"Noted.")
+        await ctx.reply(f"I added that note for you.")
 
     @commands.guild_only()
     @commands.check(isadmin)
     @commands.command(aliases=["echo"])
-    async def say(self, ctx, *, the_text: str):
+    async def say(self, ctx, *, text: str):
         """[S] Repeats a given text."""
-        await ctx.send(the_text)
+        await ctx.send(text)
 
     @commands.guild_only()
     @commands.check(isadmin)
@@ -762,16 +762,16 @@ class Mod(Cog):
         ctx,
         channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
         *,
-        the_text: str,
+        text: str,
     ):
         """[S] Posts a given text in a given channel."""
-        output = await channel.send(the_text)
-        if ctx.author.id in config.bot_managers:
+        output = await channel.send(text)
+        if ctx.author.id in config.managers:
             output.author = ctx.author
             newctx = await self.bot.get_context(output)
             newctx.message.author = ctx.guild.me
             await self.bot.invoke(newctx)
-        await ctx.message.reply("👍", mention_author=False)
+        await ctx.reply("👍", mention_author=False)
 
     @commands.guild_only()
     @commands.check(isadmin)
@@ -779,20 +779,18 @@ class Mod(Cog):
     async def reply(
         self,
         ctx,
-        channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
-        message: int,
+        message: discord.Message,
         *,
-        the_text: str,
+        text: str,
     ):
         """[S] Replies to a message with a given text in a given channel."""
-        msg = await channel.fetch_message(message)
-        output = await msg.reply(content=f"{the_text}", mention_author=False)
-        if ctx.author.id in config.bot_managers:
+        output = await message.reply(content=f"{text}", mention_author=False)
+        if ctx.author.id in config.managers:
             output.author = ctx.author
             newctx = await self.bot.get_context(output)
             newctx.message.author = ctx.guild.me
             await self.bot.invoke(newctx)
-        await ctx.message.reply("👍", mention_author=False)
+        await ctx.reply("👍", mention_author=False)
 
     @commands.guild_only()
     @commands.check(isadmin)
@@ -800,15 +798,13 @@ class Mod(Cog):
     async def react(
         self,
         ctx,
-        channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
-        message: int,
+        message: discord.Message,
         emoji: str,
     ):
         """[S] Reacts to a message with a given emoji in a given channel."""
         emoji = discord.PartialEmoji.from_str(emoji)
-        msg = await channel.fetch_message(message)
-        await msg.add_reaction(emoji)
-        await ctx.message.reply("👍", mention_author=False)
+        await message.add_reaction(emoji)
+        await ctx.reply("👍", mention_author=False)
 
     @commands.guild_only()
     @commands.check(isadmin)
@@ -819,8 +815,8 @@ class Mod(Cog):
         channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
         duration: int,
     ):
-        """[S] Sends a typing indicator for a given duration of seconds.."""
-        await ctx.send("👍")
+        """[S] Sends a typing indicator for a given duration of seconds."""
+        await ctx.reply("👍", mention_author=False)
         async with channel.typing():
             await asyncio.sleep(duration)
 
