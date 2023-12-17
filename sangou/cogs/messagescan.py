@@ -308,7 +308,7 @@ class Messagescan(Cog):
             and message.channel.permissions_for(message.guild.me).manage_messages
         ):
             # Discord SUCKS!!
-            if twitterlinks or tiktoklinks:
+            if tiktoklinks:
                 ctr = 0
                 while not message.embeds:
                     if ctr == 50:
