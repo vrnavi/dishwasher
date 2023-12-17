@@ -98,8 +98,17 @@
         "{unamused} Why am I going to do that for you...? I don't know you."
     ],
     "err_dmfail": [
-        "{huh} I can't DM you. Your DMs might be closed or you might have me blocked...",
         "{fear} I can't do that, you won't let me DM you! Check your DM settings...",
         "{unamused} Hey, I can't DM you... check your settings first."
+    ],
+    "err_usernotfound": [
+        "{huh} I don't know who that user is...",
+        "{normal} Discord API says that's not a user.",
+        "{unamused} Hey, that isn't a user. It doesn't exist."
+    ],
+    "err_membernotfound": [
+        "{normal} That's not a member on this server.",
+        "{huh} You either gave me something wrong, or that member isn't on this server...",
+        "{normal} I looked, that's not a member here."
     ]
 }

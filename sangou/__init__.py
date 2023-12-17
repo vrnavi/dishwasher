@@ -186,6 +186,10 @@ async def on_command_error(ctx, error):
         return await ctx.send(random_msg("err_checkfail", ctx))
     elif isinstance(error, commands.MissingRequiredAttachment):
         return await ctx.send(random_msg("err_noattachment", ctx))
+    elif isinstance(error, commands.UserNotFound):
+        return await ctx.send(random_msg("err_usernotfound", ctx))
+    elif isinstance(error, commands.MemberNotFound):
+        return await ctx.send(random_msg("err_membernotfound", ctx))
     elif isinstance(error, commands.CommandInvokeError) and (
         "Cannot send messages to this user" in str(error)
     ):
