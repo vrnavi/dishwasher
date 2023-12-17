@@ -11,6 +11,8 @@ import random
 import asyncio
 import shutil
 import os
+from io import StringIO
+from contextlib import redirect_stdout
 from helpers.embeds import stock_embed
 from helpers.checks import ismanager
 from helpers.sv_config import get_config
@@ -414,8 +416,12 @@ class Admin(Cog):
             }
             env.update(globals())
 
+            tmp_stdout = String()
+
             self.bot.log.info(f"Execing {repr(code)}:")
-            result = exec(code, env)
+            with redirect_stdout(tmp_stdout):
+                exec(code, env)
+            result = tmp_stdout.getvalue()
 
             if result is not None:
                 self.last_exec_result = result
