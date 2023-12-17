@@ -416,7 +416,7 @@ class Admin(Cog):
             }
             env.update(globals())
 
-            tmp_stdout = String()
+            tmp_stdout = StringIO()
 
             self.bot.log.info(f"Execing {repr(code)}:")
             with redirect_stdout(tmp_stdout):
