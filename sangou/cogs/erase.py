@@ -162,6 +162,14 @@ class Erase(Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @commands.command()
     async def erase(self, ctx, verify=None):
+        """This deletes all record of you from the server.
+
+        It will systematically go through all of your messages,
+        and send you all attachments you've posted. Make a Data
+        Request before using this command.
+
+        - `verify`
+        The code required to activate this command. Optional."""
         erasequeue = get_guildfile(ctx.guild.id, "erasures")
         if str(ctx.author.id) in erasequeue:
             return await ctx.reply(

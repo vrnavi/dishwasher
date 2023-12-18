@@ -72,6 +72,12 @@ class Messagescan(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def snipe(self, ctx):
+        """This shows the last deleted message in a channel.
+
+        It will *only* be the last deleted message.
+        Hope you have logs if you wanted older!
+
+        No arguments."""
         if ctx.channel.id in self.prevmessages:
             lastmsg = self.prevmessages[ctx.channel.id]
             # Prepare embed msg
@@ -100,6 +106,12 @@ class Messagescan(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def snipf(self, ctx):
+        """This shows the last edited message in a channel.
+
+        It will *only* be the last edited message.
+        Hope you have logs if you wanted older!
+
+        No arguments."""
         if ctx.channel.id in self.prevedit_before:
             lastbeforemsg = self.prevedit_before[ctx.channel.id]
             lastaftermsg = self.prevedit_after[ctx.channel.id]
@@ -173,6 +185,11 @@ class Messagescan(Cog):
 
     @commands.command()
     async def usage(self, ctx):
+        """This shows the DeepL free tier usage pool.
+
+        There's not much more to this.
+
+        No arguments."""
         translation = deepl.Translator(config.deepl_key, send_platform_info=False)
         usage = translation.get_usage()
 

@@ -28,32 +28,18 @@ class Mod(Cog):
         )
 
     @commands.guild_only()
-    @commands.check(isadmin)
-    @commands.bot_has_permissions(manage_guild=True)
-    @commands.command()
-    async def setguildicon(self, ctx, url):
-        """[O] Changes the guild icon."""
-        img_bytes = await self.bot.aiogetbytes(url)
-        await ctx.guild.edit(icon=img_bytes, reason=str(ctx.author))
-        await ctx.send(f"Done!")
-
-        slog = get_config(ctx.guild.id, "logging", "serverlog")
-        if slog:
-            slog = await self.bot.fetch_channel(slog)
-            log_msg = (
-                f"✏️ **Guild Icon Update**: {ctx.author} changed the guild icon."
-                f"\n🔗 __Jump__: <{ctx.message.jump_url}>"
-            )
-            img_filename = url.split("/")[-1].split("#")[0]  # hacky
-            img_file = discord.File(io.BytesIO(img_bytes), filename=img_filename)
-            await slog.send(log_msg, file=img_file)
-
-    @commands.guild_only()
     @commands.check(ismod)
     @commands.bot_has_permissions(kick_members=True)
     @commands.command(aliases=["boot"])
     async def kick(self, ctx, target: discord.Member, *, reason: str = ""):
-        """[S] Kicks a user."""
+        """This kicks a user.
+
+        Giving a `reason` will send the reason to the user.
+
+        - `target`
+        The target to kick.
+        - `reason`
+        The reason for the kick. Optional."""
         if target == ctx.author:
             return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
@@ -113,7 +99,14 @@ class Mod(Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command(aliases=["yeet"])
     async def ban(self, ctx, target: discord.User, *, reason: str = ""):
-        """[S] Bans a user."""
+        """This bans a user.
+
+        Giving a `reason` will send the reason to the user.
+
+        - `target`
+        The target to ban.
+        - `reason`
+        The reason for the ban. Optional."""
         if target == ctx.author:
             return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
@@ -193,7 +186,16 @@ class Mod(Cog):
     async def dban(
         self, ctx, day_count: int, target: discord.User, *, reason: str = ""
     ):
-        """[S] Bans a user, with n days of messages deleted."""
+        """This bans a user with X days worth of messages deleted.
+
+        Giving a `reason` will send the reason to the user.
+
+        - `day_count`
+        The days worth of messages to delete.
+        - `target`
+        The target to kick.
+        - `reason`
+        The reason for the kick. Optional."""
         if target == ctx.author:
             return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
@@ -279,7 +281,14 @@ class Mod(Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command()
     async def massban(self, ctx, *, targets: str):
-        """[S] Bans users with their IDs, doesn't message them."""
+        """This mass bans user IDs.
+
+        You can get IDs with `pls dump` if they're banned from
+        a different server with the bot. Otherwise, good luck.
+        This won't DM them.
+
+        - `targets`
+        The target to ban."""
         msg = await ctx.send(f"🚨 **MASSBAN IN PROGRESS...** 🚨")
         targets_int = [int(target) for target in targets.strip().split(" ")]
         mlog = get_config(ctx.guild.id, "logging", "modlog")
@@ -330,7 +339,14 @@ class Mod(Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command()
     async def unban(self, ctx, target: discord.User, *, reason: str = ""):
-        """[S] Unbans a user with their ID, doesn't message them."""
+        """This unbans a user.
+
+        The `reason` won't be sent to the user, but is used for logs.
+
+        - `target`
+        The target to unban.
+        - `reason`
+        The reason for the unban. Optional."""
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -367,7 +383,14 @@ class Mod(Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command(aliases=["silentban"])
     async def sban(self, ctx, target: discord.User, *, reason: str = ""):
-        """[S] Bans a user silently. Does not message them."""
+        """This bans a user silently.
+
+        In this case, the `reason` will only be saved to the logs.
+
+        - `target`
+        The target to ban.
+        - `reason`
+        The reason for the ban. Optional."""
         if target == ctx.author:
             return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
@@ -422,27 +445,36 @@ class Mod(Cog):
     @commands.guild_only()
     @commands.check(ismod)
     @commands.command(aliases=["count"])
-    async def msgcount(self, ctx, messageid: int):
-        """[S] Counts a given number of messages."""
-        history = [message.id async for message in ctx.channel.history(limit=200)]
-        if messageid in history:
-            return await ctx.reply(
-                content=f"**Raw**: {history.index(messageid)}\n"
-                + f"**Now**: {history.index(messageid) + 2}\n"
-                + f"**With Purge**: {history.index(messageid) + 3}",
-                mention_author=False,
-            )
-        else:
-            return await ctx.reply(
-                content="That message isn't in this channel.", mention_author=False
-            )
+    async def msgcount(self, ctx, message: discord.Message):
+        """This counts up to a certain message.
+
+        Think of this as counting from the newest message
+        up to the message you specify. Useful for purging.
+
+        - `message`
+        An ID or message link to the message to count to."""
+        history = [histmsg.id async for histmsg in message.channel.history(limit=200)]
+        return await ctx.reply(
+            content=f"**Raw**: {history.index(message.id)}\n"
+            + f"**Now**: {history.index(message.id) + 2}\n"
+            + f"**With Purge**: {history.index(message.id) + 3}",
+            mention_author=False,
+        )
 
     @commands.guild_only()
     @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
     @commands.group(invoke_without_command=True, aliases=["clear"])
     async def purge(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
-        """[S] Clears a given number of messages."""
+        """This clears a given number of messages.
+
+        Please see the sister subcommands as well, in the [documentation](https://3gou.0ccu.lt/as-a-moderator/basic-functionality/#purging).
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `limit`
+        The limit of messages to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
         if limit >= 1000000:
@@ -473,7 +505,14 @@ class Mod(Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @purge.command()
     async def bots(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
-        """[S] Clears a given number of bot messages."""
+        """This clears a given number of bot messages.
+
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `limit`
+        The limit of messages to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
 
@@ -509,7 +548,16 @@ class Mod(Cog):
         limit=50,
         channel: discord.abc.GuildChannel = None,
     ):
-        """[S] Clears a given number of messages from a user."""
+        """This clears a given number of user messages.
+
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `target`
+        The user to purge messages from.
+        - `limit`
+        The limit of messages to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
 
@@ -543,7 +591,16 @@ class Mod(Cog):
         limit=50,
         channel: discord.abc.GuildChannel = None,
     ):
-        """[S] Clears a given number of messages containing input."""
+        """This clears a given number of specific messages.
+
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `string`
+        Messages containing this will be deleted.
+        - `limit`
+        The limit of messages to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
 
@@ -573,7 +630,14 @@ class Mod(Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @purge.command(aliases=["emoji"])
     async def emotes(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
-        """[S] Clears a given number of emotes."""
+        """This clears a given number of emotes.
+
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `limit`
+        The limit of emotes to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
 
@@ -603,7 +667,15 @@ class Mod(Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @purge.command()
     async def embeds(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
-        """[S] Clears a given number of embeds."""
+        """This clears a given number of messages with embeds.
+
+        This includes stickers, by the way, but not emoji.
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `limit`
+        The limit of messages to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
 
@@ -633,7 +705,15 @@ class Mod(Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @purge.command(aliases=["reactions"])
     async def reacts(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
-        """[S] Clears a given number of reactions."""
+        """This clears a given number of reactions.
+
+        This does NOT delete their messages! Just the reactions!
+        Defaults to 50 messages in the current channel. Max of one million.
+
+        - `limit`
+        The limit of reactions to delete. Optional.
+        - `channel`
+        The channel to purge from. Optional."""
         if not channel:
             channel = ctx.channel
 
@@ -663,7 +743,14 @@ class Mod(Cog):
     @commands.check(ismod)
     @commands.command()
     async def warn(self, ctx, target: discord.User, *, reason: str = ""):
-        """[S] Warns a user."""
+        """This warns a user.
+
+        Warnings will appear on their user`log`.
+
+        - `target`
+        The user to warn.
+        - `reason`
+        The reason for the warning. Optional."""
         if target == ctx.author:
             return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
@@ -742,8 +829,15 @@ class Mod(Cog):
     @commands.guild_only()
     @commands.check(ismod)
     @commands.command(aliases=["addnote"])
-    async def note(self, ctx, target: discord.User, *, note: str = ""):
-        """[S] Adds a note to a user."""
+    async def note(self, ctx, target: discord.User, *, note: str):
+        """This adds a note to a user.
+
+        Notes will appear on their user`log`.
+
+        - `target`
+        The user to add a note to.
+        - `note`
+        The contents of the note."""
         add_userlog(ctx.guild.id, target.id, ctx.author, note, "notes")
         await ctx.reply(f"I added that note for you.")
 
@@ -751,7 +845,12 @@ class Mod(Cog):
     @commands.check(isadmin)
     @commands.command(aliases=["echo"])
     async def say(self, ctx, *, text: str):
-        """[S] Repeats a given text."""
+        """This makes the bot repeat some text.
+
+        It will not do anything other than that.
+
+        - `text`
+        The text to repeat."""
         await ctx.send(text)
 
     @commands.guild_only()
@@ -764,7 +863,14 @@ class Mod(Cog):
         *,
         text: str,
     ):
-        """[S] Posts a given text in a given channel."""
+        """This makes the bot repeat some text in a specific channel.
+
+        If you manage the bot, it can even run commands.
+
+        - `channel`
+        The channel to post the text in.
+        - `text`
+        The text to repeat."""
         output = await channel.send(text)
         if ctx.author.id in config.managers:
             output.author = ctx.author
@@ -783,7 +889,14 @@ class Mod(Cog):
         *,
         text: str,
     ):
-        """[S] Replies to a message with a given text in a given channel."""
+        """This makes the bot reply to a message.
+
+        If you manage the bot, it can even run commands.
+
+        - `message`
+        The message to reply to. Message link preferred.
+        - `text`
+        The text to repeat."""
         output = await message.reply(content=f"{text}", mention_author=False)
         if ctx.author.id in config.managers:
             output.author = ctx.author
@@ -801,7 +914,14 @@ class Mod(Cog):
         message: discord.Message,
         emoji: str,
     ):
-        """[S] Reacts to a message with a given emoji in a given channel."""
+        """This makes the bot react to a message with an emoji.
+
+        It can't react with emojis it doesn't have access to.
+
+        - `message`
+        The message to reply to. Message link preferred.
+        - `emoji`
+        The emoji to react with."""
         emoji = discord.PartialEmoji.from_str(emoji)
         await message.add_reaction(emoji)
         await ctx.reply("👍", mention_author=False)
@@ -815,7 +935,14 @@ class Mod(Cog):
         channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
         duration: int,
     ):
-        """[S] Sends a typing indicator for a given duration of seconds."""
+        """This makes the bot type in a channel for some time.
+
+        There's not much else to it.
+
+        - `channel`
+        The channel or thread to type in.
+        - `duration`
+        The length of time to type for."""
         await ctx.reply("👍", mention_author=False)
         async with channel.typing():
             await asyncio.sleep(duration)

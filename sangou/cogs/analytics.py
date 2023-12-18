@@ -17,7 +17,12 @@ class Analytics(Cog):
 
     @commands.group(invoke_without_command=True)
     async def stats(self, ctx):
-        """[U] Shows your analytics."""
+        """This shows your analytics.
+
+        It only shows the most recent command uses,
+        since I'm currently too lazy to code a page system.
+
+        No arguments."""
         useranalytics = get_userfile(ctx.author.id, "analytics")
         if not useranalytics:
             return await ctx.reply(
@@ -32,7 +37,12 @@ class Analytics(Cog):
     @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def mydata(self, ctx):
-        """[U] Returns the user's data."""
+        """This gives you your data.
+
+        It zips up the entirety of your users folder.
+        It does not include reminders, as that is on a separate system.
+
+        No arguments."""
         try:
             shutil.make_archive(
                 f"data/{ctx.author.id}", "zip", f"data/users/{ctx.author.id}"
@@ -52,7 +62,11 @@ class Analytics(Cog):
 
     @stats.command()
     async def enable(self, ctx):
-        """[U] Turns on analytics collection."""
+        """This enables analytics collection.
+
+        Please see the [privacy notice](https://3gou.0ccu.lt/introduction/privacy-notice/).
+
+        No arguments."""
         userdata = get_botfile("botusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
@@ -69,7 +83,12 @@ class Analytics(Cog):
 
     @stats.command()
     async def disable(self, ctx):
-        """[U] Turns off analytics collection and deletes analytics data."""
+        """This disables analytics collection.
+
+        Please see the [privacy notice](https://3gou.0ccu.lt/introduction/privacy-notice/).
+        It will delete your analytics data as well.
+
+        No arguments."""
         userdata = get_botfile("botusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []

@@ -25,6 +25,12 @@ class NameCheck(Cog):
     @commands.bot_has_permissions(manage_nicknames=True)
     @commands.command()
     async def decancer(self, ctx, target: discord.Member):
+        """This cleans unicode from a username.
+
+        There's not much more to it.
+
+        - `target`
+        The target to clean unicode from."""
         oldname = target.display_name
         newname = unidecode(target.display_name)
         if not newname:
@@ -40,6 +46,12 @@ class NameCheck(Cog):
     @commands.bot_has_permissions(manage_nicknames=True)
     @commands.command()
     async def dehoist(self, ctx, target: discord.Member):
+        """This dehoists a user from the member list.
+
+        It uses a specific unicode character to do so.
+
+        - `target`
+        The target to dehoist."""
         oldname = target.display_name
         await target.edit(nick="᲼" + target.display_name, reason="Namecheck")
         return await ctx.reply(

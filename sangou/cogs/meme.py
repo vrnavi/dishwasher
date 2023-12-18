@@ -20,7 +20,12 @@ class Meme(Cog):
     @commands.check(ismod)
     @commands.command(hidden=True, name="warm")
     async def warm_member(self, ctx, user: discord.Member):
-        """Warms a user :3"""
+        """This warms a user.
+
+        :3
+
+        - `user`
+        The user to warm."""
         celsius = random.randint(15, 100)
         fahrenheit = self.bot.c_to_f(celsius)
         kelvin = self.bot.c_to_k(celsius)
@@ -33,7 +38,12 @@ class Meme(Cog):
     @commands.check(ismod)
     @commands.command(hidden=True, name="chill", aliases=["cold"])
     async def chill_member(self, ctx, user: discord.Member):
-        """Chills a user >:3"""
+        """This chills a user.
+
+        >:3
+
+        - `user`
+        The user to chill."""
         celsius = random.randint(-50, 15)
         fahrenheit = self.bot.c_to_f(celsius)
         kelvin = self.bot.c_to_k(celsius)
@@ -45,7 +55,11 @@ class Meme(Cog):
 
     @commands.command(hidden=True)
     async def btwiuse(self, ctx):
-        """btw i use arch"""
+        """This is what the bot uses.
+
+        Arch, btw.
+
+        No arguments."""
         uname = platform.uname()
         await ctx.send(
             f"BTW I use {platform.python_implementation()} "
@@ -55,13 +69,22 @@ class Meme(Cog):
 
     @commands.command(hidden=True)
     async def yahaha(self, ctx):
-        """secret command"""
+        """YAHAHA
+
+        🍂🍂🍂
+
+        No arguments."""
         await ctx.send(f"🍂 you found me 🍂")
 
     @commands.check(ismod)
     @commands.command(hidden=True, name="bam")
     async def bam_member(self, ctx, target: discord.Member):
-        """Bams a user owo"""
+        """Bams a user.
+
+        owo
+
+        - `target`
+        The target to bam."""
         if target == self.bot.user:
             return await ctx.send(random_bot_msg(ctx.author.name))
 
@@ -69,11 +92,6 @@ class Meme(Cog):
             ctx, str(target)
         )
         await ctx.send(f"{safe_name} is ̶n͢ow b̕&̡.̷ 👍̡")
-
-    @commands.command(hidden=True)
-    async def memebercount(self, ctx):
-        """Checks memeber count, as requested by dvdfreitag"""
-        await ctx.send("Fuck, IDK, dude.")
 
     @commands.command(
         hidden=True,
@@ -86,7 +104,12 @@ class Meme(Cog):
         ],
     )
     async def yearoflinux(self, ctx):
-        """Shows the year of Linux on the desktop"""
+        """This shows the year of Linux on the Desktop.
+
+        It's current year guys, I swear!
+        Ren develops on a Raspberry Pi, so it must be true!
+
+        No arguments."""
         await ctx.send(
             f"{datetime.datetime.now().year} is the year of Linux on the Desktop"
         )

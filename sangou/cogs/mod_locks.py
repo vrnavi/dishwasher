@@ -50,9 +50,16 @@ class ModLocks(Cog):
     @commands.bot_has_permissions(manage_channels=True)
     @commands.command(aliases=["lockdown"])
     async def lock(self, ctx, soft: bool = False, channel: discord.TextChannel = None):
-        """[S] Prevents people from speaking in a channel.
+        """This prevents people from typing in a channel.
 
-        Defaults to current channel."""
+        Useful for rowdy bunches. It saves the channel
+        permissions state until the bot goes down.
+        Defaults to the current channel.
+
+        - `soft`
+        Whether to yell at the users or not.
+        - `channel`
+        The channel to lock down."""
         if not channel:
             channel = ctx.channel
         adminroleid = get_config(ctx.guild.id, "staff", "adminrole")
@@ -129,7 +136,12 @@ class ModLocks(Cog):
     @commands.bot_has_permissions(manage_channels=True)
     @commands.command()
     async def unlock(self, ctx, channel: discord.TextChannel = None):
-        """[S] Unlocks speaking in current channel."""
+        """This allows people to type in a channel again.
+
+        This reloads the pre-lockdown state.
+
+        - `channel`
+        The channel to unlock."""
         if not channel:
             channel = ctx.channel
         mlog = get_config(ctx.guild.id, "logging", "modlog")
@@ -162,6 +174,12 @@ class ModLocks(Cog):
     @commands.bot_has_permissions(manage_channels=True)
     @commands.command()
     async def lockout(self, ctx, target: discord.Member):
+        """This locks a specific user out of a channel.
+
+        Not much more to it.
+
+        - `target`
+        The member to lock out."""
         if target == ctx.author:
             return await ctx.reply(
                 random_self_msg(ctx.author.name), mention_author=False
@@ -183,6 +201,12 @@ class ModLocks(Cog):
     @commands.bot_has_permissions(manage_channels=True)
     @commands.command()
     async def unlockout(self, ctx, target: discord.Member):
+        """This unlocks a specific user out of a channel.
+
+        Not much more to it.
+
+        - `target`
+        The member to unlock out."""
         if target == ctx.author:
             return await ctx.reply(
                 random_self_msg(ctx.author.name), mention_author=False

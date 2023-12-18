@@ -221,6 +221,12 @@ class Reply(Cog):
     @commands.check(ismod)
     @commands.command()
     async def reset(self, ctx, target: discord.Member):
+        """This resets reply ping violations for a user.
+
+        There's not much more to it.
+
+        - `target`
+        The target to reset violations for."""
         if (
             ctx.guild.id not in self.violations
             or target.id not in self.violations[message.guild.id]
@@ -240,6 +246,12 @@ class Reply(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def replyconfig(self, ctx):
+        """This sets your reply ping preferences.
+
+        Use the reactions to pick your setting.
+        See the [documentation](https://3gou.0ccu.lt/as-a-user/reply-ping-preferences/) for more info.
+
+        No arguments."""
         profile = fill_profile(ctx.author.id)
         embed = stock_embed(self.bot)
         embed.title = "🏓 Your reply preference..."

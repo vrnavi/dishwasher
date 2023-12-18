@@ -20,6 +20,11 @@ class ModReport(Cog):
     @commands.dm_only()
     @commands.command()
     async def report(self, ctx):
+        """This reports something to a server's staff channel.
+
+        This requires a server's `staffchannel` to be configured.
+
+        No arguments."""
         guilds = [guild for guild in self.bot.guilds if guild.get_member(ctx.author.id)]
         if not guilds:
             return await ctx.reply(

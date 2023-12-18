@@ -31,7 +31,11 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command(name="exit", aliases=["quit", "bye"])
     async def _exit(self, ctx):
-        """[O] Shuts down (or restarts) the bot."""
+        """This shuts down the bot.
+
+        They need a lunch break sometimes.
+
+        No arguments."""
         await ctx.message.reply(content=random_msg("deaths", ctx), mention_author=False)
         await self.bot.close()
 
@@ -39,7 +43,11 @@ class Admin(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command(name="errors")
     async def _errors(self, ctx):
-        """[O] Shows bot command errors."""
+        """Shows logged command errors.
+
+        It's paginated.
+
+        No arguments."""
         if not self.bot.errors:
             return await ctx.reply(
                 content="There are no logged command errors yet.", mention_author=False
@@ -115,7 +123,12 @@ class Admin(Cog):
     @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def getdata(self, ctx):
-        """[O] Returns data files."""
+        """This returns the bot's data files.
+
+        Better do it out of sight, where it won't
+        be a massive security risk. Dummy...
+
+        No arguments."""
         shutil.make_archive("data_export", "zip", "data")
         try:
             await ctx.author.send(
@@ -130,7 +143,12 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def setdata(self, ctx, attachment: discord.Attachment):
-        """[O] Replaces data files. This is destructive behavior!"""
+        """This replaces the bot's data files.
+
+        This can be insanely destructive. Use caution.
+
+        - `attachment`
+        The ZIP file to use as the data folder."""
         await attachment.save("data.zip")
         if os.path.exists("data"):
             shutil.rmtree("data")
@@ -142,7 +160,12 @@ class Admin(Cog):
     @commands.bot_has_permissions(attach_files=True)
     @commands.command(aliases=["getserverdata"])
     async def getsdata(self, ctx, server: discord.Guild = None):
-        """[O] Returns server data."""
+        """This returns the server files.
+
+        Useful for debugging things.
+
+        - `server`
+        The server you want the data files of. Optional."""
         if not server:
             server = ctx.guild
         try:
@@ -165,7 +188,14 @@ class Admin(Cog):
     async def setsdata(
         self, ctx, attachment: discord.Attachment, server: discord.Guild = None
     ):
-        """[O] Replaces server data files. This is destructive behavior!"""
+        """This replaces the server's data files.
+
+        This can be insanely destructive. Use caution.
+
+        - `attachment`
+        The ZIP file to use as the data folder.
+        - `server`
+        The server to upload the data to. Optional."""
         if not server:
             server = ctx.guild
         await attachment.save(f"data/{server.id}.zip")
@@ -179,7 +209,12 @@ class Admin(Cog):
     @commands.bot_has_permissions(attach_files=True)
     @commands.command(aliases=["getuserdata"])
     async def getudata(self, ctx, user: discord.User = None):
-        """[O] Returns user data."""
+        """This returns the user files.
+
+        Useful for debugging things.
+
+        - `user`
+        The user you want the data files of. Optional."""
         if not user:
             user = ctx.author
         try:
@@ -202,7 +237,14 @@ class Admin(Cog):
     async def setudata(
         self, ctx, attachment: discord.Attachment, user: discord.User = None
     ):
-        """[O] Replaces user data files. This is destructive behavior!"""
+        """This replaces the user's data files.
+
+        This can be insanely destructive. Use caution.
+
+        - `attachment`
+        The ZIP file to use as the data folder.
+        - `user`
+        The user to upload the data to. Optional."""
         if not user:
             user = ctx.author
         await attachment.save(f"data/{user.id}.zip")
@@ -216,7 +258,11 @@ class Admin(Cog):
     @commands.bot_has_permissions(attach_files=True)
     @commands.command()
     async def getlogs(self, ctx):
-        """[O] Returns the log file."""
+        """This gets the bot's log file.
+
+        Useful for trying to figure out problems within Discord.
+
+        No arguments."""
         shutil.copy("logs/sangou.log", "logs/upload.log")
         await ctx.message.reply(
             content="The current log file...",
@@ -228,7 +274,11 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def taillogs(self, ctx):
-        """[O] Returns the last 10 lines of the log file."""
+        """This gets the last 10 lines of the log file.
+
+        Useful for trying to figure out problems within Discord.
+
+        No arguments."""
         shutil.copy("logs/sangou.log", "logs/upload.log")
         with open("logs/upload.log", "r+") as f:
             tail = "\n".join(f.read().split("\n")[-10:])
@@ -241,7 +291,11 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def guilds(self, ctx):
-        """[O] Shows the current guilds I am in."""
+        """This shows the current guilds that the bot is in.
+
+        Not sure why this is needed.
+
+        No arguments."""
         guildmsg = "**I am in the following guilds:**"
         for g in self.bot.guilds:
             guildmsg += f"\n- {g.name} with `{g.member_count}` members."
@@ -256,7 +310,16 @@ class Admin(Cog):
         target: discord.Member = None,
         channel: discord.abc.GuildChannel = None,
     ):
-        """[O] Shows the permissions."""
+        """This shows the permissions for a user in a channel.
+
+        Though its a debugging command, I should probably make this
+        usable for server staff as well...
+        Defaults to the bot in the current channel.
+
+        - `target`
+        The user to view the permissions for. Optional.
+        - `channel`
+        The channel to view the user's permissions in. Optional."""
         if not target:
             target = ctx.guild.me
         if not channel:
@@ -277,7 +340,13 @@ class Admin(Cog):
     @commands.bot_has_permissions(manage_threads=True)
     @commands.command()
     async def threadlock(self, ctx, channel: discord.TextChannel):
-        """[O] Locks all threads in a given channel."""
+        """This locks every thread in a channel.
+
+        I've only used this once for one specific use case.
+        But it's here anyway!
+
+        - `channel`
+        The channel to lock all threads in."""
         msg = await ctx.reply(content="Locking threads...", mention_author=False)
         # Pull old archvied threads from the grave.
         async for t in channel.archived_threads():
@@ -295,7 +364,12 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def botban(self, ctx, user: discord.User):
-        """[O] Bars a user from using the bot."""
+        """This bars a user from using the bot.
+
+        Oh joy, naughty naughty!
+
+        - `user`
+        The user to bar."""
         botusers = get_botfile("botusers")
         if "botban" not in botusers:
             botusers["botban"] = []
@@ -312,7 +386,12 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def unbotban(self, ctx, user: discord.User):
-        """[O] Unbars a user from using the bot."""
+        """This unbars a user from using the bot.
+
+        Give them a second chance.
+
+        - `user`
+        The user to unbar."""
         botusers = get_botfile("botusers")
         if "botban" not in botusers:
             botusers["botban"] = []
@@ -329,7 +408,13 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command(name="eval")
     async def _eval(self, ctx, *, code: str):
-        """[O] Evaluates some code."""
+        """This evaluates some code.
+
+        NICE TRY FUNNYMAN, YOU THINK THIS BOT
+        HAS UNSECURED EVAL? LMAO LOL HAHAHAHA
+
+        - `code`
+        The code to eval."""
         try:
             code = code.strip("` ")
 
@@ -385,7 +470,14 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command(name="exec")
     async def _exec(self, ctx, *, code: str):
-        """[O] Executes some code."""
+        """This executes some code.
+
+        Look at you, prying around! I see you. I know
+        who you are. I'm coming to your house soon.
+        Your Pepsi ain't safe.
+
+        - `code`
+        The code to exec."""
         try:
             code = code.strip("` ")
 
@@ -443,7 +535,13 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def pull(self, ctx, auto=False):
-        """[O] Performs a git pull."""
+        """This performs a Git Pull.
+
+        I really wouldn't use this unless you're fine
+        with me breaking the bot every five seconds.
+
+        - `auto`
+        Whether you want it to reload the cogs for you. Optional."""
         tmp = await ctx.message.reply(content="Pulling...", mention_author=False)
         git_output = await self.bot.async_call_shell("git pull")
         allowed_mentions = discord.AllowedMentions(replied_user=False)
@@ -484,7 +582,12 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def load(self, ctx, ext: str):
-        """[O] Loads a cog."""
+        """This loads a cog.
+
+        You have to prefix it with `cogs.`. No no, don't ask!
+
+        - `ext`
+        The cog to load."""
         try:
             await self.bot.load_extension(ext)
         except:
@@ -510,7 +613,12 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def unload(self, ctx, ext: str):
-        """[O] Unloads a cog."""
+        """This unloads a cog.
+
+        You have to prefix it with `cogs.`. No no, don't ask!
+
+        - `ext`
+        The cog to unload."""
         await self.bot.unload_extension(ext)
         self.bot.log.info(f"Unloaded ext {ext}")
         await ctx.message.reply(
@@ -521,7 +629,12 @@ class Admin(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def reload(self, ctx, ext="_"):
-        """[O] Reloads a cog."""
+        """This reloads a cog.
+
+        You have to prefix it with `cogs.`. No no, don't ask!
+
+        - `ext`
+        The cog to reload."""
         if ext == "_":
             ext = self.lastreload
         else:

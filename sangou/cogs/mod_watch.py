@@ -18,8 +18,13 @@ class ModWatch(Cog):
     @commands.check(ismod)
     @commands.bot_has_guild_permissions(embed_links=True, create_public_threads=True)
     @commands.command()
-    async def watch(self, ctx, target: discord.User, *, note: str = ""):
-        """[S] Puts a user under watch."""
+    async def watch(self, ctx, target: discord.User):
+        """This puts a user under watch.
+
+        Please refer to the watching section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-watching-system/).
+
+        - `target`
+        The target to watch."""
         if not get_config(ctx.guild.id, "staff", "watchchannel"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if target == ctx.author:
@@ -56,8 +61,13 @@ class ModWatch(Cog):
     @commands.check(ismod)
     @commands.bot_has_guild_permissions(embed_links=True, manage_threads=True)
     @commands.command()
-    async def unwatch(self, ctx, target: discord.User, *, note: str = ""):
-        """[S] Removes a user from watch."""
+    async def unwatch(self, ctx, target: discord.User):
+        """This removes a user under watch.
+
+        Please refer to the watching section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-watching-system/).
+
+        - `target`
+        The target to unwatch."""
         if not get_config(ctx.guild.id, "staff", "watchchannel"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if target == ctx.author:

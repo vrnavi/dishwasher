@@ -25,6 +25,11 @@ class ModRaidmode(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def raidmode(self, ctx):
+        """This sets raidmode for the server.
+
+        Medium requires `raidrole` to be configured.
+
+        No arguments."""
         raidmode = get_guildfile(ctx.guild.id, "raidmode")
         if "setting" not in raidmode:
             raidmode["setting"] = 0

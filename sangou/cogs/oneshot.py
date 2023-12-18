@@ -11,17 +11,15 @@ class OneShot(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.guild_only()
-    @commands.command(hidden=True, aliases=["renavi"])
-    async def ren(self, ctx):
-        """[U] What does Sangou think about Ren?"""
-        await ctx.send("HELP! HELP! HELP!")
-
     @commands.bot_has_permissions(embed_links=True)
     @commands.guild_only()
     @commands.command()
     async def staff(self, ctx):
-        """[U] Shows currently active staff."""
+        """This shows the currently active staff.
+
+        It merges admins and mods together, sorry!
+
+        No arguments."""
         adminrole = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "adminrole"))
         modrole = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "modrole"))
 
@@ -90,7 +88,11 @@ class OneShot(Cog):
     @commands.guild_only()
     @commands.command(aliases=["pingmods", "summonmods"])
     async def pingmod(self, ctx):
-        """[U] Pings mods, only use when there's an emergency."""
+        """This ping the mods.
+
+        Please only use in case of emergency.
+
+        No arguments."""
         await ctx.reply(
             f"<@&{get_config(ctx.guild.id, 'staff', 'modrole') if get_config(ctx.guild.id, 'staff', 'modrole') else get_config(ctx.guild.id, 'staff', 'adminrole')}>, {ctx.author.display_name} is requesting assistance.",
             mention_author=False,
@@ -99,6 +101,12 @@ class OneShot(Cog):
     @commands.guild_only()
     @commands.command(aliases=["togglemod"])
     async def modtoggle(self, ctx):
+        """This toggles your mod role.
+
+        If you have Mod, it will replace it with Ex-Staff.
+        Doesn't work for admins.
+
+        No arguments."""
         """[S] Toggles your Staff role.
 
         If you have Staff, it will replace it with Ex-Staff, and vice versa."""

@@ -154,7 +154,12 @@ class ModLogs(Cog):
     )
     @commands.command(name="logs")
     async def logs_cmd(self, ctx, target: discord.User):
-        """[S] The full User Logs command."""
+        """This shows the user`logs` for a user.
+
+        Use the reactions to view different parts of the log.
+
+        - `target`
+        The user to get logs for."""
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
         embeds = self.get_log_embeds(ctx.guild.id, target, False)
@@ -168,7 +173,12 @@ class ModLogs(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command(aliases=["listnotes", "usernotes"])
     async def notes(self, ctx, target: discord.User):
-        """[S] Lists notes for a user."""
+        """This shows the notes for a user.
+
+        Useful if you need to see someone's notes quickly.
+
+        - `target`
+        The user to get notes for."""
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
         embed = self.get_log_embed(ctx.guild.id, target, event="notes")
@@ -177,7 +187,13 @@ class ModLogs(Cog):
     @commands.guild_only()
     @commands.command()
     async def mylogs(self, ctx, eventtype=None):
-        """[U] Lists your Log events."""
+        """This shows your logs.
+
+        For privacy reasons, it won't show Notes, Tosses,
+        or total events done on you. By default, shows a summary.
+
+        - `eventtype`
+        Whether you want warns, kicks, or bans. Optional."""
         embeds = self.get_log_embeds(ctx.guild.id, ctx.author, True)
         if not eventtype:
             embeds[0].color = ctx.author.color
@@ -220,7 +236,14 @@ class ModLogs(Cog):
     @commands.check(isadmin)
     @commands.command()
     async def clearevents(self, ctx, target: discord.User, eventtype):
-        """[S] Clears all events of given type for a user."""
+        """This clears events for a user.
+
+        Useful if you need to give a user a clean slate.
+
+        - `target`
+        The user to get notes for.
+        - `eventtype`
+        The type of event to clear."""
         types = ["notes", "tosses", "warns", "kicks", "bans"]
         eventtype = eventtype.lower()
         if eventtype not in types:
@@ -261,7 +284,16 @@ class ModLogs(Cog):
     @commands.check(isadmin)
     @commands.command()
     async def delevent(self, ctx, target: discord.User, eventtype, index: int):
-        """[S] Removes a specific event from a user."""
+        """This deletes an event for a user.
+
+        Not much more to this. There's no undo.
+
+        - `target`
+        The user to delete an event for.
+        - `eventtype`
+        The type of event to delete.
+        - `index`
+        The index of the event."""
         types = ["notes", "tosses", "warns", "kicks", "bans"]
         eventtype = eventtype.lower()
         if eventtype not in types:

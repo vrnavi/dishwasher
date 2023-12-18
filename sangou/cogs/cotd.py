@@ -44,6 +44,11 @@ class Cotd(Cog):
     @commands.guild_only()
     @commands.command()
     async def cotd(self, ctx):
+        """This shows the Color of The Day.
+
+        It requires CoTD to be configured.
+
+        No arguments."""
         if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(
             ctx.guild.id, "cotd", "cotdname"
         ):
@@ -74,6 +79,12 @@ class Cotd(Cog):
     @commands.guild_only()
     @commands.command()
     async def voteskip(self, ctx):
+        """This votes to skip the CoTD.
+
+        It requires CoTD to be configured.
+        It will move the reroll time back by an hour.
+
+        No arguments."""
         if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(
             ctx.guild.id, "cotd", "cotdname"
         ):
@@ -125,6 +136,11 @@ class Cotd(Cog):
     @commands.bot_has_permissions(embed_links=True, manage_roles=True)
     @commands.command()
     async def reroll(self, ctx):
+        """This forcibly rerolls the CoTD.
+
+        It requires CoTD to be configured.
+
+        No arguments."""
         if not get_config(ctx.guild.id, "cotd", "cotdrole") or not get_config(
             ctx.guild.id, "cotd", "cotdname"
         ):

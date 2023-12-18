@@ -164,6 +164,11 @@ class ModToss(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def sessions(self, ctx):
+        """This shows the open toss sessions.
+
+        There's not much more to this.
+
+        No arguments."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         embed = stock_embed(self.bot)
@@ -209,6 +214,12 @@ class ModToss(Cog):
     @commands.bot_has_permissions(manage_roles=True, manage_channels=True)
     @commands.command(aliases=["roleban"])
     async def toss(self, ctx, *, user_ids):
+        """This tosses a user.
+
+        Please refer to the tossing section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-tossing-system/).
+
+        - `user_ids`
+        The users to toss."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         user_id_list, invalid_ids = self.get_user_list(ctx, user_ids)
@@ -359,6 +370,12 @@ class ModToss(Cog):
     @commands.bot_has_permissions(manage_roles=True, manage_channels=True)
     @commands.command(aliases=["unroleban"])
     async def untoss(self, ctx, *, user_ids=None):
+        """This untosses a user.
+
+        Please refer to the tossing section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-tossing-system/).
+
+        - `user_ids`
+        The users to untoss."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):
@@ -497,6 +514,12 @@ class ModToss(Cog):
     @commands.check(ismod)
     @commands.command()
     async def close(self, ctx, archive=True):
+        """This closes a toss session.
+
+        Please refer to the tossing section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-tossing-system/).
+
+        - `archive`
+        Whether to archive the session or not. Optional."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):

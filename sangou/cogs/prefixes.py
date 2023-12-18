@@ -18,7 +18,11 @@ class prefixes(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.group(aliases=["prefix"], invoke_without_command=True)
     async def prefixes(self, ctx):
-        """[U] Lists all prefixes."""
+        """This lists all of your prefixes.
+
+        You can manage it with the `add/remove` subcommands.
+
+        No arguments."""
         embed = stock_embed(self.bot)
         embed.title = "📣 Your current prefixes..."
         embed.description = f"Use `{ctx.prefix}prefix add/remove` to change your prefixes.\nMentioning the bot will always be a prefix."
@@ -41,7 +45,12 @@ class prefixes(Cog):
 
     @prefixes.command()
     async def add(self, ctx, *, arg: str):
-        """[U] Adds a new prefix."""
+        """This adds a new prefix.
+
+        Prefixes with spaces are welcome.
+
+        - `arg`
+        The prefix to add."""
         profile = fill_profile(ctx.author.id)
         maxprefixes = config.maxprefixes if config.maxprefixes <= 25 else 25
         if not len(profile["prefixes"]) >= maxprefixes:
@@ -56,7 +65,12 @@ class prefixes(Cog):
 
     @prefixes.command()
     async def remove(self, ctx, number: int):
-        """[U] Removes a prefix."""
+        """This removes a prefix.
+
+        Refer to the index in the prefixes command.
+
+        - `number`
+        The index of the prefix to remove."""
         profile = fill_profile(ctx.author.id)
         try:
             profile["prefixes"].pop(number - 1)

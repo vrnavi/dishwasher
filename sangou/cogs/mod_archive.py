@@ -32,6 +32,11 @@ class ModArchive(Cog):
     @commands.check(ismod)
     @commands.command(aliases=["archives"])
     async def archive(self, ctx, *, args=None):
+        """Archives a toss channel to a Google Drive folder.
+
+        This will be removed soon. Don't use it.
+
+        No arguments."""
         if not get_config(ctx.guild.id, "toss", "drivefolder"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         credentials = ServiceAccountCredentials.from_json_keyfile_name(

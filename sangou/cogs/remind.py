@@ -15,7 +15,11 @@ class Remind(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.group(invoke_without_command=True)
     async def reminders(self, ctx):
-        """[U] Lists your reminders."""
+        """This lists your reminders.
+
+        There's not much more to it.
+
+        No arguments."""
         ctab = get_botfile("timers")
         uid = str(ctx.author.id)
         embed = stock_embed(self.bot)
@@ -40,7 +44,12 @@ class Remind(Cog):
 
     @reminders.command()
     async def remove(self, ctx, number: int):
-        """[U] Removes one of your reminders."""
+        """This removes a reminder.
+
+        Use the index from the reminders command.
+
+        - `number`
+        The index of the reminder to remove."""
         ctab = get_botfile("timers")
         uid = str(ctx.author.id)
         idx = 0
@@ -57,7 +66,14 @@ class Remind(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command(aliases=["remindme"])
     async def remind(self, ctx, when: str, *, text: str = "something"):
-        """[U] Reminds you about something."""
+        """This adds a new reminder.
+
+        Spaces are welcome.
+
+        - `when`
+        The amount of time to remind you. For example, `5m`, `7w`, or a timestamp.
+        - `text`
+        The contents of the reminder."""
         if when.isdigit() and len(when) == 10:
             # Timestamp provided, just use that.
             expiry_timestamp = int(when)

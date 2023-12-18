@@ -17,9 +17,18 @@ class ModTimed(Cog):
     @commands.bot_has_permissions(ban_members=True)
     @commands.command()
     async def timeban(
-        self, ctx, target: discord.Member, duration: str, *, reason: str = ""
+        self, ctx, target: discord.User, duration: str, *, reason: str = ""
     ):
-        """[S] Bans a user for a specified amount of time."""
+        """This bans a user for a certain amount of time.
+
+        Does it work? I do not know!
+
+        - `target`
+        The user to ban.
+        - `duration`
+        The length of time to ban for. For example, `5m`, or `7d`.
+        - `reason`
+        The reason for the ban."""
         if target == ctx.author:
             return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
