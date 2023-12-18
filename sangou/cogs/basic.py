@@ -411,7 +411,9 @@ class Basic(Cog):
             )
 
             embed.add_field(
-                name="Aliases", value="\n- ".join(botcommand.aliases), inline=True
+                name="Aliases",
+                value="\n- ".join(botcommand.aliases) if botcommand.aliases else "None",
+                inline=True,
             )
 
             if "bot_has_permissions" in repr(botcommand.checks):
