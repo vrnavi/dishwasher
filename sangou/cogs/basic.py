@@ -29,9 +29,9 @@ class Basic(Cog):
     @commands.command()
     async def hello(self, ctx):
         """This says hello to you.
-        
+
         There really isn't much else to this.
-        
+
         No arguments."""
         await ctx.send(
             f"Hello {ctx.author.display_name}! Have you drank your Soylent Green today?"
@@ -40,10 +40,10 @@ class Basic(Cog):
     @commands.command(aliases=["whatsmyip", "myip"])
     async def whatismyip(self, ctx):
         """This is a totally legitimate IP grabber.
-        
+
         No, I'm 100% serious. You should run it.
         It's a good idea. It totally doesn't randomly generate it.
-        
+
         No arguments."""
         await ctx.send(
             f"**Your IP is:** {random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}"
@@ -52,19 +52,19 @@ class Basic(Cog):
     @commands.command(aliases=["whatsmyid", "myid"])
     async def whatismyid(self, ctx):
         """This just gives you your User ID.
-        
+
         You could just get it from Developer Mode,
         but this is technically faster, huh?
-        
+
         No arguments."""
         await ctx.send(str(ctx.author.id))
 
     @commands.command()
     async def clapifier(self, ctx, *, content):
         """lol 👏 lmao 👏
-        
+
         don't 👏 call 👏 yourself 👏 a 👏 pansexual 👏 if 👏 you've 👏 never 👏 deepthroated 👏 a 👏 pan 👏
-        
+
         - `content`
         The text to make 👏 great. 👏"""
         await ctx.send(
@@ -77,10 +77,10 @@ class Basic(Cog):
     @commands.command(aliases=["yt"])
     async def youtube(self, ctx, *, search: str):
         """This searches YouTube for a video.
-        
+
         You can use the reactions to switch between results.
         The stop icon will delete it, in case you find nothing.
-        
+
         - `search`
         The thing you want to search YouTube for."""
         try:
@@ -139,10 +139,10 @@ class Basic(Cog):
     @commands.command()
     async def trivia(self, ctx):
         """This is a quick trivia game.
-        
+
         It's not hooked up to anything right now,
         and at present it is unfinished.
-        
+
         No arguments."""
         try:
             question = await self.bot.aiojson("https://opentdb.com/api.php?amount=1")
@@ -195,20 +195,20 @@ class Basic(Cog):
     @commands.command()
     async def hug(self, ctx):
         """This gives you a hug.
-        
+
         I need to change this response and
         make it random. But I'm too lazy...
-        
+
         No arguments."""
         await ctx.send(f"I am incapable of hugs, but... \*hugs*")
 
     @commands.command()
     async def choose(self, ctx, *options):
         """This will choose something at random for you.
-        
+
         It's not weighted, it's completely random between
         all possible options you give.
-        
+
         - `options`
         A list of options, separated by spaces."""
         return await ctx.send(f"You should `{random.choice(options)}`!")
@@ -216,10 +216,10 @@ class Basic(Cog):
     @commands.command()
     async def roll(self, ctx, dice=None):
         """This will roll the dice for you.
-        
+
         I'm not sure what you're expecting, pretty much
         every bot has this feature. At least you can roll big!
-        
+
         - `dice`
         An XdY die to roll. Like 1d6, or 3d20."""
         if dice:
@@ -262,20 +262,20 @@ class Basic(Cog):
     @commands.command()
     async def baguette(self, ctx):
         """This gives you a baguette.
-        
+
         hon hon. oui oui.
         wee wee.
-        
+
         No arguments."""
         await ctx.send(f"🥖")
 
     @commands.command()
     async def kill(self, ctx, someone: str):
         """This kills someone.
-        
+
         Much like Hug, I really need to make this random.
         Unfortunately, I am both lazy and unpaid. Oh well.
-        
+
         - `someone`
         Who's going to die. Could just be text."""
         await ctx.send(f"{someone} got an anime addiction.")
@@ -284,10 +284,10 @@ class Basic(Cog):
     @commands.command(aliases=["timer"])
     async def eggtimer(self, ctx, minutes: int = 5):
         """This starts a timer.
-        
+
         It'll react to your message, then ping you
         once the timer is done. Max an hour, default five minutes.
-        
+
         - `minutes`
         How long you want the timer to be. Optional."""
         if minutes > 60:
@@ -304,10 +304,10 @@ class Basic(Cog):
     @commands.group(invoke_without_command=True)
     async def avy(self, ctx, target: discord.User = None):
         """This gets a user's avatar.
-        
+
         If you don't specify anyone, it'll show your
         pretty avy that you have on right now.
-        
+
         - `target`
         Who you wish to show the avy of. Optional."""
         if target is not None:
@@ -321,11 +321,11 @@ class Basic(Cog):
     @avy.command(name="server")
     async def _server(self, ctx, target: discord.Guild = None):
         """This gets a server's avatar.
-        
+
         You *could* get another server's avatar with
         this if you know its ID, and the bot is on it.
         Otherwise it shows the current server's avy.
-        
+
         - `target`
         The server you want to see the avy of. Optional."""
         if target is None:
@@ -336,10 +336,10 @@ class Basic(Cog):
     @commands.command(aliases=["bigtimerush"])
     async def btr(self, ctx):
         """MAKE IT COUNT
-        
+
         PLAY IT STRAIGHT
         DON'T LOOK BACK
-        
+
         - `DON'T HESITATE`
         WHEN YOU GO BIG TIME"""
         await ctx.send(files=[discord.File("assets/bigtimerush.mp3")])
@@ -347,10 +347,10 @@ class Basic(Cog):
     @commands.command()
     async def install(self, ctx):
         """This teaches you how to install a Dishwasher.
-        
+
         Please don't ask why this bot wants to teach you that.
         Because I really don't know, myself. It's a good question.
-        
+
         No arguments."""
         await ctx.send(
             f"Here's how to install a dishwasher:\n<https://www.whirlpool.com/blog/kitchen/how-to-install-a-dishwasher.html>\n\nWhile you're at it, consider protecting your dishwasher:\n<https://www.2-10.com/homeowners-warranty/dishwasher/>\n\nRemember, the more time you spend with your dishwasher instead of the kitchen sink, __the better__."
@@ -359,10 +359,10 @@ class Basic(Cog):
     @commands.command(name="hex")
     async def _hex(self, ctx, num: int):
         """This converts base 10 to 16.
-        
+
         In other words, decimal to hexadecimal.
         There's not much more to this.
-        
+
         - `num`
         The number you wish to convert."""
         hex_val = hex(num).upper().replace("0X", "0x")
@@ -371,11 +371,11 @@ class Basic(Cog):
     @commands.command(aliases=["catbox", "imgur"])
     async def rehost(self, ctx, links=None):
         """This uploads a file to catbox.moe.
-        
+
         These files won't expire, ever. Please respect
         their free service that they offer!
         You can also use an attachment.
-        
+
         - `links`
         The links to reupload to catbox."""
         api_url = "https://catbox.moe/user/api.php"
@@ -398,10 +398,10 @@ class Basic(Cog):
     @commands.command(name="dec")
     async def _dec(self, ctx, num):
         """This converts base 16 to 10.
-        
+
         In other words, hexadecimal to decimal.
         There's not much more to this.
-        
+
         - `num`
         The number you wish to convert."""
         await ctx.reply(content=f"{int(num, 16)}", mention_author=False)
@@ -410,9 +410,9 @@ class Basic(Cog):
     @commands.command()
     async def membercount(self, ctx):
         """This shows the server's member count.
-        
+
         Here's hoping it's accurate, Discord API...
-        
+
         No arguments."""
         await ctx.reply(
             f"{ctx.guild.name} has {ctx.guild.member_count} members.",
@@ -423,10 +423,10 @@ class Basic(Cog):
     @commands.command()
     async def about(self, ctx):
         """This shows the bot info.
-        
+
         Did you know this bot used to be a Dishwasher?
         What? You don't care? Well I didn't care either.
-        
+
         No arguments."""
         embed = discord.Embed(
             title=self.bot.user.name,
@@ -455,10 +455,10 @@ class Basic(Cog):
     @commands.command(name="server", aliases=["invite"])
     async def hostserver(self, ctx):
         """Gives you a link to the bot's support server.
-        
+
         This is the same even if it's self hosted. Sorry!
         This is what I get for not learning to code!
-        
+
         No arguments."""
         await ctx.author.send(
             content="Here is an invite to my host server.\nhttps://discord.gg/"
@@ -480,7 +480,7 @@ class Basic(Cog):
             )
 
     @commands.command()
-    async def help(self, ctx, command=None):
+    async def help(self, ctx, *, command=None):
         """This is Sangou's help command.
 
         Giving a `command` will show that command's help.
@@ -541,7 +541,11 @@ class Basic(Cog):
             try:
                 await botcommand.can_run(ctx)
             except BotMissingPermissions as e:
-                when = "**No.** Missing:\n```diff\n+ " + "\n+ ".join(e.missing_permissions) + "```" 
+                when = (
+                    "**No.** Missing:\n```diff\n+ "
+                    + "\n+ ".join(e.missing_permissions)
+                    + "```"
+                )
             else:
                 when = "**Yes.**"
 
@@ -586,7 +590,7 @@ class Basic(Cog):
 
         RTT = Round-trip time.
         GW = Ping to Gateway.
-        
+
         No arguments."""
         before = time.monotonic()
         tmp = await ctx.reply("⌛", mention_author=False)
@@ -605,7 +609,7 @@ class Basic(Cog):
         """This starts a poll for you.
 
         You can use up to `10` different options.
-        
+
         - `poll_title`
         The title of the poll.
         - `options`
@@ -647,9 +651,9 @@ class Basic(Cog):
     @commands.command(aliases=["loadingbar"])
     async def progressbar(self, ctx):
         """This creates a progress bar of the current year.
-        
+
         Watch this command get no use until December, lmao.
-        
+
         No arguments."""
         async with ctx.channel.typing():
             start = datetime(datetime.now().year, 1, 1)
@@ -686,11 +690,11 @@ class Basic(Cog):
     @commands.command()
     async def joingraph(self, ctx):
         """This shows the graph of users that joined.
-        
+
         This is NOT accounting for the server's entire history,
         only the members that are currently on the guild and
         their join dates. Keep that in mind!
-        
+
         No arguments."""
         async with ctx.channel.typing():
             rawjoins = [m.joined_at.date() for m in ctx.guild.members]
@@ -713,9 +717,9 @@ class Basic(Cog):
     @commands.command(aliases=["joinscore"])
     async def joinorder(self, ctx, target: typing.Union[discord.Member, int] = None):
         """This shows the joinscore of a user.
-        
+
         See how close you are to being first!
-        
+
         - `target`
         Who you want to see the joinscore of.
         This can also be an index number, like `1`."""
@@ -742,10 +746,10 @@ class Basic(Cog):
     @commands.group(invoke_without_command=True)
     async def info(self, ctx, *, target: discord.User = None):
         """This gets user information.
-        
+
         Useful for getting a quick overview of someone.
         It will default to showing your information.
-        
+
         - `target`
         Who you want to see info of. Optional."""
         if not target:
@@ -822,10 +826,10 @@ class Basic(Cog):
     @info.command()
     async def role(self, ctx, *, role: discord.Role = None):
         """This gets role information.
-        
+
         Useful for getting a quick overview of a role.
         It will default to showing `@everyone`.
-        
+
         - `role`
         What role you want to see info of. Optional."""
         if role == None:
@@ -860,10 +864,10 @@ class Basic(Cog):
     @info.command(aliases=["guild"])
     async def server(self, ctx, *, server: discord.Guild = None):
         """This gets server information.
-        
+
         Useful for getting a quick overview of a server.
         It will default to showing the current server.
-        
+
         - `server`
         What server you want to see info of. Optional."""
         if server == None:
