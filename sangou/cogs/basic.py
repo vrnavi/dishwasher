@@ -28,7 +28,11 @@ class Basic(Cog):
 
     @commands.command()
     async def hello(self, ctx):
-        """[U] Says hello!"""
+        """This says hello to you.
+        
+        There really isn't much else to this.
+        
+        No arguments required."""
         await ctx.send(
             f"Hello {ctx.author.display_name}! Have you drank your Soylent Green today?"
         )
@@ -379,7 +383,7 @@ class Basic(Cog):
                     mention_author=False,
                 )
             embed = stock_embed(self.bot)
-            embed.title = f"❓ `{ctx.prefix} {command}`"
+            embed.title = f"❓ `{ctx.prefix}{command}`"
             segments = botcommand.help.split("\n\n")
             if len(segments) != 3:
                 return await ctx.reply(
@@ -416,23 +420,14 @@ class Basic(Cog):
                 inline=True,
             )
 
-            if "bot_has_permissions" in repr(botcommand.checks):
-                for check in botcommand.checks:
-                    if "bot_has_permissions" in repr(check):
-                        try:
-                            check(ctx)
-                        except BotMissingPermissions as e:
-                            when = (
-                                "❎ I'm missing:\n```diff\n- "
-                                + "\n- ".join(e.missing_permissions)
-                                + "```"
-                            )
-                        else:
-                            when = "✅ I can do this."
+            try:
+                await botcommand.can_run(ctx)
+            except BotMissingPermissions as e:
+                when = "**No.** Missing:\n```diff\n+ " + "\n+ ".join(e.missing_permissions) + "```" 
             else:
-                when = "✅ No special permissions."
+                when = "**Yes.**"
 
-            embed.add_field(name="Permissions", value=when, inline=True)
+            embed.add_field(name="Executable", value=when, inline=True)
 
             await ctx.reply(embed=embed, mention_author=False)
 

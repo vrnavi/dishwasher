@@ -176,8 +176,8 @@ async def on_command_error(ctx, error):
             random_msg("err_role", ctx) + f"```{error.missing_role}```"
         )
     elif isinstance(error, commands.BotMissingPermissions):
-        roles_needed = "\n-".join(error.missing_permissions)
-        return await ctx.send(random_msg("err_perms", ctx) + f"```- {roles_needed}```")
+        roles_needed = "\n+ ".join(error.missing_permissions)
+        return await ctx.send(random_msg("err_perms", ctx) + f"```diff\n+ {roles_needed}```")
     elif isinstance(error, commands.CommandOnCooldown):
         return await ctx.send(
             random_msg("err_cooldown", ctx) + f"{error.retry_after:.1f} seconds."
