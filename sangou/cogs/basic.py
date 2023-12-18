@@ -11,6 +11,7 @@ import platform
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
+from helpers.embeds import stock_embed, author_embed
 import aiohttp
 import re as ren
 import html
@@ -359,11 +360,15 @@ class Basic(Cog):
     @commands.command()
     async def help(self, ctx, command=None):
         """This is Sangou's help command.
-        You can give it a `command`.
-        It will give you information on the command you specify."""
+
+        Giving a `command` will show that command's help.
+        Running this command by itself shows a link to the documentation.
+
+        - `command`
+        The command to get help on. Optional."""
         if not command:
             return await ctx.reply(
-                "For my documentation and command list, please see my documentation:\nhttps://3gou.0ccu.lt/.",
+                "For how to use my services, please see my documentation:\nhttps://3gou.0ccu.lt/.",
                 mention_author=False,
             )
         else:
@@ -373,11 +378,72 @@ class Basic(Cog):
                     "This isn't a command.",
                     mention_author=False,
                 )
+            embed = stock_embed(self.bot)
+            embed.title = f"❓ `{ctx.prefix} {command}`"
+            segments = botcommand.help.split("\n\n")
+            if len(segments) != 3:
+                return await ctx.reply(
+                    "This command isn't configured properly yet.\nPlease look at the documentation, and yell at Ren to fix it.",
+                    mention_author=False,
+                )
+            embed.description = f"**{segments[0]}**\n>>> {segments[1]}"
+            embed.add_field(name="Arguments", value=segments[2], inline=False)
+            if "ismanager" in repr(botcommand.checks):
+                who = "Bot Manager Only"
+            elif "isowner" in repr(botcommand.checks):
+                who = "Server Owner or Higher"
+            elif "isadmin" in repr(botcommand.checks):
+                who = "Server Admin or Higher"
+            elif "ismod" in repr(botcommand.checks):
+                who = "Server Mod or Higher"
+            else:
+                who = "Everyone"
+
+            if "dm_only" in repr(botcommand.checks):
+                where = "DMs Only"
+            elif "guild_only" in repr(botcommand.checks):
+                where = "Guilds Only"
+            else:
+                where = "Everywhere"
+
+            embed.add_field(
+                name="Access", value="- " + who + "\n- " + where, inline=True
+            )
+
+            embed.add_field(
+                name="Aliases", value="\n- ".join(botcommand.aliases), inline=True
+            )
+
+            if "bot_has_permissions" in repr(botcommandchecks):
+                for check in botcommand.checks:
+                    if "bot_has_permissions" in repr(check):
+                        try:
+                            check(ctx)
+                        except BotMissingPermissions as e:
+                            when = (
+                                "❎ I'm missing:\n```diff\n- "
+                                + "\n- ".join(e.missing_permissions)
+                                + "```"
+                            )
+                        else:
+                            when = "✅ I can do this."
+            else:
+                when = "✅ No special permissions."
+
+            embed.add_field(name="Permissions", value=when, inline=True)
+
+            await ctx.reply(embed=embed, mention_author=False)
 
     @commands.bot_has_permissions(embed_links=True)
     @commands.command(aliases=["showcolor"])
     async def color(self, ctx, color):
-        """Shows a color in chat."""
+        """This shows a color in chat.
+
+        You can provide a color with `000000` or `#000000` format.
+        Colors should be valid hexadecimal colors!
+
+        - `color`
+        The hexadecimal color to view. Required."""
         if color[0] == "#":
             color = color[1:]
 
