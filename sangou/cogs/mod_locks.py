@@ -49,17 +49,17 @@ class ModLocks(Cog):
     @commands.check(ismod)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.command(aliases=["lockdown"])
-    async def lock(self, ctx, soft: bool = False, channel: discord.TextChannel = None):
+    async def lock(self, ctx, channel: discord.TextChannel = None, soft: bool = False):
         """This prevents people from typing in a channel.
 
         Useful for rowdy bunches. It saves the channel
         permissions state until the bot goes down.
         Defaults to the current channel.
 
-        - `soft`
-        Whether to yell at the users or not.
         - `channel`
-        The channel to lock down."""
+        The channel to lock down.
+        - `soft`
+        Whether to yell at the users or not."""
         if not channel:
             channel = ctx.channel
         adminroleid = get_config(ctx.guild.id, "staff", "adminrole")
