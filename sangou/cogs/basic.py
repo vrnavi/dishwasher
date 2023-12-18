@@ -414,7 +414,7 @@ class Basic(Cog):
                 name="Aliases", value="\n- ".join(botcommand.aliases), inline=True
             )
 
-            if "bot_has_permissions" in repr(botcommandchecks):
+            if "bot_has_permissions" in repr(botcommand.checks):
                 for check in botcommand.checks:
                     if "bot_has_permissions" in repr(check):
                         try:
