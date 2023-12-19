@@ -502,6 +502,7 @@ class Basic(Cog):
                 )
             embed = stock_embed(self.bot)
             embed.title = f"❓ `{ctx.prefix}{botcommand.qualified_name}`"
+            embed.color = ctx.author.color
             segments = botcommand.help.split("\n\n")
             if len(segments) != 3:
                 return await ctx.reply(
