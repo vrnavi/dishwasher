@@ -19,7 +19,13 @@ class Snippets(Cog):
     @commands.guild_only()
     @commands.group(aliases=["snip"], invoke_without_command=True)
     async def snippet(self, ctx, *, name=None):
-        """[U] Staff defined tags."""
+        """This displays staff defined tags.
+
+        Using this command by itself will show a list of tags.
+        Giving a name will post that snippet in the chat.
+
+        - `name`
+        The name of the snippet to post. Optional."""
         snippets = get_guildfile(ctx.guild.id, "snippets")
         if not name:
             embed = stock_embed(self.bot)
@@ -64,7 +70,16 @@ class Snippets(Cog):
     @commands.check(isadmin)
     @snippet.command()
     async def create(self, ctx, name, *, contents):
-        """Creates a new snippet."""
+        """This creates a new snippet.
+
+        You can set the `contents` to be the name of another
+        snippet to create an alias to that snippet. See the
+        [documentation](https://3gou.0ccu.lt/as-a-moderator/the-snippet-system/) for more details.
+
+        - `name`
+        The name of the snippet to create.
+        - `contents`
+        The contents of the snippet."""
         snippets = get_guildfile(ctx.guild.id, "snippets")
         if name.lower() in snippets:
             return await ctx.reply(
@@ -94,7 +109,13 @@ class Snippets(Cog):
     @commands.check(isadmin)
     @snippet.command()
     async def delete(self, ctx, name):
-        """Deletes a snippet."""
+        """This deletes a snippet
+
+        The name can be an alias as well. See the
+        [documentation](https://3gou.0ccu.lt/as-a-moderator/the-snippet-system/) for more details.
+
+        - `name`
+        The name of the snippet to delete."""
         snippets = get_guildfile(ctx.guild.id, "snippets")
         if name.lower() not in snippets:
             return await ctx.reply(

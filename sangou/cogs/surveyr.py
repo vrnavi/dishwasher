@@ -88,7 +88,11 @@ class Surveyr(Cog):
     @commands.check(ismod)
     @commands.command(invoke_without_command=True, aliases=["s"])
     async def survey(self, ctx):
-        """[S] Invokes Surveyr."""
+        """This shows a list of recent surveys.
+
+        Please see the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-survey-system/) for more info.
+
+        No arguments."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         surveys = get_guildfile(ctx.guild.id, "surveys")
@@ -119,7 +123,18 @@ class Surveyr(Cog):
         *,
         reason: str,
     ):
-        """[S] Invokes Surveyr manually."""
+        """THIS IS A DEBUG COMMAND!
+
+        Please only run it if you are asked to!
+
+        - `survey_type`
+        The type of survey to create.
+        - `member`
+        The actioned member.
+        - `user`
+        The actioning Staff.
+        - `reason`
+        The reason for the action."""
         if not self.enabled:
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         surveys = get_guildfile(ctx.guild.id, "surveys")
@@ -144,7 +159,14 @@ class Surveyr(Cog):
     @commands.check(ismod)
     @commands.command(aliases=["r"])
     async def reason(self, ctx, caseids: str, *, reason: str):
-        """[S] Edits case reasons."""
+        """This edits a survey reason.
+
+        Please see the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-survey-system/) for more info.
+
+        - `caseids`
+        The IDs to edit. Can be single (`15`) or multiple (`15..18`).
+        - `reason`
+        The reason to apply to the cases."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
@@ -197,7 +219,12 @@ class Surveyr(Cog):
     @commands.check(ismod)
     @commands.command(aliases=["c"])
     async def censor(self, ctx, caseids: str):
-        """[S] Censors cases."""
+        """This censors a survey name.
+
+        Useful for people with racist or otherwise offensive names.
+
+        - `caseids`
+        The IDs to censor. Can be single (`15`) or multiple (`15..18`)."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
@@ -253,7 +280,12 @@ class Surveyr(Cog):
     @commands.check(ismod)
     @commands.command(aliases=["u"])
     async def uncensor(self, ctx, caseids: str):
-        """[S] Uncensors cases."""
+        """This uncensors a survey name.
+
+        Using it will fetch the user's latest name as well.
+
+        - `caseids`
+        The IDs to uncensor. Can be single (`15`) or multiple (`15..18`)."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
@@ -297,7 +329,12 @@ class Surveyr(Cog):
     @commands.guild_only()
     @commands.command(aliases=["d"])
     async def dump(self, ctx, caseids: str):
-        """[S] Dumps userids from cases."""
+        """This dumps survey user IDs.
+
+        Use this with `massban` to ban users on other servers.
+
+        - `caseids`
+        The IDs to dump. Can be single (`15`) or multiple (`15..18`)."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))

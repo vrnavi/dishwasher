@@ -83,13 +83,15 @@ class sv_config(Cog):
     @commands.check(isadmin)
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
     @commands.group(aliases=["config"], invoke_without_command=True)
-    async def configs(self, ctx, guild: discord.Guild = None):
-        """[S] Gets the configuration for a guild."""
-        if not guild:
-            guild = ctx.guild
-        if not os.path.exists(f"data/servers/{guild.id}/config.yml"):
-            fill_config(guild.id)
-        configs = discord.File(f"data/servers/{guild.id}/config.yml")
+    async def configs(self, ctx):
+        """This gets the configuration for your server.
+
+        Please see the [documentation](https://3gou.0ccu.lt/as-an-administrator/server-configuration/) for more information.
+
+        No arguments."""
+        if not os.path.exists(f"data/servers/{ctx.guild.id}/config.yml"):
+            fill_config(ctx.guild.id)
+        configs = discord.File(f"data/servers/{ctx.guild.id}/config.yml")
         embed = stock_embed(self.bot)
         author_embed(embed, ctx.author)
         embed.title = "⚙️ Your server's configuration..."
@@ -105,7 +107,12 @@ class sv_config(Cog):
     @commands.check(ismanager)
     @configs.command()
     async def reset(self, ctx, guild: discord.Guild = None):
-        """[O] Resets the configuration for a guild."""
+        """This resets the configuration for a guild.
+
+        Dev only command. Server admins should use the `stock` command.
+
+        - `guild`
+        The guild to reset configs for."""
         if not guild:
             guild = ctx.guild
         make_config(guild.id)
@@ -119,7 +126,11 @@ class sv_config(Cog):
     @commands.bot_has_permissions(attach_files=True)
     @configs.command()
     async def stock(self, ctx):
-        """[S] Gets the stock configuration."""
+        """This gets the latest stock configuration.
+
+        Stock configurations include comments to aid in filling out.
+
+        No arguments."""
         configs = discord.File(f"assets/config.example.yml")
         return await ctx.reply(
             content="Here is the latest stock configuration.",
@@ -130,12 +141,14 @@ class sv_config(Cog):
     @commands.guild_only()
     @commands.check(isadmin)
     @configs.command()
-    async def set(
-        self, ctx, attachment: discord.Attachment, guild: discord.Guild = None
-    ):
-        """[S] Sets the configuration for a guild."""
-        if not guild:
-            guild = ctx.guild
+    async def set(self, ctx, attachment: discord.Attachment):
+        """This sets the guild configuration.
+
+        If it tells you the config is invalid, please compare
+        against the `stock` configuration.
+
+        - `attachment`
+        The config file, upload this please."""
         try:
             conffile = await attachment.read()
             config = yaml.safe_load(conffile.decode("utf-8"))
@@ -144,7 +157,7 @@ class sv_config(Cog):
                 content="Malformed config.yml error.", mention_author=False
             )
         try:
-            config = self.validate(guild, config)
+            config = self.validate(ctx.guild, config)
         except KeyError:
             return await ctx.reply(
                 content="Unable to convert a name to an ID.", mention_author=False
@@ -158,7 +171,7 @@ class sv_config(Cog):
                 content="Nonexistent setting error. Compare your config against the `stock` config.",
                 mention_author=False,
             )
-        set_raw_config(guild.id, config)
+        set_raw_config(ctx.guild.id, config)
         return await ctx.reply(
             content="The configuration has been updated.", mention_author=False
         )

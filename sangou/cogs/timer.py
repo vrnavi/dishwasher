@@ -29,7 +29,11 @@ class Timer(Cog):
     @commands.check(ismanager)
     @commands.command()
     async def listjobs(self, ctx):
-        """[S] Lists timed jobs."""
+        """This lists timed jobs.
+
+        I really need to revamp this system.
+
+        No arguments."""
         ctab = get_botfile("timers")
         embed = discord.Embed(title=f"Active jobs")
         for jobtype in ctab:
@@ -47,14 +51,16 @@ class Timer(Cog):
     @commands.check(ismanager)
     @commands.command(aliases=["removejob"])
     async def deletejob(self, ctx, timestamp: str, job_type: str, job_name: str):
-        """[S] Removes a timed Dishtimer job.
+        """This deletes a timed job.
 
-        You'll need to supply:
-        - timestamp (like 1545981602)
-        - job type (like "unban")
-        - job name (userid, like 420332322307571713)
+        I really need to revamp this system.
 
-        You can get all 3 from listjobs command."""
+        - `timestamp`
+        The timestamp of the job.
+        - `job_type`
+        The type of the job.
+        - `job_name`
+        The name of the job. A userid."""
         delete_job(timestamp, job_type, job_name)
         await ctx.send(f"{ctx.author.mention}: Deleted!")
 

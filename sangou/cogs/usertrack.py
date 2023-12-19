@@ -29,6 +29,12 @@ class usertrack(Cog):
     @commands.guild_only()
     @commands.command()
     async def timespent(self, ctx, target: discord.Member = None):
+        """This is a debug command used to show the length of time you're on a server.
+
+        If you're an old fart user, it will be wrong. No warranty.
+
+        - `target`
+        The user to view time spent for."""
         usertracks = get_guildfile(ctx.guild.id, "usertrack")
         if not target:
             target = ctx.author

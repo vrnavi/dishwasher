@@ -22,6 +22,12 @@ class TSAR(Cog):
     @commands.guild_only()
     @commands.command()
     async def role(self, ctx, *, role):
+        """This gives you a role, if you meet the requirements.
+
+        For a list of all available roles, see the `roles` command.
+
+        - `role`
+        The name of the role you want."""
         tsars = get_guildfile(ctx.guild.id, "tsar")
         if not tsars:
             return await ctx.reply(
@@ -96,6 +102,11 @@ class TSAR(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def roles(self, ctx):
+        """This lists all available roles.
+
+        Roles are configured with the `tsar` command by server staff.
+
+        No arguments."""
         tsars = get_guildfile(ctx.guild.id, "tsar")
         embed = stock_embed(self.bot)
         embed.title = "🎫 Assignable Roles"
@@ -148,6 +159,11 @@ class TSAR(Cog):
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def tsar(self, ctx):
+        """This manages a server's available roles.
+
+        I'd direct you to a documentation page, but I forgot to write it.
+
+        No arguments."""
         tsars = get_guildfile(ctx.guild.id, "tsar")
 
         navigation_reactions = ["⏹", "✨", "❌", "💣"]

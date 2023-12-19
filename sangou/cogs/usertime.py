@@ -13,11 +13,13 @@ class usertime(Cog):
 
     @commands.command()
     async def timezone(self, ctx, *, timezone: str = None):
-        """
-        Sets your timezone for use with the 'tf' command.
-        Timezones must be supplied the IANA tzdb (i.e. America/Chicago) format.
-        """
+        """This views or sets your timezone.
 
+        Timezones must be in `America/New_York` format.
+        See [this page](https://xske.github.io/tz/) to find your timezone.
+
+        - `timezone`
+        The timezone to set. Optional."""
         userdata = fill_profile(ctx.author.id)
         if timezone == None:
             await ctx.reply(
@@ -42,6 +44,16 @@ class usertime(Cog):
 
     @commands.command(aliases=["tf"])
     async def timefor(self, ctx, target: Member = None, *, time: str = None):
+        """This shows someone's current time.
+
+        You can supply a time in `12AM`, `12 AM`, `12:00 AM`, or `00:00` to
+        view another person's time. Running the command by itself will
+        show your current time.
+
+        - `target`
+        The person you wish to see the time for. Optional.
+        - `time`
+        This time for you will show this time for them. Optional."""
         """Send the current time in the invoker's (or mentioned user's) time zone."""
         if time and target.id != ctx.author.id:
             # check both *have* timezones
