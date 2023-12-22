@@ -106,47 +106,6 @@ class ModLogs(Cog):
 
         return embeds
 
-    def get_log_embed(self, sid: int, user, event):
-        uid = str(user.id)
-        userlog = get_guildfile(sid, "userlog")
-        embed = stock_embed(self.bot)
-        index = ["notes", "tosses", "warns", "kicks", "bans"].index(event)
-        author_embed(embed, user)
-
-        # Nonexist
-        if uid not in userlog:
-            embed.title = "📇 About that log..."
-            embed.description = (
-                "> "
-                + ("This user isn't" if not own else "You aren't")
-                + " in the system!"
-            )
-            return embed
-
-        # Empty
-        if not userlog[uid]:
-            embed.title = "📇 About that log..."
-            embed.description = (
-                "> " + ("This user's" if not own else "Your") + " logs are empty!"
-            )
-            return embed
-
-        # Individual
-        embed.title = ["📝", "🚷", "⚠️", "👢", "⛔"][index] + " Recorded " + event + "..."
-        if not userlog[uid][event]:
-            embed.description = "> This section is empty!"
-        else:
-            for idx, evn in enumerate(userlog[uid][event]):
-                embed.add_field(
-                    name=["Note", "Toss", "Warning", "Kick", "Ban"][index]
-                    + f" {idx+1}",
-                    value=f"<t:{evn['timestamp']}:R> on <t:{evn['timestamp']}:f>\n"
-                    + f"__Issuer:__ <@{evn['issuer_id']}> ({evn['issuer_id']})\n"
-                    + f"__Reason:__ {evn['reason']}",
-                    inline=False,
-                )
-        return embed
-
     @commands.guild_only()
     @commands.check(ismod)
     @commands.bot_has_permissions(
@@ -181,8 +140,11 @@ class ModLogs(Cog):
         The user to get notes for."""
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
-        embed = self.get_log_embed(ctx.guild.id, target, event="notes")
-        await ctx.send(embed=embed)
+        embeds = self.get_log_embeds(ctx.guild.id, target, False)
+        if len(embeds) == 1:
+            await ctx.send(embed=embeds[0])
+        else:
+            await ctx.send(embed=embeds[1])
 
     @commands.guild_only()
     @commands.command()
