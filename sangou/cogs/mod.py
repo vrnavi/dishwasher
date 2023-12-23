@@ -57,19 +57,21 @@ class Mod(Cog):
         if reason:
             dm_message += f'\n*The given reason is:* "{reason}".'
         dm_message += "\n\nYou are able to rejoin."
+        failmsg = ""
 
         try:
             await target.send(dm_message)
         except discord.errors.Forbidden:
             # Prevents kick issues in cases where user blocked bot
             # or has DMs disabled
+            failmsg = "\nI couldn't DM this user to tell them."
             pass
         except discord.HTTPException:
             # Prevents kick issues on bots
             pass
 
         await target.kick(reason=f"[ Kick by {ctx.author} ] {reason}")
-        await ctx.send(f"**{target.mention}** was KICKED.")
+        await ctx.send(f"**{target.mention}** was KICKED.{failmsg}")
 
         mlog = get_config(ctx.guild.id, "logging", "modlog")
         if not mlog:
@@ -141,11 +143,13 @@ class Mod(Cog):
                 if get_config(ctx.guild.id, "staff", "appealurl")
                 else "."
             )
+            failmsg = ""
             try:
                 await target.send(dm_message)
             except discord.errors.Forbidden:
                 # Prevents ban issues in cases where user blocked bot
                 # or has DMs disabled
+                failmsg = "\nI couldn't DM this user to tell them."
                 pass
             except discord.HTTPException:
                 # Prevents ban issues on bots
@@ -154,7 +158,7 @@ class Mod(Cog):
         await ctx.guild.ban(
             target, reason=f"[ Ban by {ctx.author} ] {reason}", delete_message_days=0
         )
-        await ctx.send(f"**{target.mention}** is now BANNED.")
+        await ctx.send(f"**{target.mention}** is now BANNED.\n{failmsg}")
 
         mlog = get_config(ctx.guild.id, "logging", "modlog")
         if not mlog:
@@ -235,11 +239,13 @@ class Mod(Cog):
                 else "."
             )
             dm_message += f"\n\nThis ban does not expire{appealmsg}"
+            failmsg = ""
             try:
                 await target.send(dm_message)
             except discord.errors.Forbidden:
                 # Prevents ban issues in cases where user blocked bot
                 # or has DMs disabled
+                failmsg = "\nI couldn't DM this user to tell them."
                 pass
             except discord.HTTPException:
                 # Prevents ban issues on bots
@@ -250,7 +256,7 @@ class Mod(Cog):
             delete_message_days=day_count,
         )
         await ctx.send(
-            f"**{target.mention}** is now BANNED.\n{day_count} days of messages were deleted."
+            f"**{target.mention}** is now BANNED.\n{day_count} days of messages were deleted.\n{failmsg}"
         )
 
         mlog = get_config(ctx.guild.id, "logging", "modlog")
@@ -785,18 +791,20 @@ class Mod(Cog):
             msg += (
                 f"\n\nPlease read the rules{rulesmsg} " f"This is warn #{warn_count}."
             )
+            failmsg = ""
             try:
                 await target.send(msg)
             except discord.errors.Forbidden:
                 # Prevents warn issues in cases where user blocked bot
                 # or has DMs disabled
+                failmsg = "\nI couldn't DM this user to tell them."
                 pass
             except discord.HTTPException:
                 # Prevents warn issues on bots
                 pass
 
         await ctx.send(
-            f"{target.mention} has been warned. This user now has {warn_count} warning(s)."
+            f"{target.mention} has been warned. This user now has {warn_count} warning(s).\n{failmsg}"
         )
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
