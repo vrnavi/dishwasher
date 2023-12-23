@@ -13,6 +13,7 @@ from helpers.datafiles import (
     new_survey,
     edit_survey,
     get_guildfile,
+    set_guildfile,
 )
 
 
@@ -325,6 +326,75 @@ class Surveyr(Cog):
                 break
         uncensored = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
         await ctx.reply(content=f"Uncensored `{uncensored}`.", mention_author=False)
+
+    @commands.guild_only()
+    @commands.check(ismod)
+    @commands.command(aliases=["re"])
+    async def repost(self, ctx, caseid: str):
+        """This reposts survey messages up to a case ID.
+
+        If you botch the log, this will post what the bot has.
+
+        - `caseid`
+        The ID to repost up to. Must be single (`15`)."""
+        if not self.enabled(ctx.guild.id):
+            return await ctx.reply(content=self.nocfgmsg, mention_author=False)
+        cases = self.case_handler(
+            caseid + "..l", get_guildfile(ctx.guild.id, "surveys")
+        )
+        if not cases:
+            return await ctx.reply(content="Malformed cases.", mention_author=False)
+        if len(cases) > 20:
+            warningmsg = await ctx.reply(
+                f"You are trying to repost `{len(cases)}` cases. **That's more than `20`.**\nIf you're sure about that, please tick the box within ten seconds to proceed.",
+                mention_author=False,
+            )
+            await warningmsg.add_reaction("✅")
+
+            def check(r, u):
+                return u.id == ctx.author.id and str(r.emoji) == "✅"
+
+            try:
+                await self.bot.wait_for("reaction_add", timeout=10.0, check=check)
+            except asyncio.TimeoutError:
+                await warningmsg.edit(content="Operation timed out.", delete_after=5)
+                return
+
+        surveychannel = ctx.guild.get_channel(
+            get_config(ctx.guild.id, "surveyr", "surveychannel")
+        )
+
+        for case in cases:
+            try:
+                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+            except KeyError:
+                await ctx.reply(
+                    content="You sent cases that exceed the actual case list.\nThese cases have been ignored.",
+                    mention_author=False,
+                )
+                break
+            user = await self.bot.fetch_user(survey["target_id"])
+            staff = await self.bot.fetch_user(survey["issuer_id"])
+            try:
+                msg = await surveychannel.fetch_message(survey["post_id"])
+            except discord.NotFound:
+                pass
+            else:
+                await msg.delete()
+            msg = await surveychannel.send(
+                content=(
+                    f"`#{case}` **{surveyr_event_types[survey['type']].upper()}** on <t:{survey['timestamp']}:f>\n"
+                    f"**User:** " + self.username_system(user) + "\n"
+                    f"**Staff:** " + self.username_system(staff) + "\n"
+                    f"**Reason:** {survey['reason']}"
+                )
+            )
+            surveys = get_guildfile(ctx.guild.id, "surveys")
+            surveys[case]["post_id"] = msg.id
+            set_guildfile(ctx.guild.id, "surveys", json.dumps(surveys))
+
+        reposted = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
+        await ctx.reply(content=f"Reposted `{reposted}`.", mention_author=False)
 
     @commands.guild_only()
     @commands.command(aliases=["d"])
