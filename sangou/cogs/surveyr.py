@@ -390,7 +390,7 @@ class Surveyr(Cog):
                 )
             )
             surveys = get_guildfile(ctx.guild.id, "surveys")
-            surveys[case]["post_id"] = msg.id
+            surveys[str(case)]["post_id"] = msg.id
             set_guildfile(ctx.guild.id, "surveys", json.dumps(surveys))
 
         reposted = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
