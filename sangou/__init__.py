@@ -195,7 +195,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandInvokeError) and (
         "Cannot send messages to this user" in str(error)
     ):
-        return await ctx.send(random_msg("err_dmfail", ctx))
+        return await ctx.send(random_msg("err_dmfail"))
 
     help_text = (
         f"Usage of this command is: ```{ctx.prefix}{ctx.command.name} "
