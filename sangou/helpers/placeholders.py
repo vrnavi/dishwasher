@@ -2,7 +2,7 @@ import random
 import config
 import discord
 import datetime
-import json
+import yaml
 
 
 with open("assets/placeholders.yml", "r") as f:
