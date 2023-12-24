@@ -247,13 +247,9 @@ class ModToss(Cog):
 
         for us in user_id_list:
             if us.id == ctx.author.id:
-                output += "\n" + random_msg("warn_targetself").format(
-                    authorname=ctx.author.name
-                )
+                output += "\n" + random_msg("targetself", ctx)
             elif us.id == self.bot.application_id:
-                output += "\n" + random_msg("warn_targetbot").format(
-                    authorname=ctx.author.name
-                )
+                output += "\n" + random_msg("targetbot", ctx)
             elif str(us.id) + ".json" in alreadytossed and toss_role in us.roles:
                 output += "\n" + f"{self.username_system(us)} is already tossed."
             else:
@@ -434,13 +430,9 @@ class ModToss(Cog):
 
         for us in user_id_list:
             if us.id == self.bot.application_id:
-                output += "\n" + random_msg("warn_targetbot").format(
-                    authorname=ctx.author.name
-                )
+                output += "\n" + random_msg("targetbot", ctx)
             elif us.id == ctx.author.id:
-                output += "\n" + random_msg("warn_targetself").format(
-                    authorname=ctx.author.name
-                )
+                output += "\n" + random_msg("targetself", ctx)
             elif (
                 str(us.id) + ".json"
                 not in os.listdir(

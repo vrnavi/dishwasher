@@ -41,13 +41,9 @@ class Mod(Cog):
         - `reason`
         The reason for the kick. Optional."""
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("warn_targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("warn_targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         elif self.check_if_target_is_staff(target):
             return await ctx.send("I cannot kick Staff members.")
 
@@ -114,13 +110,9 @@ class Mod(Cog):
         - `reason`
         The reason for the ban. Optional."""
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("warn_targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("warn_targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.check_if_target_is_staff(target):
@@ -209,13 +201,9 @@ class Mod(Cog):
         - `reason`
         The reason for the kick. Optional."""
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("warn_targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("warn_targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.check_if_target_is_staff(target):
@@ -316,14 +304,10 @@ class Mod(Cog):
             target_user = await self.bot.fetch_user(target)
             target_member = ctx.guild.get_member(target)
             if target == ctx.author.id:
-                await ctx.send(
-                    random_msg("warn_targetself").format(authorname=ctx.author.name)
-                )
+                await ctx.send(random_msg("targetself", ctx))
                 continue
             elif target == self.bot.user:
-                await ctx.send(
-                    random_msg("warn_targetbot").format(authorname=ctx.author.name)
-                )
+                await ctx.send(random_msg("targetbot", ctx))
                 continue
             elif target_member and self.check_if_target_is_staff(target_member):
                 await ctx.send(f"(re: {target}) I cannot ban Staff members.")
@@ -414,13 +398,9 @@ class Mod(Cog):
         - `reason`
         The reason for the ban. Optional."""
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("warn_targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("warn_targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.check_if_target_is_staff(target):
@@ -778,13 +758,9 @@ class Mod(Cog):
         - `reason`
         The reason for the warning. Optional."""
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("warn_targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("warn_targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.check_if_target_is_staff(target):

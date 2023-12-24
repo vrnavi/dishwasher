@@ -162,36 +162,40 @@ async def on_command_error(ctx, error):
     bot.errors.append((ctx, error))
 
     if isinstance(error, commands.NoPrivateMessage):
-        return await ctx.send(random_msg("err_serversonly"))
+        return await ctx.send(random_msg("err_serversonly", ctx))
     elif isinstance(error, commands.PrivateMessageOnly):
-        return await ctx.send(random_msg("err_dmsonly"))
+        return await ctx.send(random_msg("err_dmsonly", ctx))
     elif (
         isinstance(error, commands.InvalidEndOfQuotedStringError)
         or isinstance(error, commands.ExpectedClosingQuoteError)
         or isinstance(error, commands.UnexpectedQuoteError)
     ):
-        return await ctx.send(random_msg("err_quotes"))
+        return await ctx.send(random_msg("err_quotes", ctx))
     elif isinstance(error, commands.MissingRole):
-        return await ctx.send(random_msg("err_role") + f"```{error.missing_role}```")
+        return await ctx.send(
+            random_msg("err_role", ctx) + f"```{error.missing_role}```"
+        )
     elif isinstance(error, commands.BotMissingPermissions):
         roles_needed = "\n+ ".join(error.missing_permissions)
-        return await ctx.send(random_msg("err_perms") + f"```diff\n+ {roles_needed}```")
+        return await ctx.send(
+            random_msg("err_perms", ctx) + f"```diff\n+ {roles_needed}```"
+        )
     elif isinstance(error, commands.CommandOnCooldown):
         return await ctx.send(
-            random_msg("err_cooldown") + f"{error.retry_after:.1f} seconds."
+            random_msg("err_cooldown", ctx) + f"{error.retry_after:.1f} seconds."
         )
     elif isinstance(error, commands.CheckFailure):
-        return await ctx.send(random_msg("err_checkfail"))
+        return await ctx.send(random_msg("err_checkfail", ctx))
     elif isinstance(error, commands.MissingRequiredAttachment):
-        return await ctx.send(random_msg("err_noattachment"))
+        return await ctx.send(random_msg("err_noattachment", ctx))
     elif isinstance(error, commands.UserNotFound):
-        return await ctx.send(random_msg("err_usernotfound"))
+        return await ctx.send(random_msg("err_usernotfound", ctx))
     elif isinstance(error, commands.MemberNotFound):
-        return await ctx.send(random_msg("err_membernotfound"))
+        return await ctx.send(random_msg("err_membernotfound", ctx))
     elif isinstance(error, commands.CommandInvokeError) and (
         "Cannot send messages to this user" in str(error)
     ):
-        return await ctx.send(random_msg("err_dmfail"))
+        return await ctx.send(random_msg("err_dmfail", ctx))
 
     help_text = (
         f"Usage of this command is: ```{ctx.prefix}{ctx.command.name} "

@@ -28,13 +28,9 @@ class ModWatch(Cog):
         if not get_config(ctx.guild.id, "staff", "watchchannel"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("warn_targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("warn_targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.bot.check_if_target_is_staff(target):
@@ -75,13 +71,9 @@ class ModWatch(Cog):
         if not get_config(ctx.guild.id, "staff", "watchchannel"):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if target == ctx.author:
-            return await ctx.send(
-                random_msg("targetself").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetself", ctx))
         elif target == self.bot.user:
-            return await ctx.send(
-                random_msg("targetbot").format(authorname=ctx.author.name)
-            )
+            return await ctx.send(random_msg("targetbot", ctx))
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.bot.check_if_target_is_staff(target):

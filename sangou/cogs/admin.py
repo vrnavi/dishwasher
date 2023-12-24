@@ -36,7 +36,7 @@ class Admin(Cog):
         They need a lunch break sometimes.
 
         No arguments."""
-        await ctx.message.reply(content=random_msg("quit_deaths"), mention_author=False)
+        await ctx.message.reply(content=random_msg("deaths", ctx), mention_author=False)
         await self.bot.close()
 
     @commands.check(ismanager)
@@ -50,7 +50,7 @@ class Admin(Cog):
         No arguments."""
         if not self.bot.errors:
             return await ctx.reply(
-                content=random_msg("errors_noerrors"), mention_author=False
+                content="There are no logged command errors yet.", mention_author=False
             )
 
         allowed_mentions = discord.AllowedMentions(replied_user=False)
@@ -136,7 +136,7 @@ class Admin(Cog):
                 file=discord.File("data_export.zip"),
             )
         except:
-            await ctx.reply(content=random_msg("err_dmfail"), mention_author=False)
+            await ctx.reply(content=random_msg("err_dmfail", ctx), mention_author=False)
         os.remove("data_export.zip")
 
     @commands.dm_only()
