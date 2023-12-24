@@ -12,8 +12,8 @@ game_names = placeholders["games"]
 
 def random_msg(variant, **fills):
     shorthands = placeholders["shorthands"]
+    string = random.choice(placeholders[variant])
     if fills:
-        string = random.choice(placeholders[variant])
         for name in fills.keys():
             if not "{" + name + "}" in string:
                 continue
