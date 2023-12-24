@@ -36,7 +36,7 @@ class Admin(Cog):
         They need a lunch break sometimes.
 
         No arguments."""
-        await ctx.message.reply(content=random_msg("deaths", ctx), mention_author=False)
+        await ctx.message.reply(content=random_msg("deaths"), mention_author=False)
         await self.bot.close()
 
     @commands.check(ismanager)
@@ -136,7 +136,7 @@ class Admin(Cog):
                 file=discord.File("data_export.zip"),
             )
         except:
-            await ctx.reply(content=random_msg("err_dmfail", ctx), mention_author=False)
+            await ctx.reply(content=random_msg("err_dmfail"), mention_author=False)
         os.remove("data_export.zip")
 
     @commands.dm_only()

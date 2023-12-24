@@ -9,9 +9,15 @@ game_type = discord.ActivityType.listening
 game_names = placeholders["games"]
 
 
-def random_msg(variant, ctx):
-    replacements = placeholders["shorthands"] | {"authorname": ctx.author.name}
-    return random.choice(placeholders[variant]).format(**replacements)
+def random_msg(variant, **fills):
+    shorthands = placeholders["shorthands"]
+    if fills:
+        string = random.choice(placeholders[variant])
+        for name in fills.keys():
+            if not "{" + name + "}" in string:
+                continue
+            string = string.replace("{" + name + "}", fills[name])
+    return string.format(**shorthands)
 
 
 def create_log_embed(bot, color, title, desc, author, fields, thumbnail=None):

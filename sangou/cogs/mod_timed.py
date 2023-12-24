@@ -30,9 +30,13 @@ class ModTimed(Cog):
         - `reason`
         The reason for the ban."""
         if target == ctx.author:
-            return await ctx.send(random_msg("targetself", ctx))
+            return await ctx.send(
+                random_msg("warn_targetself", authorname=ctx.author.name)
+            )
         elif target == self.bot.user:
-            return await ctx.send(random_msg("targetbot", ctx))
+            return await ctx.send(
+                random_msg("warn_targetbot", authorname=ctx.author.name)
+            )
         elif self.bot.check_if_target_is_staff(target):
             return await ctx.send("I cannot ban Staff members.")
 
