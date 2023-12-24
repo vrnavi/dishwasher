@@ -4,14 +4,16 @@ import discord
 import datetime
 import json
 
-placeholders = json.load(open("assets/placeholders.json", "r"))
+
+with open("assets/placeholders.yml", "r") as f:
+    placeholders = yaml.safe_load(f)
 game_type = discord.ActivityType.listening
 game_names = placeholders["games"]
 
 
-def random_msg(variant, ctx):
-    replacements = placeholders["shorthands"] | {"authorname": ctx.author.name}
-    return random.choice(placeholders[variant]).format(**replacements)
+def random_msg(variant):
+    shorthands = placeholders["shorthands"]
+    return random.choice(placeholders[variant]).format(**shorthands)
 
 
 def create_log_embed(bot, color, title, desc, author, fields, thumbnail=None):

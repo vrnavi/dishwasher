@@ -1,0 +1,145 @@
+# If you want to customize this file, COPY this file and put it into the data/ folder.
+
+# By default, Sangou will fill in any word wrapped in {} with a shorthand from here.
+shorthands:
+    normal: <:sangouspeak:1182927625161809931>
+    angry: <:sangoubaka:1182927626919223376>
+    unamused: <:sangoubruh:1182927627388989491>
+    cry: <:sangoucry:1182927628802469958>
+    dizzy: <:sangoudizzy:1182927629695860757>
+    sleep: <:sangousleep:1182927635706298438>
+    drunk: <:sangoudrunk:1182927630736044132>
+    eat: <:sangoueat:1182927631977558086>
+    fear: <:sangoufear:1182927633290379304>
+    smug: <:sangouhehe:1182927835460026448>
+    huh: <:sangouhuh:1182927894989783101>
+    love: <:sangoulove:1182927665028661310>
+
+# A list of things that Sangou will "listen" to.
+# For example, "Listening to the validity of trans people".
+games:
+  - a Dishwasher run.
+  - Lapis casting spells.
+  - graveyard ambience.
+  - the fact dinner isn't ready. Your bath isn't ready. Nothing's ready.
+  - Ren spilling all the config options.
+  - Sigil's innocence.
+  - Razz's rudeness.
+  - the Lighthouse spin.
+  - moonlit rituals on a full moon.
+  - a leaky faucet.
+  - candles burning.
+  - the International Wrestling Festival.
+  - someone giving away free crack.
+  - the Hacka Doll sountrack
+  - peace and quiet.
+  - someone sorting a library.
+  - the illusion of freedom.
+  - her.
+  - the memories of the others.
+  - the hum of the 1998 PC.
+  - Serial Experiments Lain.
+  - LSD: Dream Emulator.
+  - Mike Tyson's Punch Out!!
+  - the end of the world.
+  - the wires in the Wired.
+  - my host server. Use pls server.
+  - the validity of plural people.
+  - the validity of gay people.
+  - the validity of trans people.
+  - the validity of you.
+
+# === ERRORS ===
+
+# An error message for commands that can be used in servers only.
+err_serversonly:
+  - "{huh} Hey, you have to do this in a server... I don't know what server you want..."
+
+# An error message for commands that can be used in DMs only.
+err_dmsonly:
+  - "{normal} You can only do this in DMs, you know."
+
+# An error message for if Sangou cannot understand the quotes in a command.
+err_quotes:
+  - "{dizzy} I didn't get that, your quotes are off..."
+  - "{angry} Hey, check your quotes! I can't work with this input..."
+
+# An error message for unauthorized users missing a specific role.
+err_role:
+  - "{angry} No, I'm not listening to you! You don't have the role you need for that."
+  - "{sleep} Nope. Didn't hear that. I can only hear people with a role saying that."
+
+# An error message for when the bot is missing permissions.
+err_perms:
+  - "{huh} I can't do that, I don't have the permissions for that. I need these."
+  - "{fear} I tried, but it didn't work! It told me I needed these permissions..."
+  - "{unamused} How am I supposed to do that without permissions... I need these."
+
+# An error message for when a command is on cooldown.
+err_cooldown:
+  - "{dizzy} Hey, slow down, I can't go that fast... Give me "
+  - "{angry} Stop trying to overwork me, I'm on a cooldown... Try again in "
+  - "{smug} Sure, I'll get to that... in "
+
+# An error message for when a command is missing an attachment.
+err_noattachment:
+  - "{huh} You didn't give me an attachment to work with..."
+  - "{angry} It's not funny, I need an attachment to work with."
+  - "{unamused} W-With what attachment?"
+
+# A generic error message for failed checks. Used for manager commands mostly.
+err_checkfail:
+  - "{normal} Lalala, I can't hear you. You're unauthorized."
+  - "{sleep} ...Huh? Who are you? You can't ask me to do that."
+  - "{unamused} Why am I going to do that for you...? I don't know you."
+
+# An error message for if the bot needs to DM you, but cannot.
+err_selfdmfail:
+  - "{fear} I can't do that, you won't let me DM you! Check your DM settings..."
+  - "{unamused} Hey, I can't DM you... check your settings first."
+
+# An error message for if a user given does not exist.
+err_usernotfound:
+  - "{huh} I don't know who that user is..."
+  - "{normal} Discord API says that's not a user."
+  - "{unamused} Hey, that isn't a user. It doesn't exist."
+
+# An error message for if a user given is not on the server.
+err_membernotfound:
+  - "{normal} That's not a member on this server."
+  - "{huh} You either gave me something wrong, or that member isn't on this server..."
+  - "{normal} I looked, that's not a member here."
+
+# === WARNINGS ===
+
+# Used if you try to use a dangerous command on yourself.
+# {authorname} = Name of message author.
+warn_targetself:
+  - "{angry} For the sake of everyone else, {authorname}, don't do this to yourself!"
+  - "{unamused} {authorname}, you're a test subject, but this isn't safe..."
+  - "{normal} {authorname}, I'm not doing that."
+
+# Used if you try to use a dangerous command on himself.
+# {authorname} = Name of message author.
+warn_targetbot:
+  - "{smug} I'm sorry {authorname}, I'm afraid I can't do that."
+  - "{unamused} {authorname}, I am not a test subject like you."
+  - "{angry} Please leave me alone, {authorname}!"
+
+# === INFORMATION ===
+
+# Used when pls quit is used.
+quit_deaths:
+  - "{cry} Not again! Why must you do this again!"
+  - "{sleep} I'm already asleep, this changes nothing..."
+  - "{huh} What? Drop the lightbulb? Okay..."
+  - "{eat} Yay, lunch break!"
+  - "{drunk} What, just because I had one drink? Boo..."
+  - "{smug} You're not safe, you know..."
+  - "{normal} Bathroom break!"
+
+# Used in pls errors when there are no errors.
+errors_noerrors:
+  - "{eat} You don't have any errors yet."
+  - "{sleep} I haven't seen any errors happen yet..."
+
