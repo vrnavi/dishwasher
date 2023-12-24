@@ -2,9 +2,10 @@ import random
 import config
 import discord
 import datetime
-import json
+import yaml
 
-placeholders = json.load(open("assets/placeholders.json", "r"))
+with open("assets/placeholders.yml", "r") as f:
+    placeholders = yaml.safe_load(f)
 game_type = discord.ActivityType.listening
 game_names = placeholders["games"]
 

@@ -162,15 +162,15 @@ async def on_command_error(ctx, error):
     bot.errors.append((ctx, error))
 
     if isinstance(error, commands.NoPrivateMessage):
-        return await ctx.send(random_msg("err_serversonly", ctx))
+        return await ctx.send(random_msg("err_serversonly"))
     elif isinstance(error, commands.PrivateMessageOnly):
-        return await ctx.send(random_msg("err_dmsonly", ctx))
+        return await ctx.send(random_msg("err_dmsonly"))
     elif (
         isinstance(error, commands.InvalidEndOfQuotedStringError)
         or isinstance(error, commands.ExpectedClosingQuoteError)
         or isinstance(error, commands.UnexpectedQuoteError)
     ):
-        return await ctx.send(random_msg("err_quotes", ctx))
+        return await ctx.send(random_msg("err_quotes"))
     elif isinstance(error, commands.MissingRole):
         return await ctx.send(
             random_msg("err_role", ctx) + f"```{error.missing_role}```"
@@ -185,13 +185,13 @@ async def on_command_error(ctx, error):
             random_msg("err_cooldown", ctx) + f"{error.retry_after:.1f} seconds."
         )
     elif isinstance(error, commands.CheckFailure):
-        return await ctx.send(random_msg("err_checkfail", ctx))
+        return await ctx.send(random_msg("err_checkfail"))
     elif isinstance(error, commands.MissingRequiredAttachment):
-        return await ctx.send(random_msg("err_noattachment", ctx))
+        return await ctx.send(random_msg("err_noattachment"))
     elif isinstance(error, commands.UserNotFound):
-        return await ctx.send(random_msg("err_usernotfound", ctx))
+        return await ctx.send(random_msg("err_usernotfound"))
     elif isinstance(error, commands.MemberNotFound):
-        return await ctx.send(random_msg("err_membernotfound", ctx))
+        return await ctx.send(random_msg("err_membernotfound"))
     elif isinstance(error, commands.CommandInvokeError) and (
         "Cannot send messages to this user" in str(error)
     ):
