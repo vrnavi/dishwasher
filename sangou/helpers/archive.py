@@ -25,7 +25,11 @@ async def log_whole_channel(bot, channel, zip_files=False):
         padding = len(ts) + len(m.author.name) + 2
         add = ts
         if m.type == discord.MessageType.default:
-            add += "{0.author.name}: {0.clean_content}".format(m)
+            add += f"{m.author.name}: {m.clean_content}"
+            if m.clean_content:
+                blank_content = False
+        elif m.type == discord.MessageType.reply:
+            add += f"{m.author.name}: {m.clean_content}"
             if m.clean_content:
                 blank_content = False
         else:

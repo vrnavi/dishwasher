@@ -143,3 +143,15 @@ errors_noerrors:
   - "{eat} You don't have any errors yet."
   - "{sleep} I haven't seen any errors happen yet..."
 
+# Used with pls hello.
+hello_hello:
+  - "{normal} Helloooooo."
+  - "{eat} Hello. What's up?"
+  - "{sleep} ...Wha?"
+
+# === COMPONENTS ===
+
+# Used for messages with embeds.
+embed_msg:
+  - "{normal} If you can't see this, check your message link settings."
+  - "{eat} Here's your embed. Check your settings if you can't see it."
