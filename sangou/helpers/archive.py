@@ -71,14 +71,13 @@ async def log_whole_channel(bot, channel, zip_files=False):
         add += "\n"
         st = add + st
 
-    ret = st
     if zip_files:
         if zipped_count:
             z.writestr("log.txt", st)
             b.seek(0)
-            ret = (ret, b)
+            ret = (st, b)
         else:
-            ret = (ret, None)
+            ret = (st, None)
 
     return ret
 

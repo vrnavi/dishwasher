@@ -17,6 +17,7 @@ class CogBurstReacts(commands.Cog, name="Burst reactions handler"):
 
     async def burst_reaction_check(self, payload: Dict):
         """Super Reaction handler."""
+
         channel_id = payload["channel_id"]
         user_id = payload["user_id"]
         message_id = payload["message_id"]
@@ -42,8 +43,13 @@ class CogBurstReacts(commands.Cog, name="Burst reactions handler"):
         # Remove reaction
         await message.remove_reaction(emoji, author)
 
+        mlog = get_config(guild.id, "logging", "modlog")
+
+        if not mlog:
+            return
+
         # Send information to log channel
-        mlog = await self.bot.fetch_channel(get_config(guild.id, "logging", "modlog"))
+        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.title = "🗑️ Autoremoved a Super Reaction"
