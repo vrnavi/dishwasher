@@ -203,7 +203,7 @@ class Basic(Cog):
         await ctx.send(f"I am incapable of hugs, but... \*hugs*")
 
     @commands.command()
-    async def petpet(self, ctx, user: discord.User = None):
+    async def petpet(self, ctx, target: discord.User = None):
         """This petpets someone.
 
         This uses an API. Ew, gross! But I'm
@@ -211,9 +211,12 @@ class Basic(Cog):
 
         - `user`
         The user to petpet. Optional."""
-        if not user:
-            user = ctx.author
-        await ctx.reply(content="https://memeado.vercel.app/api/petpet?image=" + user.display_avatar.url, mention_author=False)
+        if target is not None:
+            if ctx.guild and ctx.guild.get_member(target.id):
+                target = ctx.guild.get_member(target.id)
+        else:
+            target = ctx.author
+        await ctx.reply(content="https://memeado.vercel.app/api/petpet?image=" + target.display_avatar.url, mention_author=False)
 
     @commands.command()
     async def choose(self, ctx, *options):
