@@ -203,6 +203,19 @@ class Basic(Cog):
         await ctx.send(f"I am incapable of hugs, but... \*hugs*")
 
     @commands.command()
+    async def petpet(self, ctx, user: discord.User = None):
+        """This petpets someone.
+
+        This uses an API. Ew, gross! But I'm
+        too lazy to code this myself right now.
+
+        - `user`
+        The user to petpet. Optional."""
+        if not user:
+            user = ctx.author
+        await ctx.reply(content="https://memeado.vercel.app/api/petpet?image=" + user.display_avatar.url, mention_author=False)
+
+    @commands.command()
     async def choose(self, ctx, *options):
         """This will choose something at random for you.
 
