@@ -632,7 +632,7 @@ class Surveyr(Cog):
             await msg.edit(
                 content=(
                     f"`#{caseid}` **TIMEOUT** ending <t:{int(entry.after.timed_out_until.timestamp())}:R> on <t:{timestamp}:f>\n"
-                    f"**User:** " + self.username_system(member) + "\n"
+                    f"**User:** " + self.username_system(member_after) + "\n"
                     f"**Staff:** " + self.username_system(user) + "\n"
                     f"**Reason:** {reason}"
                 )
@@ -718,7 +718,7 @@ class Surveyr(Cog):
                     await msg.edit(
                         content=(
                             f"`#{caseid}` **DEMOTION** from `{role.name}` on <t:{timestamp}:f>\n"
-                            f"**User:** " + self.username_system(member) + "\n"
+                            f"**User:** " + self.username_system(member_after) + "\n"
                             f"**Staff:** " + self.username_system(user) + "\n"
                             f"**Reason:** {reason}"
                         )
