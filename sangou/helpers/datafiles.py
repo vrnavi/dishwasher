@@ -190,7 +190,7 @@ def new_survey(sid, uid, mid, iid, reason, event):
     surveys = get_guildfile(sid, "surveys")
 
     cid = (
-        get_config(sid, "surveyr", "start_case")
+        get_config(sid, "surveyr", "startingcase")
         if len(surveys.keys()) == 0
         else int(list(surveys)[-1]) + 1
     )
