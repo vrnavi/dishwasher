@@ -3,8 +3,7 @@
 </p>
 <p align="center"><i>3号 - Sangou</i></p>
 
-<p align="center"><img alt="Stable Version" src="https://img.shields.io/badge/version-0.2.0-white"><img alt="Nightly Version" src="https://img.shields.io/badge/version-0.2.0-black
-"><img alt="GitHub Activity" src="https://img.shields.io/github/commit-activity/w/vrnavi/sangou?logo=github&color=red"><img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/vrnavi/sangou"><img alt="GitHub License" src="https://img.shields.io/github/license/vrnavi/sangou"></p>
+<p align="center"><img alt="Stable Version" src="https://img.shields.io/badge/version-0.2.0-white"><img alt="Nightly Version" src="https://img.shields.io/badge/version-0.2.0-black"><img alt="GitHub Activity" src="https://img.shields.io/github/commit-activity/w/vrnavi/sangou?logo=github&color=red"><img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/vrnavi/sangou"><img alt="GitHub License" src="https://img.shields.io/github/license/vrnavi/sangou"></p>
 
 
 Sangou is a fork of [robocop-ng](https://github.com/reswitched/robocop-ng) with heavy tweaks. It was made for the OneShot Discord, but is free to use. 
