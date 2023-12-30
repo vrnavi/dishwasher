@@ -1,9 +1,9 @@
 <p align="center">
-    <a href="https://3gou.0ccu.lt"><picture><img width="150px" src="https://github.com/vrnavi/sangou/blob/e9712991eb5711918f3602b0322a97245965601f/sangou/assets/sangou.png"></picture></a>
+    <a href="https://3gou.0ccu.lt"><picture><img width="150px" src="https://raw.githubusercontent.com/vrnavi/sangou/master/sangou/assets/sangou.png"></picture></a>
 </p>
 <p align="center"><i>3号 - Sangou</i></p>
 
-<p align="center"><img alt="Version" src="https://img.shields.io/badge/version-0.2.0-white"><img alt="GitHub commit activity (branch)" src="https://img.shields.io/github/commit-activity/w/vrnavi/sangou?logo=github&color=red"><img alt="GitHub contributors" src="https://img.shields.io/github/contributors/vrnavi/sangou"><img alt="GitHub License" src="https://img.shields.io/github/license/vrnavi/sangou"></p>
+<p align="center">☀️ <img alt="Stable Version" src="https://img.shields.io/badge/version-0.2.0-white"> | 🌙 <img alt="Nightly Version" src="https://img.shields.io/badge/0.2.0-black"> | ⌚ <img alt="GitHub Activity" src="https://img.shields.io/github/commit-activity/w/vrnavi/sangou?logo=github&color=red"> | 👥<img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/vrnavi/sangou"> | ⚖️ <img alt="GitHub License" src="https://img.shields.io/github/license/vrnavi/sangou"></p>
 
 
 Sangou is a fork of [robocop-ng](https://github.com/reswitched/robocop-ng) with heavy tweaks. It was made for the OneShot Discord, but is free to use. 
