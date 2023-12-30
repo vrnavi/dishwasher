@@ -501,7 +501,7 @@ class ModToss(Cog):
             user = f""
 
             filename = (
-                ctx.message.created_at.astimezone().strftime("%m/%d/%Y")
+                ctx.message.created_at.astimezone().strftime("%m-%d-%Y")
                 + f" {ctx.channel.name} {ctx.channel.id}"
             )
             reply = (
