@@ -1,9 +1,10 @@
-# This Cog contains code from Tosser2, which was made by OblivionCreator.
+# This Cog contained code from Tosser2, which was made by OblivionCreator.
 import discord
 import json
 import os
 import asyncio
 import random
+import zipfile
 from datetime import datetime, timezone, timedelta
 from discord.ext import commands
 from discord.ext.commands import Cog
@@ -13,7 +14,7 @@ from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
 from io import BytesIO
 from helpers.checks import ismod
-from helpers.datafiles import add_userlog
+from helpers.datafiles import add_userlog, toss_userlog, get_tossfile, set_tossfile
 from helpers.placeholders import random_msg
 from helpers.archive import log_whole_channel, get_members
 from helpers.embeds import stock_embed, username_system, mod_embed
@@ -23,7 +24,7 @@ from helpers.sv_config import get_config
 class ModToss(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.tosscache = {}
+        self.busy = False
         self.spamcounter = {}
         self.nocfgmsg = "Tossing isn't enabled for this server."
 
@@ -54,31 +55,6 @@ class ModToss(Cog):
         i = (s + s).find(s, 1, -1)
         return None if i == -1 else s[:i]
 
-    def get_user_list(self, ctx, user_ids):
-        user_id_list = []
-        invalid_ids = []
-
-        if user_ids.isnumeric():
-            tmp_user = ctx.guild.get_member(int(user_ids))
-            if tmp_user is not None:
-                user_id_list.append(tmp_user)
-            else:
-                invalid_ids.append(user_ids)
-        else:
-            if ctx.message.mentions:
-                for u in ctx.message.mentions:
-                    user_id_list.append(u)
-            user_ids_split = user_ids.split()
-            for n in user_ids_split:
-                if n.isnumeric():
-                    user = ctx.guild.get_member(int(n))
-                    if user is not None:
-                        user_id_list.append(user)
-                    else:
-                        invalid_ids.append(n)
-
-        return user_id_list, invalid_ids
-
     def is_rolebanned(self, member, hard=True):
         roleban = [
             r
@@ -93,6 +69,21 @@ class ModToss(Cog):
                     return len([r for r in member.roles if not (r.managed)]) == 2
                 return True
 
+    def get_session(self, member):
+        tosses = get_tossfile(member.guild.id, "tosses")
+        if not tosses:
+            return None
+        session = None
+        if "LEFTGUILD" in tosses and str(member.id) in tosses["LEFTGUILD"]:
+            session = False
+        for channel in tosses:
+            if channel == "LEFTGUILD":
+                continue
+            if str(member.id) in tosses[channel]["tossed"]:
+                session = channel
+                break
+        return session
+
     async def new_session(self, guild):
         staff_role = guild.get_role(
             get_config(guild.id, "staff", "modrole")
@@ -100,10 +91,14 @@ class ModToss(Cog):
             else get_config(guild.id, "staff", "adminrole")
         )
         bot_role = guild.get_role(get_config(guild.id, "staff", "botrole"))
+        tosses = get_tossfile(guild.id, "tosses")
+
         for c in get_config(guild.id, "toss", "tosschannels"):
             if c not in [g.name for g in guild.channels]:
-                if not os.path.exists(f"data/servers/{guild.id}/toss/{c}"):
-                    os.makedirs(f"data/servers/{guild.id}/toss/{c}")
+                if c not in tosses:
+                    tosses[c] = {"tossed": {}, "untossed": [], "left": []}
+                    set_tossfile(guild.id, "tosses", json.dumps(tosses))
+
                 overwrites = {
                     guild.default_role: discord.PermissionOverwrite(
                         read_messages=False
@@ -119,8 +114,9 @@ class ModToss(Cog):
                         get_config(guild.id, "toss", "tosscategory")
                     ),
                     overwrites=overwrites,
-                    topic="The rolebanned channel. You likely won't get banned, but don't leave immediately, or you will be banned.",  # i need to replace this
+                    topic=get_config(guild.id, "toss", "tosstopic"),
                 )
+
                 return toss_channel
 
     async def perform_toss(self, user, staff, toss_channel):
@@ -130,11 +126,9 @@ class ModToss(Cog):
             if rx != user.guild.default_role and rx != toss_role:
                 roles.append(rx)
 
-        with open(
-            rf"data/servers/{user.guild.id}/toss/{toss_channel.name}/{user.id}.json",
-            "w",
-        ) as file:
-            file.write(json.dumps([role.id for role in roles]))
+        tosses = get_tossfile(user.guild.id, "tosses")
+        tosses[toss_channel.name]["tossed"][str(user.id)] = [role.id for role in roles]
+        set_tossfile(user.guild.id, "tosses", json.dumps(tosses))
 
         prev_roles = " ".join([f"`{role.name}`" for role in roles])
 
@@ -174,14 +168,14 @@ class ModToss(Cog):
         embed = stock_embed(self.bot)
         embed.title = "👁‍🗨 Toss Channel Sessions..."
         embed.color = ctx.author.color
+        tosses = get_tossfile(ctx.guild.id, "tosses")
+
         for c in get_config(ctx.guild.id, "toss", "tosschannels"):
             if c in [g.name for g in ctx.guild.channels]:
-                if not os.path.exists(
-                    f"data/servers/{ctx.guild.id}/toss/{c}"
-                ) or not os.listdir(f"data/servers/{ctx.guild.id}/toss/{c}"):
+                if c not in tosses:
                     embed.add_field(
                         name=f"🟡 #{c}",
-                        value="__Empty__\n> Please close the channel.",
+                        value="__Empty__\n> Please delete the channel.",
                         inline=False,
                     )
                 else:
@@ -189,13 +183,8 @@ class ModToss(Cog):
                         [
                             f"> {self.username_system(user)}"
                             for user in [
-                                await self.bot.fetch_user(u)
-                                for u in [
-                                    uf[:-5]
-                                    for uf in os.listdir(
-                                        f"data/servers/{ctx.guild.id}/toss/{c}"
-                                    )
-                                ]
+                                await self.bot.fetch_user(str(u))
+                                for u in tosses[c]["tossed"].keys()
                             ]
                         ]
                     )
@@ -213,26 +202,17 @@ class ModToss(Cog):
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.bot_has_permissions(manage_roles=True, manage_channels=True)
     @commands.command(aliases=["roleban"])
-    async def toss(self, ctx, *, user_ids):
+    async def toss(self, ctx, users: commands.Greedy[discord.Member]):
         """This tosses a user.
 
         Please refer to the tossing section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-tossing-system/).
 
-        - `user_ids`
+        - `users`
         The users to toss."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
-        user_id_list, invalid_ids = self.get_user_list(ctx, user_ids)
-        alreadytossed = [
-            tossed
-            for dsub in [
-                os.listdir(channel)
-                for channel in [
-                    dirs[0] for dirs in os.walk(f"data/servers/{ctx.guild.id}/toss")
-                ]
-            ]
-            for tossed in dsub
-        ]
+
+        tosses = get_tossfile(ctx.guild.id, "tosses")
 
         staff_channel = get_config(ctx.guild.id, "staff", "staffchannel")
         modlog_channel = get_config(ctx.guild.id, "logging", "modlog")
@@ -244,8 +224,9 @@ class ModToss(Cog):
         toss_role = ctx.guild.get_role(get_config(ctx.guild.id, "toss", "tossrole"))
 
         output = ""
+        invalid = []
 
-        for us in user_id_list:
+        for us in users:
             if us.id == ctx.author.id:
                 output += "\n" + random_msg(
                     "warn_targetself", authorname=ctx.author.name
@@ -254,21 +235,23 @@ class ModToss(Cog):
                 output += "\n" + random_msg(
                     "warn_targetbot", authorname=ctx.author.name
                 )
-            elif str(us.id) + ".json" in alreadytossed and toss_role in us.roles:
+            elif self.get_session(us) and toss_role in us.roles:
                 output += "\n" + f"{self.username_system(us)} is already tossed."
             else:
                 continue
-            user_id_list.remove(us)
-        if not user_id_list:
+            users.remove(us)
+        if not users:
             return await ctx.reply(
-                output
-                + "\n\n"
-                + "There's nobody left in the list to toss, so nobody was tossed.",
+                output + "\n\n" + "There's nobody left to toss, so nobody was tossed.",
                 mention_author=False,
             )
-        if all(
+
+        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
+            addition = True
+            toss_channel = ctx.channel
+        elif all(
             [
-                c in ctx.guild.channels
+                c in [g.name for g in ctx.guild.channels]
                 for c in get_config(ctx.guild.id, "toss", "tosschannels")
             ]
         ):
@@ -276,63 +259,59 @@ class ModToss(Cog):
                 content="I cannot toss them. All sessions are currently in use.",
                 mention_author=False,
             )
-
-        toss_pings = ", ".join([us.mention for us in user_id_list])
-
-        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
-            addition = True
-            toss_channel = ctx.channel
         else:
             addition = False
             toss_channel = await self.new_session(ctx.guild)
 
-        for us in user_id_list:
+        toss_pings = ", ".join([us.mention for us in users])
+
+        for us in users:
             try:
                 bad_roles_msg, prev_roles = await self.perform_toss(
                     us, ctx.author, toss_channel
                 )
                 await toss_channel.set_permissions(us, read_messages=True)
+            except commands.MissingPermissions:
+                invalid.append(us.name)
+                continue
 
-                add_userlog(
-                    ctx.guild.id,
-                    us.id,
-                    ctx.author,
-                    f"[Jump]({ctx.message.jump_url}) to toss event.",
-                    "tosses",
+            toss_userlog(
+                ctx.guild.id,
+                us.id,
+                ctx.author,
+                ctx.message.jump_url,
+                toss_channel.id,
+            )
+
+            if staff_channel:
+                await ctx.guild.get_channel(staff_channel).send(
+                    f"{self.username_system(us)} has been tossed in `#{ctx.channel.name}` by {self.username_system(ctx.author)}. {us.mention}\n"
+                    f"**ID:** {us.id}\n"
+                    f"**Created:** <t:{int(us.created_at.timestamp())}:R> on <t:{int(us.created_at.timestamp())}:f>\n"
+                    f"**Joined:** <t:{int(us.joined_at.timestamp())}:R> on <t:{int(us.joined_at.timestamp())}:f>\n"
+                    f"**Previous Roles:**{prev_roles}{bad_roles_msg}\n\n"
+                    f"{toss_channel.mention}"
                 )
 
-                if staff_channel:
-                    await ctx.guild.get_channel(staff_channel).send(
-                        f"{self.username_system(us)} has been tossed in `#{ctx.channel.name}` by {self.username_system(ctx.author)}. {us.mention}\n"
-                        f"**ID:** {us.id}\n"
-                        f"**Created:** <t:{int(us.created_at.timestamp())}:R> on <t:{int(us.created_at.timestamp())}:f>\n"
-                        f"**Joined:** <t:{int(us.joined_at.timestamp())}:R> on <t:{int(us.joined_at.timestamp())}:f>\n"
-                        f"**Previous Roles:**{prev_roles}{bad_roles_msg}\n\n"
-                        f"{toss_channel.mention}"
-                    )
+            if modlog_channel:
+                embed = stock_embed(self.bot)
+                embed.color = discord.Color.from_str("#FF0000")
+                embed.title = "🚷 Toss"
+                embed.description = f"{us.mention} was tossed by {ctx.author.mention} [`#{ctx.channel.name}`] [[Jump]({ctx.message.jump_url})]"
+                mod_embed(embed, us, ctx.author)
 
-                if modlog_channel:
-                    embed = stock_embed(self.bot)
-                    embed.color = discord.Color.from_str("#FF0000")
-                    embed.title = "🚷 Toss"
-                    embed.description = f"{us.mention} was tossed by {ctx.author.mention} [`#{ctx.channel.name}`] [[Jump]({ctx.message.jump_url})]"
-                    mod_embed(embed, us, ctx.author)
-
-                    mlog = await self.bot.fetch_channel(modlog_channel)
-                    await mlog.send(embed=embed)
-
-            except commands.MissingPermissions:
-                invalid_ids.append(us.name)
+                mlog = await self.bot.fetch_channel(modlog_channel)
+                await mlog.send(embed=embed)
 
         output += "\n" + "\n".join(
-            [f"{self.username_system(us)} has been tossed." for us in user_id_list]
+            [f"{self.username_system(us)} has been tossed." for us in users]
         )
 
-        if invalid_ids:
+        if invalid:
             output += (
                 "\n\n"
                 + "I was unable to toss these users: "
-                + ", ".join([str(iv) for iv in invalid_ids])
+                + ", ".join([str(iv) for iv in invalid])
             )
 
         output += (
@@ -350,7 +329,7 @@ class ModToss(Cog):
             )
 
             def check(m):
-                return m.author in user_id_list and m.channel == toss_channel
+                return m.author in users and m.channel == toss_channel
 
             try:
                 msg = await self.bot.wait_for("message", timeout=300, check=check)
@@ -362,10 +341,7 @@ class ModToss(Cog):
                 return
             else:
                 pokemsg = await toss_channel.send(ctx.author.mention)
-                await pokemsg.edit(
-                    content="🫳⏰",
-                    delete_after=5,
-                )
+                await pokemsg.edit(content="🫳⏰", delete_after=5)
 
     @commands.guild_only()
     @commands.bot_has_permissions(kick_members=True)
@@ -373,13 +349,13 @@ class ModToss(Cog):
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.bot_has_permissions(manage_roles=True, manage_channels=True)
     @commands.command(aliases=["unroleban"])
-    async def untoss(self, ctx, *, user_ids=None):
+    async def untoss(self, ctx, users: commands.Greedy[discord.Member] = None):
         """This untosses a user.
 
         Please refer to the tossing section of the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-tossing-system/).
 
-        - `user_ids`
-        The users to untoss."""
+        - `users`
+        The users to untoss. Optional."""
         if not self.enabled(ctx.guild.id):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):
@@ -388,51 +364,19 @@ class ModToss(Cog):
                 mention_author=False,
             )
 
-        if not user_ids:
-            nagmsg = await ctx.reply(
-                content="**⚠️ Warning**\nThis will untoss all users and end the session. Are you sure you want to do this?\nUse `untoss all` in the future to skip this warning.",
-                mention_author=False,
-            )
-            await nagmsg.add_reaction("✅")
-            await nagmsg.add_reaction("❎")
+        tosses = get_tossfile(ctx.guild.id, "tosses")
+        if not users:
+            users = [
+                ctx.guild.get_member(int(u))
+                for u in tosses[ctx.channel.name]["tossed"].keys()
+            ]
 
-            def check(r, u):
-                return u.id == ctx.author.id and str(r.emoji) in ["✅", "❎"]
-
-            try:
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", timeout=30.0, check=check
-                )
-            except asyncio.TimeoutError:
-                return await nagmsg.edit(content="Operation timed out.", delete_after=5)
-
-            if str(reaction) == "❎":
-                return await nagmsg.edit(content="Operation cancelled.", delete_after=5)
-            elif str(reaction) == "✅":
-                user_ids = " ".join(
-                    [
-                        record[:-5]
-                        for record in os.listdir(
-                            f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"
-                        )
-                    ]
-                )
-        elif user_ids == "all":
-            user_ids = " ".join(
-                [
-                    record[:-5]
-                    for record in os.listdir(
-                        f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"
-                    )
-                ]
-            )
-
-        user_id_list, invalid_ids = self.get_user_list(ctx, user_ids)
         staff_channel = get_config(ctx.guild.id, "staff", "staffchannel")
         toss_role = ctx.guild.get_role(get_config(ctx.guild.id, "toss", "tossrole"))
         output = ""
+        invalid = []
 
-        for us in user_id_list:
+        for us in users:
             if us.id == self.bot.application_id:
                 output += "\n" + random_msg(
                     "warn_targetbot", authorname=ctx.author.name
@@ -442,35 +386,26 @@ class ModToss(Cog):
                     "warn_targetself", authorname=ctx.author.name
                 )
             elif (
-                str(us.id) + ".json"
-                not in os.listdir(
-                    f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"
-                )
-                and toss_role not in us.roles
+                str(us.id) not in tosses[ctx.channel.name] and toss_role not in us.roles
             ):
                 output += "\n" + f"{self.username_system(us)} is not already tossed."
             else:
                 continue
-            user_id_list.remove(us)
-        if not user_id_list:
+            users.remove(us)
+        if not users:
             return await ctx.reply(
                 output
                 + "\n\n"
-                + "There's nobody left in the list to untoss, so nobody was untossed.",
+                + "There's nobody left to untoss, so nobody was untossed.",
                 mention_author=False,
             )
 
-        for us in user_id_list:
-            try:
-                with open(
-                    rf"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}/{us.id}.json"
-                ) as file:
-                    roles = json.loads(file.read())
-                os.remove(
-                    rf"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}/{us.id}.json"
-                )
-            except FileNotFoundError:
-                roles = []
+        for us in users:
+            self.busy = True
+            roles = tosses[ctx.channel.name]["tossed"][str(us.id)]
+            if us.id not in tosses[ctx.channel.name]["untossed"]:
+                tosses[ctx.channel.name]["untossed"].append(us.id)
+            del tosses[ctx.channel.name]["tossed"][str(us.id)]
 
             if roles:
                 roles = [ctx.guild.get_role(r) for r in roles]
@@ -489,12 +424,6 @@ class ModToss(Cog):
 
             await ctx.channel.set_permissions(us, overwrite=None)
 
-            if ctx.guild.id not in self.bot.tosscache:
-                self.bot.tosscache[ctx.guild.id] = {}
-            if ctx.channel.name not in self.bot.tosscache[ctx.guild.id]:
-                self.bot.tosscache[ctx.guild.id][ctx.channel.name] = []
-            self.bot.tosscache[ctx.guild.id][ctx.channel.name].append(us.id)
-
             restored = " ".join([f"`{rx.name}`" for rx in roles])
             output += (
                 "\n"
@@ -505,14 +434,17 @@ class ModToss(Cog):
                     f"{self.username_system(us)} has been untossed in {ctx.channel.mention} by {self.username_system(ctx.author)}.\n**Roles Restored:** {restored}"
                 )
 
-        if invalid_ids:
+        set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
+        self.busy = False
+
+        if invalid:
             output += (
                 "\n\n"
                 + "I was unable to untoss these users: "
-                + ", ".join([str(iv) for iv in invalid_ids])
+                + ", ".join([str(iv) for iv in invalid])
             )
 
-        if not os.listdir(f"data/servers/{ctx.guild.id}/toss/{ctx.channel.name}"):
+        if not tosses[ctx.channel.name]:
             output += "\n\n" + "There is nobody left in this session."
 
         await ctx.reply(content=output, mention_author=False)
@@ -535,104 +467,98 @@ class ModToss(Cog):
                 content="This command must be run inside of a toss channel.",
                 mention_author=False,
             )
+
         staff_channel = self.bot.get_channel(
             get_config(ctx.guild.id, "staff", "staffchannel")
         )
         log_channel = self.bot.get_channel(
             get_config(ctx.guild.id, "logging", "modlog")
         )
+        tosses = get_tossfile(ctx.guild.id, "tosses")
+
+        if tosses[ctx.channel.name]["tossed"]:
+            return await ctx.reply(
+                content="You must untoss everyone first!", mention_author=True
+            )
+
         if archive:
-            out = await log_whole_channel(self.bot, ctx.channel, zip_files=True)
-            zipped_files = out[1]
-            out = out[0]
-            user = f"unspecified (logged by {ctx.author})"
-            users = None
-            try:
-                users = [
-                    await self.bot.fetch_user(uid)
-                    for uid in self.bot.tosscache[ctx.guild.id][ctx.channel.name]
-                ]
-                user = f"{users[0].name} {users[0].id}"
-            except:
+            if not staff_channel or not log_channel:
                 return await ctx.reply(
-                    content="The toss cache is empty. Untoss someone first.",
+                    content="You don't have anywhere for me to send the archives to.\nPlease configure either a staff channel or a moderation log channel, and then try again.",
                     mention_author=False,
                 )
 
-            fn = ctx.message.created_at.strftime("%Y-%m-%d") + " " + str(user)
-            reply = f"📕 Archived as: `{fn}.txt`"
-            out += f"{ctx.message.created_at.strftime('%Y-%m-%d %H:%M')} {self.bot.user.name}: {reply}"
-            out += "\nThis toss session had the following users:"
-            for u in users:
-                out += f"\n- {self.username_system(u)} ({u.id})"
+            async with ctx.channel.typing():
+                dotraw, dotzip = await log_whole_channel(
+                    self.bot, ctx.channel, zip_files=True
+                )
 
-            if get_config(ctx.guild.id, "toss", "drivefolder"):
-                credentials = ServiceAccountCredentials.from_json_keyfile_name(
-                    "data/service_account.json", "https://www.googleapis.com/auth/drive"
-                )
-                credentials.authorize(httplib2.Http())
-                gauth = GoogleAuth()
-                gauth.credentials = credentials
-                drive = GoogleDrive(gauth)
-                folder = get_config(ctx.guild.id, "toss", "drivefolder")
-                f = drive.CreateFile(
-                    {
-                        "parents": [{"kind": "drive#fileLink", "id": folder}],
-                        "title": fn + ".txt",
-                    }
-                )
-                f.SetContentString(out)
-                f.Upload()
+            users = [
+                await self.bot.fetch_user(uid)
+                for uid in tosses[ctx.channel.name]["untossed"]
+                + tosses[ctx.channel.name]["left"]
+            ]
+            user = f""
 
-                embed = stock_embed(self.bot)
-                embed.title = "📁 Toss Channel Archived"
-                embed.description = f"`#{ctx.channel.name}`'s session was archived by {ctx.author.mention} ({ctx.author.id})"
-                embed.color = ctx.author.color
-                embed.set_author(
-                    name=ctx.author, icon_url=ctx.author.display_avatar.url
+            filename = (
+                ctx.message.created_at.astimezone().strftime("%m/%d/%Y")
+                + f" {ctx.channel.name} {ctx.channel.id}"
+            )
+            reply = (
+                f"📕 I've archived that as: `{filename}.txt`\nThis toss session had the following users:\n- "
+                + "\n- ".join([f"{self.username_system(u)} ({u.id})" for u in users])
+            )
+            dotraw += f"\n{ctx.message.created_at.astimezone().strftime('%m/%d/%Y %H:%M')} {self.bot.user} [BOT]\n{reply}"
+
+            if not os.path.exists(
+                f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}"
+            ):
+                os.makedirs(
+                    f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}"
                 )
+            with open(
+                f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}/{filename}.txt",
+                "w",
+            ) as txtfile:
+                txtfile.write(dotraw)
+            if dotzip:
+                with open(
+                    f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}/{filename} (files).zip",
+                    "w",
+                ) as zipfile:
+                    zipfile.write(dotzip.getbuffer())
+
+            embed = stock_embed(self.bot)
+            embed.title = "📦 Toss Session Closed"
+            embed.description = f"`#{ctx.channel.name}`'s session was closed by {ctx.author.mention} ({ctx.author.id})."
+            embed.color = ctx.author.color
+            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
+
+            embed.add_field(
+                name="🗒️ Text",
+                value=f"{filename}.txt\n"
+                + f"`"
+                + str(len(dotraw.split("\n")))
+                + "` lines, "
+                + f"`{len(dotraw.split())}` words, "
+                + f"`{len(dotraw)}` characters.",
+                inline=True,
+            )
+            if dotzip:
                 embed.add_field(
-                    name="🔗 Text",
-                    value=f"[{fn}.txt](https://drive.google.com/file/d/{f['id']})",
+                    name="📁 Files",
+                    value=f"{filename} (files).zip"
+                    + "\n"
+                    + f"`{len(zipfile.ZipFile(dotzip, 'w', zipfile.ZIP_DEFLATED).infolist())}` files in the zip file.",
                     inline=True,
                 )
 
-                if zipped_files:
-                    f_zip = drive.CreateFile(
-                        {
-                            "parents": [{"kind": "drive#fileLink", "id": folder}],
-                            "title": fn + " (files).zip",
-                        }
-                    )
-                    f_zip.content = zipped_files
-                    f_zip["mimeType"] = "application/zip"
-                    f_zip.Upload()
+            channel = staff_channel if staff_channel else log_channel
+            await channel.send(embed=embed)
 
-                    embed.add_field(
-                        name="📦 Files",
-                        value=f"[{fn} (files).zip](https://drive.google.com/file/d/{f_zip['id']})",
-                        inline=True,
-                    )
+        del tosses[ctx.channel.name]
+        set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
 
-                if staff_channel or log_channel:
-                    channel = staff_channel if staff_channel else log_channel
-                    await channel.send(embed=embed)
-            else:
-                if not staff_channel or log_channel:
-                    return await ctx.reply(
-                        content="You don't have anywhere for me to send the archives to.\nPlease configure either a staff channel or a moderation log channel, and then try again.",
-                        mention_author=False,
-                    )
-                files = [discord.File(out, filename=fn + ".txt")]
-                if zipped_files:
-                    files.append(
-                        discord.File(zipped_files, filename=fn + " (files).zip")
-                    )
-                channel = staff_channel if staff_channel else log_channel
-                await channel.send(
-                    content=f"📁 Toss Session Archive\n`#{ctx.channel.name}`'s session was archived by {ctx.author.mention} ({ctx.author.id})",
-                    files=files,
-                )
         await ctx.channel.delete(reason="Sangou Toss")
         return
 
@@ -644,6 +570,7 @@ class ModToss(Cog):
             or message.author.bot
             or not self.enabled(message.guild.id)
             or self.is_rolebanned(message.author)
+            or self.get_session(message.author)
             or message.guild.get_role(get_config(message.guild.id, "staff", "modrole"))
             in message.author.roles
             or message.guild.get_role(
@@ -696,12 +623,13 @@ class ModToss(Cog):
                 await toss_channel.send(
                     content=f"{message.author.mention}, you were rolebanned for spamming."
                 )
-                add_userlog(
+
+                toss_userlog(
                     message.guild.id,
-                    message.author.id,
+                    message.author.id.id,
                     message.guild.me,
-                    f"Tossed for hitting `5` spam messages.",
-                    "tosses",
+                    message.jump_url,
+                    toss_channel.id,
                 )
                 if staff_channel:
                     await staff_channel.send(
@@ -731,31 +659,46 @@ class ModToss(Cog):
         staff_channel = member.guild.get_channel(
             get_config(member.guild.id, "staff", "staffchannel")
         )
-        try:
-            session = None
-            for p in os.listdir(f"data/servers/{member.guild.id}/toss"):
-                for c in os.listdir(f"data/servers/{member.guild.id}/toss/{p}"):
-                    if member.id == c[:-5]:
-                        session = p
-                        break
-                if session:
+
+        tosses = get_tossfile(member.guild.id, "tosses")
+        toss_channel = None
+
+        if "LEFTGUILD" in tosses and str(member.id) in tosses["LEFTGUILD"]:
+            for channel in tosses:
+                if "left" in tosses[channel] and member.id in tosses[channel]["left"]:
+                    toss_channel = discord.utils.get(
+                        member.guild.channels, name=channel
+                    )
                     break
-        except:
-            return
-        if not session:
+            if toss_channel:
+                toss_role = member.guild.get_role(
+                    get_config(member.guild.id, "toss", "tossrole")
+                )
+                await member.add_roles(toss_role, reason="User tossed.")
+                tosses[toss_channel.name]["tossed"][str(member.id)] = tosses[
+                    "LEFTGUILD"
+                ][str(member.id)]
+                tosses[toss_channel.name]["left"].remove(member.id)
+            else:
+                toss_channel = await self.new_session(member.guild)
+                bad_roles_msg, prev_roles = await self.perform_toss(
+                    member, member.guild.me, toss_channel
+                )
+                tosses = get_tossfile(member.guild.id, "tosses")
+                tosses[toss_channel.name]["tossed"][str(member.id)] = tosses[
+                    "LEFTGUILD"
+                ][str(member.id)]
+        else:
             return
 
-        toss_channel = await self.new_session(member.guild)
-        bad_roles_msg, prev_roles = await self.perform_toss(
-            member, member.guild.me, toss_channel
-        )
+        del tosses["LEFTGUILD"][str(member.id)]
+        if not tosses["LEFTGUILD"]:
+            del tosses["LEFTGUILD"]
+        set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
+
         await toss_channel.set_permissions(member, read_messages=True)
         await toss_channel.send(
-            content=f"{member.mention}, you were previously rolebanned. As such, a new session has been made for you here."
-        )
-        os.replace(
-            f"data/servers/{member.guild.id}/toss/{session}/{member.id}.json",
-            f"data/servers/{member.guild.id}/toss/{toss_channel.name}/{member.id}.json",
+            content=f"🔁 {self.username_system(member)} rejoined while tossed."
         )
         if staff_channel:
             await staff_channel.send(
@@ -768,65 +711,63 @@ class ModToss(Cog):
         await self.bot.wait_until_ready()
         if not self.enabled(member.guild.id):
             return
-        if self.is_rolebanned(member):
-            session = None
-            for p in os.listdir(f"data/servers/{member.guild.id}/toss"):
-                for c in os.listdir(f"data/servers/{member.guild.id}/toss/{p}"):
-                    if str(member.id) == c[:-5]:
-                        if member.guild.id not in self.bot.tosscache:
-                            self.bot.tosscache[member.guild.id] = {}
-                        if p not in self.bot.tosscache[member.guild.id]:
-                            self.bot.tosscache[member.guild.id][p] = []
-                        self.bot.tosscache[member.guild.id][p].append(member.id)
-                        os.replace(
-                            f"data/servers/{member.guild.id}/toss/{p}/{c}",
-                            f"data/servers/{member.guild.id}/toss/left_while_tossed/{c}",
-                        )
-                        for channel in member.guild.channels:
-                            if channel.name == p:
-                                session = channel
-                                break
-                        break
-                if session:
-                    break
-            staff_channel = member.guild.get_channel(
-                get_config(member.guild.id, "staff", "staffchannel")
-            )
-            try:
-                await member.guild.fetch_ban(member)
-                out = f"🔨 {self.username_system(member)} got banned while tossed."
-            except discord.NotFound:
-                out = f"🚪 {self.username_system(member)} left while tossed."
-            if staff_channel:
-                await staff_channel.send(out)
-            if session:
-                await session.send(out)
+
+        session = self.get_session(member)
+        if not session:
+            return
+
+        tosses = get_tossfile(member.guild.id, "tosses")
+        if "LEFTGUILD" not in tosses:
+            tosses["LEFTGUILD"] = {}
+        tosses["LEFTGUILD"][str(member.id)] = tosses[session]["tossed"][str(member.id)]
+        tosses[session]["left"].append(member.id)
+        del tosses[session]["tossed"][str(member.id)]
+        set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
+
+        staff_channel = member.guild.get_channel(
+            get_config(member.guild.id, "staff", "staffchannel")
+        )
+        toss_channel = discord.utils.get(member.guild.channels, name=session)
+        try:
+            await member.guild.fetch_ban(member)
+            out = f"🔨 {self.username_system(member)} got banned while tossed."
+        except discord.NotFound:
+            out = f"🚪 {self.username_system(member)} left while tossed."
+        except discord.Forbidden:
+            out = f"❓ {self.username_system(member)} was removed from the server.\nI do not have Audit Log permissions to tell why."
+        if staff_channel:
+            await staff_channel.send(out)
+        if toss_channel:
+            await toss_channel.send(out)
 
     @Cog.listener()
     async def on_member_update(self, before, after):
         await self.bot.wait_until_ready()
         if not self.enabled(after.guild.id):
             return
+        while self.busy:
+            await asyncio.sleep(1)
         if self.is_rolebanned(before) and not self.is_rolebanned(after):
-            try:
-                for p in os.listdir(f"data/servers/{after.guild.id}/toss"):
-                    for c in os.listdir(f"data/servers/{after.guild.id}/toss/{p}"):
-                        if after.id == c[:-5]:
-                            self.bot.tosscache[after.guild.id][p].append(after.id)
-                            os.remove(f"data/servers/{after.guild.id}/toss/{p}/{c}")
-            except:
+            session = self.get_session(after)
+            if not session:
                 return
+
+            tosses = get_tossfile(after.guild.id, "tosses")
+            tosses[session]["untossed"].append(after.id)
+            del tosses[session]["tossed"][str(after.id)]
+            set_tossfile(after.guild.id, "tosses", json.dumps(tosses))
 
     @Cog.listener()
     async def on_guild_channel_delete(self, channel):
         await self.bot.wait_until_ready()
-        if (
-            self.enabled(channel.guild.id)
-            and channel.name in get_config(channel.guild.id, "toss", "tosschannels")
-            and channel.guild.id in self.bot.tosscache
-            and channel.name in self.bot.tosscache[channel.guild.id]
+        if self.enabled(channel.guild.id) and channel.name in get_config(
+            channel.guild.id, "toss", "tosschannels"
         ):
-            self.bot.tosscache[channel.guild.id][channel.name] = []
+            tosses = get_tossfile(channel.guild.id, "tosses")
+            if channel.name not in tosses:
+                return
+            del tosses[channel.name]
+            set_tossfile(channel.guild.id, "tosses", json.dumps(tosses))
 
 
 async def setup(bot):

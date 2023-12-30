@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 import json
 from datetime import datetime, timezone
 from helpers.checks import ismod, isadmin
-from helpers.datafiles import userlog_event_types, get_guildfile, set_guildfile
+from helpers.datafiles import get_guildfile, set_guildfile
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed, sympage
 
@@ -18,8 +18,8 @@ class ModLogs(Cog):
         userlog = get_guildfile(sid, "userlog")
         events = ["notes", "tosses", "warns", "kicks", "bans"]
 
-        # Nonexist
         if uid not in userlog:
+            # Nonexist
             embed = stock_embed(self.bot)
             embed.title = "📇 About that log..."
             embed.description = (
@@ -28,9 +28,8 @@ class ModLogs(Cog):
                 + " in the system!"
             )
             return [embed]
-
-        # Empty
-        if not userlog[uid]:
+        elif not userlog[uid]:
+            # Empty
             embed = stock_embed(self.bot)
             embed.title = "📇 About that log..."
             embed.description = (
@@ -94,12 +93,16 @@ class ModLogs(Cog):
                 embeds.append(embed)
                 continue
             for idx, evn in enumerate(userlog[uid][event]):
+                if event == "tosses":
+                    lastline = f"__Incident:__ {evn['post_link']}"
+                else:
+                    lastline = f"__Reason:__ {evn['reason']}"
                 embed.add_field(
                     name=["Note", "Toss", "Warning", "Kick", "Ban"][index]
                     + f" {idx+1}",
                     value=f"<t:{evn['timestamp']}:R> on <t:{evn['timestamp']}:f>\n"
                     + f"__Issuer:__ <@{evn['issuer_id']}> ({evn['issuer_id']})\n"
-                    + f"__Reason:__ {evn['reason']}",
+                    + lastline,
                     inline=False,
                 )
             embeds.append(embed)
@@ -208,6 +211,7 @@ class ModLogs(Cog):
         The type of event to clear."""
         types = ["notes", "tosses", "warns", "kicks", "bans"]
         eventtype = eventtype.lower()
+
         if eventtype not in types:
             return await ctx.reply(
                 content=f"{eventtype} is not a valid event type.", mention_author=False
@@ -217,10 +221,11 @@ class ModLogs(Cog):
             return await ctx.reply(
                 content=f"{target.mention} has no logs!", mention_author=False
             )
-        if not userlog[str(target.id)][eventtype]:
+        elif not userlog[str(target.id)][eventtype]:
             return await ctx.reply(
                 content=f"{target.mention} has no {eventtype}!", mention_author=False
             )
+
         userlog[str(target.id)][eventtype] = []
         set_guildfile(ctx.guild.id, "userlog", json.dumps(userlog))
         safe_name = await commands.clean_content(escape_markdown=True).convert(
@@ -258,6 +263,7 @@ class ModLogs(Cog):
         The index of the event."""
         types = ["notes", "tosses", "warns", "kicks", "bans"]
         eventtype = eventtype.lower()
+
         if eventtype not in types:
             return await ctx.reply(
                 content=f"{eventtype} is not a valid event type.", mention_author=False
@@ -267,14 +273,15 @@ class ModLogs(Cog):
             return await ctx.reply(
                 content=f"{target.mention} has no logs!", mention_author=False
             )
-        if not userlog[str(target.id)][eventtype]:
+        elif not userlog[str(target.id)][eventtype]:
             return await ctx.reply(
                 content=f"{target.mention} has no {event}!", mention_author=False
             )
-        if not 1 <= index <= len(userlog[str(target.id)][eventtype]):
+        elif not 1 <= index <= len(userlog[str(target.id)][eventtype]):
             return await ctx.reply(
                 content=f"Your index is out of bounds!", mention_author=False
             )
+
         del userlog[str(target.id)][eventtype][index - 1]
         set_guildfile(ctx.guild.id, "userlog", json.dumps(userlog))
         await ctx.reply(content=f"I've deleted that event.", mention_author=False)

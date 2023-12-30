@@ -10,6 +10,7 @@ import os
 import aiohttp
 from helpers.sv_config import get_config
 from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.placeholders import random_msg
 
 
 class Erase(Cog):
@@ -200,7 +201,7 @@ class Erase(Cog):
                 )
             except asyncio.TimeoutError:
                 return await keywordask.edit(
-                    content="Operation timed out.",
+                    content=random_msg("warn_timedout"),
                     delete_after=5,
                     allowed_mentions=discord.AllowedMentions(replied_user=False),
                 )
@@ -258,7 +259,8 @@ class Erase(Cog):
             )
             try:
                 await ctx.author.send(
-                    content="This ia test, please ignore this message.", delete_after=5
+                    content="This is a test, please ignore this message.",
+                    delete_after=5,
                 )
             except:
                 return await ctx.reply(

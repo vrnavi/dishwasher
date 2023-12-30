@@ -1,190 +1,332 @@
-# This Cog contains code from Archiver, which was made by Roadcrosser.
-# https://github.com/Roadcrosser/archiver
 import discord
 import json
 import os
-import httplib2
-import re
+import typing
 import datetime
-import config
-import asyncio
-import textwrap
-import zipfile
 
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from oauth2client.service_account import ServiceAccountCredentials
 from io import BytesIO
 
 from discord.ext import commands
 from discord.ext.commands import Cog
-from helpers.checks import ismod
-from helpers.archive import log_whole_channel, get_members
+from helpers.checks import ismod, isadmin
+from helpers.archive import log_whole_channel
 from helpers.sv_config import get_config
+from helpers.datafiles import get_guildfile, set_guildfile, get_tossfile, set_tossfile
+from helpers.embeds import stock_embed, author_embed
 
 
-class ModArchive(Cog):
+class ModArchives(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.nocfgmsg = "Archival isn't set up for this server."
 
     @commands.guild_only()
     @commands.check(ismod)
-    @commands.command(aliases=["archives"])
-    async def archive(self, ctx, *, args=None):
-        """Archives a toss channel to a Google Drive folder.
+    @commands.bot_has_permissions(embed_links=True)
+    @commands.group(invoke_without_command=True)
+    async def archives(self, ctx, user: discord.User):
+        """Views a list of saved archives for a user.
 
-        This will be removed soon. Don't use it.
+        Use `open` to open an archive.
+        Doing so will be logged by the bot!
 
-        No arguments."""
-        if not get_config(ctx.guild.id, "toss", "drivefolder"):
-            return await ctx.reply(self.nocfgmsg, mention_author=False)
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            "data/service_account.json", "https://www.googleapis.com/auth/drive"
+        - `user`
+        The user to find archives for."""
+        if ctx.guild.get_member(user.id):
+            user = ctx.guild.get_member(user.id)
+        uid = str(user.id)
+        userlog = get_guildfile(ctx.guild.id, "userlog")
+        embed = stock_embed(self.bot)
+        author_embed(embed, user)
+        embed.title = f"📁 {user.name}'s archives..."
+
+        path = f"data/servers/{ctx.guild.id}/toss/archives/users/{uid}"
+        if os.path.exists(path) and [f for f in os.listdir(path)]:
+            filelist = "\n".join(
+                [
+                    "- "
+                    + filename
+                    + " `"
+                    + str(os.path.getsize(path + "/" + filename) / 1048576)
+                    + " MB`."
+                    for filename in [
+                        filename
+                        for filename in os.listdir(path)
+                        if os.path.isfile(os.path.join(path, filename))
+                    ]
+                ]
+            )
+        else:
+            filelist = "There are no archives for this user."
+
+        embed.add_field(
+            name="User Archives",
+            value=filelist,
+            inline=False,
         )
-        credentials.authorize(httplib2.Http())
-        gauth = GoogleAuth()
-        gauth.credentials = credentials
-        drive = GoogleDrive(gauth)
-        folder = get_config(ctx.guild.id, "toss", "drivefolder")
 
-        try:
-            await ctx.channel.typing()
-        except:
-            pass
-
-        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
-            out = await log_whole_channel(self.bot, ctx.channel, zip_files=True)
-            zipped_files = out[1]
-            out = out[0]
-
-            user = f"unspecified (logged by {ctx.author})"
-            users = None
-            if args:
-                try:
-                    users = [
-                        await self.bot.fetch_user(uid)
-                        for uid in [int(arg) for arg in args.split()]
-                    ]
-                except:
-                    return await ctx.reply(
-                        content="Fetching the users failed. Either a user ID doesn't exist, or you specified them incorrectly..",
-                        mention_author=False,
+        if uid in userlog and userlog[uid]:
+            for index, event in enumerate(userlog[uid]["tosses"]):
+                path = f"data/servers/{ctx.guild.id}/toss/archives/sessions/{event['session_id']}"
+                if "session_id" not in event or not os.path.exists(path):
+                    archivelist = "There are no archives for this session."
+                else:
+                    archivelist = "\n".join(
+                        [
+                            "- "
+                            + filename
+                            + " `"
+                            + str(os.path.getsize(path + "/" + filename) / 1048576)
+                            + " MB`."
+                            for filename in [
+                                filename
+                                for filename in os.listdir(path)
+                                if os.path.isfile(os.path.join(path, filename))
+                            ]
+                        ]
                     )
-            if not args:
-                try:
-                    users = [
-                        await self.bot.fetch_user(uid)
-                        for uid in self.bot.tosscache[ctx.guild.id][ctx.channel.name]
-                    ]
-                except:
-                    return await ctx.reply(
-                        content="The toss cache is empty. Please specify user IDs to archive instead.",
-                        mention_author=False,
-                    )
-            user = f"{users[0].name} {users[0].id}"
-
-            fn = ctx.message.created_at.strftime("%Y-%m-%d") + " " + str(user)
-
-            reply = f"📕 Archived as: `{fn}.txt`"
-
-            out += f"{ctx.message.created_at.strftime('%Y-%m-%d %H:%M')} {self.bot.user.name}: {reply}"
-            if users:
-                out += "\nThis toss session had the following users:"
-                for u in users:
-                    out += f"\n- **{u.global_name}** [{u}] ({u.id})"
-
-            f = drive.CreateFile(
-                {
-                    "parents": [{"kind": "drive#fileLink", "id": folder}],
-                    "title": fn + ".txt",
-                }
-            )
-            f.SetContentString(out)
-            f.Upload()
-
-            modch = self.bot.get_channel(
-                get_config(ctx.guild.id, "staff", "staffchannel")
-            )
-
-            embed = discord.Embed(
-                title="📁 Toss Channel Archived",
-                description=f"{ctx.channel.name}'s session was archived by {ctx.author.mention} ({ctx.author.id})",
-                color=ctx.author.color,
-                timestamp=datetime.datetime.now(),
-            )
-            embed.set_footer(
-                text=self.bot.user.name, icon_url=self.bot.user.display_avatar
-            )
-            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar.url)
-            embed.add_field(
-                name="🔗 Text",
-                value=f"[{fn}.txt](https://drive.google.com/file/d/{f['id']})",
-                inline=True,
-            )
-
-            if zipped_files:
-                f_zip = drive.CreateFile(
-                    {
-                        "parents": [{"kind": "drive#fileLink", "id": folder}],
-                        "title": fn + " (files).zip",
-                    }
-                )
-                f_zip.content = zipped_files
-                f_zip["mimeType"] = "application/zip"
-                f_zip.Upload()
 
                 embed.add_field(
-                    name="📦 Files",
-                    value=f"[{fn} (files).zip](https://drive.google.com/file/d/{f_zip['id']})",
-                    inline=True,
+                    name="Toss Archive " + str(index + 1),
+                    value=f"<t:{event['timestamp']}:R> on <t:{event['timestamp']}:f>\n"
+                    + f"__Issuer:__ <@{event['issuer_id']}> ({event['issuer_id']})\n"
+                    + archivelist,
+                    inline=False,
                 )
 
-            await ctx.send(content=reply)
-            await modch.send(embed=embed)
+        return await ctx.reply(embed=embed, mention_author=False)
 
-            return True
+    @commands.guild_only()
+    @commands.check(ismod)
+    @commands.bot_has_permissions(embed_links=True)
+    @archives.command()
+    async def open(self, ctx, user: discord.User, *, archive: typing.Union[int, str]):
+        """This send an archive to your DMs.
+
+        Note that it will trace you!
+        Archive should be an index for toss archives,
+        or a filename for a user archive.
+
+        - `user`
+        The user to find archives for.
+        - `index`
+        The index of the archive to pull. Optional."""
+        if ctx.guild.get_member(user.id):
+            user = ctx.guild.get_member(user.id)
+        uid = str(user.id)
+        userlog = get_guildfile(ctx.guild.id, "userlog")
+        embed = stock_embed(self.bot)
+
+        traces = get_tossfile(ctx.guild.id, "traces")
+        if "sessions" not in traces:
+            traces["sessions"] = {}
+        if "users" not in traces:
+            traces["users"] = {}
+
+        if type(archive) == str:
+            path = f"data/servers/{ctx.guild.id}/toss/archives/users/{uid}"
+            if not os.path.exists(path) and [f for f in os.listdir(path)]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user doesn't have any archives!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            if archive not in [f for f in os.listdir(path)]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> That's not a valid archive!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            filelist = [discord.File(os.path.join(path, archive))]
+            returnmsg = "Here's " + user.name + "'s `" + str(archive) + "` file."
+
+            if str(user.id) not in traces["users"]:
+                traces["users"][str(user.id)] = []
+            log_data = {
+                "issuer_id": ctx.author.id,
+                "file": archive,
+                "timestamp": int(datetime.datetime.now().timestamp()),
+            }
+            traces["users"][str(user.id)].append(log_data)
         else:
-            limit = 10
-            query = f"'{folder}' in parents"
-            args = re.sub("[^a-zA-Z0-9 ]", "", args) if args else None
-            title = "Results"
-            if not args:
-                await ctx.send(
-                    "Error: Unable to search archives. Please specify arguments."
-                )
-                return
+            if uid not in userlog:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user isn't in the system!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            elif not userlog[uid]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user's logs are empty!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            caseid = userlog[uid]["tosses"][archive - 1]["session_id"]
+            if not os.path.exists(
+                f"data/servers/{ctx.guild.id}/toss/archives/sessions/{caseid}"
+            ):
+                embed.title = "📂 About that archive..."
+                embed.description = "> This archive is empty!"
+                return await ctx.reply(embed=embed, mention_author=False)
 
-            search_term = args
-
-            query += f" and title contains '{search_term}'"
-            title += " for " + search_term
-
-            fl = drive.ListFile({"q": query}).GetList()
-            fl_count = len(fl)
-            unlisted_fl_count = fl_count - limit
-            fl = fl[:limit]
-            msg = "No Results."
-            if fl:
-                msg = "\n".join(
-                    [
-                        "[`{title}`](https://drive.google.com/file/d/{id})".format(**f)
-                        for f in fl
-                    ]
-                )
-                if unlisted_fl_count > 0:
-                    msg += f"\nand **{unlisted_fl_count}** more..."
-            await ctx.send(
-                embed=discord.Embed(
-                    title=title,
-                    url="https://drive.google.com/drive/folders/{}".format(folder),
-                    description=msg,
-                    color=ctx.guild.me.color,
-                )
+            path = f"data/servers/{ctx.guild.id}/toss/archives/sessions/{caseid}"
+            filelist = [
+                discord.File(os.path.join(path, file))
+                for file in [
+                    filename
+                    for filename in os.listdir(path)
+                    if os.path.isfile(os.path.join(path, filename))
+                ]
+            ]
+            returnmsg = (
+                "Here's " + user.name + "'s Toss Session `" + str(archive) + "` files."
             )
 
-        return True
+            if str(caseid) not in traces["sessions"]:
+                traces["sessions"][str(caseid)] = []
+            log_data = {
+                "issuer_id": ctx.author.id,
+                "timestamp": int(datetime.datetime.now().timestamp()),
+            }
+            traces["sessions"][str(caseid)].append(log_data)
+
+        try:
+            await ctx.author.send(
+                content=returnmsg,
+                files=filelist,
+            )
+            await ctx.reply(content="I DMed it to you!", mention_author=False)
+            set_tossfile(ctx.guild.id, "traces", json.dumps(traces))
+        except:
+            return await ctx.reply(content="I can't DM you!", mention_author=False)
+
+    @commands.guild_only()
+    @commands.check(ismod)
+    @commands.bot_has_permissions(embed_links=True)
+    @archives.command()
+    async def trace(self, ctx, user: discord.User, *, archive: typing.Union[int, str]):
+        """This views the tracelog for an archive.
+
+        Archive should be an index for toss archives,
+        or a filename for a user archive.
+
+        - `user`
+        The user to find archives for.
+        - `index`
+        The index of the archive to trace."""
+        if ctx.guild.get_member(user.id):
+            user = ctx.guild.get_member(user.id)
+        uid = str(user.id)
+        userlog = get_guildfile(ctx.guild.id, "userlog")
+        embed = stock_embed(self.bot)
+        if uid not in userlog:
+            embed.title = "📂 About that archive..."
+            embed.description = "> This user isn't in the system!"
+            return await ctx.reply(embed=embed, mention_author=False)
+        elif not userlog[uid]:
+            embed.title = "📂 About that archive..."
+            embed.description = "> This user's logs are empty!"
+            return await ctx.reply(embed=embed, mention_author=False)
+        author_embed(embed, user)
+        embed.title = "🔍 Archive traces..."
+
+        traces = get_tossfile(ctx.guild.id, "traces")
+        if type(archive) == str:
+            path = f"data/servers/{ctx.guild.id}/toss/archives/users/{uid}"
+            if not os.path.exists(path) and [f for f in os.listdir(path)]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user doesn't have any archives!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            if archive not in [f for f in os.listdir(path)]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> That's not a valid archive!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            if not "users" in traces or str(user.id) not in traces["users"]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This archive hasn't been opened!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            embed.description = "For `" + archive + "`."
+            for index, event in enumerate(
+                [
+                    trace
+                    for trace in traces["users"][str(user.id)]
+                    if trace["file"] == archive
+                ]
+            ):
+                embed.add_field(
+                    name="Trace " + str(index + 1),
+                    value=f"<t:{event['timestamp']}:R> on <t:{event['timestamp']}:f>\n"
+                    + f"__Issuer:__ <@{event['issuer_id']}> ({event['issuer_id']})\n",
+                    inline=False,
+                )
+        else:
+            if uid not in userlog:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user isn't in the system!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            elif not userlog[uid]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user's logs are empty!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            caseid = userlog[uid]["tosses"][archive - 1]["session_id"]
+            if not os.path.exists(
+                f"data/servers/{ctx.guild.id}/toss/archives/sessions/{caseid}"
+            ):
+                embed.title = "📂 About that archive..."
+                embed.description = "> This archive is empty!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            if not "sessions" in traces or str(caseid) not in traces["sessions"]:
+                embed.title = "📂 About that archive..."
+                embed.description = "> This archive hasn't been opened!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            embed.description = "For Toss Archive `" + str(archive) + "`."
+            for index, event in enumerate(traces["sessions"][str(caseid)]):
+                embed.add_field(
+                    name="Trace " + str(index + 1),
+                    value=f"<t:{event['timestamp']}:R> on <t:{event['timestamp']}:f>\n"
+                    + f"__Issuer:__ <@{event['issuer_id']}> ({event['issuer_id']})\n",
+                    inline=False,
+                )
+
+        return await ctx.reply(embed=embed, mention_author=False)
+
+    @commands.guild_only()
+    @commands.check(isadmin)
+    @commands.command()
+    async def orbitlog(
+        self,
+        ctx,
+        channels: commands.Greedy[
+            typing.Union[discord.abc.GuildChannel, discord.Thread]
+        ] = None,
+    ):
+        """Logs a channel from orbit.
+
+        Be VERY careful for using this with large channels.
+
+        - `channels`
+        A list of channels to orbitlog. You can use categories too."""
+        if not channels:
+            channels = [ctx.channel]
+        for channel in channels:
+            if type(channel) == discord.CategoryChannel:
+                for chnl in channel.channels:
+                    channels.append(chnl)
+                continue
+
+            async with ctx.channel.typing():
+                dotraw, dotzip = await log_whole_channel(
+                    self.bot, channel, zip_files=True
+                )
+                dottxt = BytesIO()
+                dottxt.write(dotraw.encode("utf-8"))
+                dottxt.seek(0)
+
+            filename = (
+                ctx.message.created_at.strftime("%Y-%m-%d")
+                + f" {channel.name} {channel.id}"
+            )
+
+            files = [discord.File(dottxt, filename=filename + ".txt")]
+            if dotzip:
+                files += [discord.File(dotzip, filename=filename + " (files).zip")]
+
+            await ctx.send(
+                content="TEMPORARY ARCHIVE MESSAGE",
+                files=files,
+            )
 
 
 async def setup(bot):
-    await bot.add_cog(ModArchive(bot))
+    await bot.add_cog(ModArchives(bot))

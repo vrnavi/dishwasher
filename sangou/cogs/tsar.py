@@ -9,6 +9,7 @@ from helpers.checks import isadmin
 from helpers.datafiles import get_guildfile
 from helpers.embeds import stock_embed
 from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.placeholders import random_msg
 
 
 class TSAR(Cog):
@@ -218,34 +219,17 @@ class TSAR(Cog):
         def messagecheck(m):
             return m.author.id == ctx.author.id and m.channel.id == ctx.channel.id
 
-        try:
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", timeout=30.0, check=reactioncheck
-            )
-        except asyncio.TimeoutError:
+        reaction = await self.bot.await_reaction(
+            ctx.channel, ctx.author, navigation_reactions, 30
+        )
+        if not reaction:
             return await configmsg.edit(
-                content="Operation timed out.",
+                content=random_msg("warn_timedout"),
                 embed=None,
                 delete_after=5,
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
-
-        async def waitformsg():
-            try:
-                message = await self.bot.wait_for(
-                    "message", timeout=300.0, check=messagecheck
-                )
-            except asyncio.TimeoutError:
-                await configsuppmsg.delete()
-                return await configmsg.edit(
-                    content="Operation timed out.",
-                    embed=None,
-                    delete_after=5,
-                    allowed_mentions=discord.AllowedMentions(replied_user=False),
-                )
-            return message
-
-        if str(reaction) == "⏹":
+        elif str(reaction) == "⏹":
             return await configmsg.edit(
                 content="Operation cancelled.",
                 embed=None,
@@ -253,71 +237,123 @@ class TSAR(Cog):
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         elif str(reaction) == "✨":
-            if len(tsars) == 20:
+            if len(tsars) >= 20:
                 return await ctx.reply(
                     content="Unable to create new TSAR: Maximum of 20 reached.",
                     mention_author=False,
                 )
             namemsg = await ctx.send(content="**Making new TSAR.**\nName of this TSAR?")
-            nameresp = await waitformsg()
-            if nameresp.content.lower() in dict(
+            nameresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not nameresp:
+                await namemsg.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
+            elif nameresp.content.lower() in dict(
                 (k.lower(), v) for k, v in tsars.items()
             ):
                 await configmsg.delete()
                 return await namemsg.edit(
                     content=f"Unable to proceed: TSAR already exists.", delete_after=5
                 )
-            await namemsg.edit(
-                content=f"TSAR Name: `{nameresp.content}`", delete_after=5
-            )
+            else:
+                await namemsg.edit(
+                    content=f"TSAR Name: `{nameresp.content}`", delete_after=5
+                )
+
             IDmsg = await ctx.send(content="ID of the role to give?")
-            IDresp = await waitformsg()
-            await IDmsg.edit(content=f"Role ID: `{IDresp.content}`", delete_after=5)
+            IDresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not IDresp:
+                await IDmsg.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
+            else:
+                await IDmsg.edit(content=f"Role ID: `{IDresp.content}`", delete_after=5)
+
             mindaysmsg = await ctx.send(content="Minimum days?")
-            mindaysresp = await waitformsg()
-            await mindaysmsg.edit(
-                content=f"Minimum days: `{mindaysresp.content}`", delete_after=5
-            )
-            blacklistedrolesmsg = await ctx.send(
+            mindaysresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not mindaysresp:
+                await mindaysmsg.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
+            else:
+                await mindaysmsg.edit(
+                    content=f"Minimum days: `{mindaysresp.content}`", delete_after=5
+                )
+
+            blrmsg = await ctx.send(
                 content="Roles forbidden? (IDs separated by spaces, or none for none)"
             )
-            blacklistedrolesresp = await waitformsg()
-            content = f"Forbidden roles: `{blacklistedrolesresp.content}`"
-            if any([o == IDresp.content for o in blacklistedrolesresp.content.split()]):
-                content += (
-                    "\nYou specified the same Role ID, so this TSAR will be give only."
+            blrresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not blrresp:
+                await blrmsg.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
                 )
-            await blacklistedrolesmsg.edit(
-                content=content,
-                delete_after=5,
-            )
-            requiredrolesmsg = await ctx.send(
+            else:
+                await blrmsg.edit(
+                    content=f"Forbidden roles: `{blrresp.content}`"
+                    + (
+                        "\nYou specified the same Role ID, so this TSAR will be give only."
+                        if any([o == IDresp.content for o in blrresp.content.split()])
+                        else ""
+                    ),
+                    delete_after=5,
+                )
+
+            rrmsg = await ctx.send(
                 content="Roles required? (IDs separated by spaces, or none for none)"
             )
-            requiredrolesresp = await waitformsg()
-            if any(
-                [r == IDresp.content for r in blacklistedrolesresp.content.split()]
-            ) and any([r == IDresp.content for r in requiredrolesresp.content.split()]):
+            rrresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not rrresp:
+                await rrmsg.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
+            elif any([r == IDresp.content for r in blrresp.content.split()]) and any(
+                [r == IDresp.content for r in rrresp.content.split()]
+            ):
                 await configmsg.delete()
-                return await requiredrolesmsg.edit(
+                return await rrmsg.edit(
                     content=f"Unable to proceed: Cannot create a TSAR both blacklisted and required.",
                     delete_after=5,
                 )
-            content = f"Required roles: `{requiredrolesresp.content}`"
-            if any([o == IDresp.content for o in requiredrolesresp.content.split()]):
-                content += "\nYou specified the same Role ID, so this TSAR will be remove only."
-            await requiredrolesmsg.edit(
-                content=content,
-                delete_after=5,
-            )
+            else:
+                await rrmsg.edit(
+                    content=f"Required roles: `{rrresp.content}`"
+                    + (
+                        "\nYou specified the same Role ID, so this TSAR will be remove only."
+                        if any([o == IDresp.content for o in rrresp.content.split()])
+                        else ""
+                    ),
+                    delete_after=5,
+                )
+
             tsars[nameresp.content] = {
                 "roleid": int(IDresp.content),
                 "mindays": int(mindaysresp.content),
-                "blacklisted": [int(r) for r in blacklistedrolesresp.content.split()]
-                if blacklistedrolesresp.content.lower() != "none"
+                "blacklisted": [int(r) for r in blrresp.content.split()]
+                if blrresp.content.lower() != "none"
                 else None,
-                "required": [int(r) for r in requiredrolesresp.content.split()]
-                if requiredrolesresp.content.lower() != "none"
+                "required": [int(r) for r in rrresp.content.split()]
+                if rresp.content.lower() != "none"
                 else None,
             }
             set_guildfile(ctx.guild.id, "tsar", json.dumps(tsars))
@@ -329,7 +365,15 @@ class TSAR(Cog):
             )
         elif str(reaction) == "❌":
             namemsg = await ctx.send(content="**Removing a TSAR.**\nName of this TSAR?")
-            nameresp = await waitformsg()
+            nameresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not nameresp:
+                await namemsg.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
             await namemsg.delete()
             del tsars[nameresp.content]
             set_guildfile(ctx.guild.id, "tsar", json.dumps(tsars))
@@ -341,7 +385,15 @@ class TSAR(Cog):
             )
         elif str(reaction) == "💣":
             confirmmsg = await ctx.send(content="Nuke the **ENTIRE** TSAR list?")
-            confirmresp = await waitformsg()
+            confirmresp = await self.bot.await_message(ctx.channel, ctx.author, 300)
+            if not confirmresp:
+                await confirmresp.delete()
+                return await configmsg.edit(
+                    content=random_msg("warn_timedout"),
+                    embed=None,
+                    delete_after=5,
+                    allowed_mentions=discord.AllowedMentions(replied_user=False),
+                )
             await confirmmsg.delete()
             if confirmresp.content.lower() == "yes":
                 tsars = {}

@@ -659,7 +659,7 @@ class Admin(Cog):
     @Cog.listener()
     async def on_guild_join(self, guild):
         msgs = []
-        for m in config.bot_managers:
+        for m in config.managers:
             msg = await self.bot.get_user(m).send(
                 content=f"{self.bot.user.name} joined `{guild}` with `{len(guild.members)}` members.\nCheck the checkmark within an hour to leave."
             )
@@ -668,7 +668,7 @@ class Admin(Cog):
 
         def check(r, u):
             return (
-                u.id in config.bot_managers
+                u.id in config.managers
                 and str(r.emoji) == "✅"
                 and type(r.message.channel) == discord.channel.DMChannel
             )

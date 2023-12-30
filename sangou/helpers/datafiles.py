@@ -93,6 +93,29 @@ def set_guildfile(serverid, filename, contents):
         f.write(contents)
 
 
+# Toss Files
+
+
+def make_tossfile(serverid, filename):
+    if not os.path.exists(f"data/servers/{serverid}/toss"):
+        os.makedirs(f"data/servers/{serverid}/toss")
+    with open(f"data/servers/{serverid}/toss/{filename}.json", "w") as f:
+        f.write("{}")
+        return json.loads("{}")
+
+
+def get_tossfile(serverid, filename):
+    if not os.path.exists(f"data/servers/{serverid}/toss/{filename}.json"):
+        make_tossfile(serverid, filename)
+    with open(f"data/servers/{serverid}/toss/{filename}.json", "r") as f:
+        return json.load(f)
+
+
+def set_tossfile(serverid, filename, contents):
+    with open(f"data/servers/{serverid}/toss/{filename}.json", "w") as f:
+        f.write(contents)
+
+
 # Default Fills
 
 
@@ -160,7 +183,6 @@ def add_userlog(sid, uid, issuer, reason, event_type):
 
     log_data = {
         "issuer_id": issuer.id,
-        "issuer_name": f"{issuer}",
         "reason": reason,
         "timestamp": int(datetime.datetime.now().timestamp()),
     }
@@ -169,6 +191,22 @@ def add_userlog(sid, uid, issuer, reason, event_type):
     userlogs[uid][event_type].append(log_data)
     set_guildfile(sid, "userlog", json.dumps(userlogs))
     return len(userlogs[uid][event_type])
+
+
+def toss_userlog(sid, uid, issuer, mlink, cid):
+    userlogs, uid = fill_userlog(sid, uid)
+
+    toss_data = {
+        "issuer_id": issuer.id,
+        "session_id": cid,
+        "post_link": mlink,
+        "timestamp": int(datetime.datetime.now().timestamp()),
+    }
+    if "tosses" not in userlogs[uid]:
+        userlogs[uid]["tosses"] = []
+    userlogs[uid]["tosses"].append(toss_data)
+    set_guildfile(sid, "userlog", json.dumps(userlogs))
+    return len(userlogs[uid]["tosses"])
 
 
 def watch_userlog(sid, uid, issuer, watch_state, tracker_thread=None, tracker_msg=None):

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import typing
 import random
 import platform
+import hashlib
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
@@ -405,6 +406,27 @@ class Basic(Cog):
         - `num`
         The number you wish to convert."""
         await ctx.reply(content=f"{int(num, 16)}", mention_author=False)
+
+    @commands.command()
+    async def hash(self, ctx, attachment: discord.Attachment):
+        """This converts an attachment to multiple hash values.
+
+        It will pull MD5 and SHA1.
+
+        - `attachment`
+        The attachment you wish to get the hash of."""
+        raw = await attachment.read()
+        md5hash = hashlib.md5(raw).hexdigest()
+        sha1hash = hashlib.sha1(raw).hexdigest()
+        warning = (
+            "Your file hash may be different, as Discord modifies images!\n"
+            if "image/" in attachment.content_type
+            else ""
+        )
+        await ctx.reply(
+            content=f"{warning}```{attachment.filename}\n\nMD5: {md5hash}\nSHA1: {sha1hash}```",
+            mention_author=False,
+        )
 
     @commands.guild_only()
     @commands.command()

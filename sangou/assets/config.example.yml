@@ -53,8 +53,8 @@ toss:
   # You may only have up to 25.
   tosschannels:
     - 
-  # Optional, only if you wish for archival. Please ask the bot owner before configuring this.
-  drivefolder: 
+  # The topic for each toss channel.
+  tosstopic:
 
 surveyr:
   # The channel ID that the bot will post moderation actions to.
@@ -89,4 +89,4 @@ reaction:
   paidforprofileeffectsenable: false
 
 metadata:
-  version: 3
+  version: 4

@@ -1,3 +1,6 @@
+# This Helper contains code from Archiver, which was made by Roadcrosser.
+# 🖤 If by any chance you're reading, we all miss you.
+# https://github.com/Roadcrosser/archiver
 import discord
 import json
 import os
@@ -19,71 +22,112 @@ async def log_whole_channel(bot, channel, zip_files=False):
         z = zipfile.ZipFile(b, "w", zipfile.ZIP_DEFLATED)
         zipped_count = 0
 
-    async for m in channel.history(limit=None):
+    async for m in channel.history(limit=None, oldest_first=True):
         blank_content = True
-        ts = "{:%Y-%m-%d %H:%M} ".format(m.created_at)
-        padding = len(ts) + len(m.author.name) + 2
-        add = ts
-        if m.type == discord.MessageType.default:
-            add += f"{m.author.name}: {m.clean_content}"
-            if m.clean_content:
-                blank_content = False
-        elif m.type == discord.MessageType.reply:
-            add += f"{m.author.name}: {m.clean_content}"
-            if m.clean_content:
+
+        header = (
+            m.author.name
+            + (" [BOT] " if m.author.bot else " ")
+            + m.created_at.astimezone().strftime("%m/%d/%Y %H:%M")
+            + "\n"
+        )
+        if m.type == discord.MessageType.reply:
+            rep = m.reference.resolved
+            preheader = (
+                "↗️ "
+                + ("[BOT] " if rep.author.bot else "")
+                + ("@" if rep.author in m.mentions else "")
+                + rep.author.name
+                + " "
+                + rep.clean_content[:50]
+                + ("..." if len(rep.clean_content) > 50 else "")
+                + "\n"
+            )
+        else:
+            preheader = ""
+        add = preheader + header
+        if m.is_system():
+            add += m.system_content
+            if m.system_content:
                 blank_content = False
         else:
-            add += m.system_content
+            add += m.clean_content
+            if m.clean_content:
+                blank_content = False
 
         for a in m.attachments:
             if not blank_content:
                 add += "\n"
-            add += " " * (padding * (not blank_content)) + "Attachment: " + a.filename
             if zip_files:
-                fn = "{}-{}-{}".format(m.id, a.id, a.filename)
-                async with bot.session.get(a.url) as r:
-                    f = await r.read()
-
+                fn = f"{a.id}-{a.filename}"
+                f = await a.read()
                 z.writestr(fn, f)
-                add += " (Saved as {})".format(fn)
                 zipped_count += 1
-
+                add += textify_attach((a.filename, fn))
+            else:
+                add += textify_attach((a.filename, None))
             blank_content = False
 
         for e in m.embeds:
             if e.type == "rich":
                 if not blank_content:
                     add += "\n"
-                add += textify_embed(
-                    e, limit=40, padding=padding, pad_first_line=not blank_content
-                )
+                add += textify_embed(e)
                 blank_content = False
 
         if m.reactions:
             if not blank_content:
                 add += "\n"
-            add += " " * (padding * (not blank_content))
             add += " ".join(
-                ["[{} {}]".format(str(r.emoji), r.count) for r in m.reactions]
+                [f"[ {str(rea.emoji)} {rea.count} ]" for rea in m.reactions]
             )
             blank_content = False
 
-        add += "\n"
-        st = add + st
+        add += "\n\n"
+        st = st + add
 
     if zip_files:
         if zipped_count:
-            z.writestr("log.txt", st)
+            z.close()
             b.seek(0)
-            ret = (st, b)
+            return (st, b)
         else:
-            ret = (st, None)
+            return (st, None)
+
+
+def textify_attach(files, limit=40):
+    text_proc = ["📄 " + files[0]]
+    if files[1]:
+        text_proc += ["🗜️ " + files[1]]
+    text_proc = [textwrap.wrap(t, width=limit) for t in text_proc]
+
+    texts = []
+
+    for tt in text_proc:
+        if not tt:
+            tt = [""]
+        for t in tt:
+            texts += [t + " " * (limit - len(t))]
+
+    ret = "┌─" + "─" * limit + "─╮"
+
+    for t in texts:
+        ret += "\n" + "│ " + t + " │"
+
+    ret += "\n" + "└─" + "─" * limit + "─╯"
 
     return ret
 
 
-def textify_embed(embed, limit=40, padding=0, pad_first_line=True):
+def textify_embed(embed, limit=40):
     text_proc = []
+    author = ""
+    if embed.author:
+        author += embed.author.name
+        if embed.author.url:
+            author += " - " + embed.author.url
+    if author:
+        text_proc += [author, ""]
     title = ""
     if embed.title:
         title += embed.title
@@ -91,8 +135,6 @@ def textify_embed(embed, limit=40, padding=0, pad_first_line=True):
             title += " - "
     if embed.url:
         title += embed.url
-    if not title and embed.author:
-        title = embed.author.name
     if title:
         text_proc += [title, ""]
     if embed.description:
@@ -113,7 +155,15 @@ def textify_embed(embed, limit=40, padding=0, pad_first_line=True):
     if embed.image:
         text_proc += ["Image: " + embed.image.url, ""]
     if embed.footer:
-        text_proc += [embed.footer.text, ""]
+        if embed.timestamp:
+            inp = (
+                embed.footer.text
+                + " | "
+                + "{:%m/%d/%Y %H:%M}".format(embed.timestamp.astimezone())
+            )
+            text_proc += [inp, ""]
+        else:
+            text_proc += [embed.footer.text, ""]
 
     text_proc = [textwrap.wrap(t, width=limit) for t in text_proc]
 
@@ -125,12 +175,12 @@ def textify_embed(embed, limit=40, padding=0, pad_first_line=True):
         for t in tt:
             texts += [t + " " * (limit - len(t))]
 
-    ret = " " * (padding * pad_first_line) + "╓─" + "─" * limit + "─╮"
+    ret = "╓─" + "─" * limit + "─╮"
 
     for t in texts[:-1]:
-        ret += "\n" + " " * padding + "║ " + t + " │"
+        ret += "\n" + "║ " + t + " │"
 
-    ret += "\n" + " " * padding + "╙─" + "─" * limit + "─╯"
+    ret += "\n" + "╙─" + "─" * limit + "─╯"
 
     return ret
 

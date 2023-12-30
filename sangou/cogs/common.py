@@ -9,6 +9,7 @@ import math
 import parsedatetime
 import random
 from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.placeholders import random_msg
 from discord.ext.commands import Cog
 
 
@@ -25,6 +26,8 @@ class Common(Cog):
         self.bot.aiogetbytes = self.aiogetbytes
         self.bot.escape_message = self.escape_message
         self.bot.get_used_invites = self.get_used_invites
+        self.bot.await_message = self.await_message
+        self.bot.await_reaction = self.await_reaction
         self.bot.parse_time = self.parse_time
         self.bot.c_to_f = self.c_to_f
         self.bot.f_to_c = self.f_to_c
@@ -153,6 +156,36 @@ class Common(Cog):
             invite_used += ", ".join([x["code"] for x in probable_invites_used])
 
         return invite_used
+
+    async def await_message(self, channel, author, timeout=60):
+        """Nice wrapper for waiting for a message"""
+
+        def check(m):
+            return m.author.id == author.id and m.channel.id == channel.id
+
+        try:
+            message = await self.bot.wait_for("message", timeout=timeout, check=check)
+        except asyncio.TimeoutError:
+            return None
+        return message
+
+    async def await_reaction(self, channel, author, reactions, timeout=60):
+        """Nice wrapper for waiting for a reaction"""
+
+        def check(r, u):
+            return (
+                u.id == author.id
+                and r.message.id == channel.id
+                and str(r.emoji) in reactions
+            )
+
+        try:
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", timeout=timeout, check=check
+            )
+        except asyncio.TimeoutError:
+            return None
+        return (reaction, user)
 
     # This function is based on https://stackoverflow.com/a/35435419/3286892
     # by link2110 (https://stackoverflow.com/users/5890923/link2110)

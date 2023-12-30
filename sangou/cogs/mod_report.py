@@ -7,6 +7,7 @@ import asyncio
 from helpers.datafiles import get_guildfile, set_guildfile
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed
+from helpers.placeholders import random_msg
 
 
 class ModReport(Cog):
@@ -57,7 +58,7 @@ class ModReport(Cog):
             )
         except asyncio.TimeoutError:
             return await message.edit(
-                content="Operation timed out.",
+                content=random_msg("warn_timedout"),
                 delete_after=5,
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
@@ -85,7 +86,7 @@ class ModReport(Cog):
             )
         except asyncio.TimeoutError:
             return await message.edit(
-                content="Operation timed out.",
+                content=random_msg("warn_timedout"),
                 delete_after=5,
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
@@ -112,7 +113,7 @@ class ModReport(Cog):
             )
         except asyncio.TimeoutError:
             return await message.edit(
-                content="Operation timed out.",
+                content=random_msg("warn_timedout"),
                 delete_after=5,
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
@@ -144,7 +145,7 @@ class ModReport(Cog):
                 )
             except asyncio.TimeoutError:
                 return await message.edit(
-                    content="Operation timed out.",
+                    content=random_msg("warn_timedout"),
                     delete_after=5,
                     allowed_mentions=discord.AllowedMentions(replied_user=False),
                 )
@@ -178,7 +179,7 @@ class ModReport(Cog):
             )
         except asyncio.TimeoutError:
             return await message.edit(
-                content="Operation timed out.",
+                content=random_msg("warn_timedout"),
                 delete_after=5,
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
@@ -210,8 +211,8 @@ class ModReport(Cog):
         for g in self.bot.guilds:
             reportlog = get_guildfile(g.id, "reportlog")
             cleanlog = {}
-            for instance, user in get_guildfile(g.id, "reportlog").items():
-                if int(datetime.datetime.now().timestamp()) - 259200 < int(instance):
+            for instance, user in reportlog.items():
+                if int(datetime.datetime.now().timestamp()) - 259200 > int(instance):
                     cleanlog[instance] = user
         set_guildfile(g.id, "reportlog", json.dumps(cleanlog))
 

@@ -152,6 +152,9 @@ class Logs2(Cog):
             return
         except discord.NotFound:
             pass
+        except discord.Forbidden:
+            # Put in a "no permissions to check why!" disclaimer
+            return
 
         alog = [
             entry

@@ -30,7 +30,7 @@ model_config = {
         "tossrole": "channelid",
         "tosscategory": "catid",
         "tosschannels": list,
-        "drivefolder": str,
+        "tosstopic": str,
     },
     "surveyr": {
         "surveychannel": "channelid",
@@ -83,6 +83,11 @@ def fill_config(sid):
             configs["staff"]["adminrole"] = None
             configs["staff"]["modrole"] = configs["staff"]["staffrole"]
             del configs["staff"]["staffrole"]
+
+        # * to 4.
+        if configs["metadata"]["version"] < 4:
+            del configs["toss"]["drivefolder"]
+            configs["toss"]["tosstopic"] = None
         set_raw_config(sid, configs)
 
     return configs

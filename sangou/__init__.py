@@ -68,7 +68,7 @@ bot.help_command = None
 bot.log = log
 bot.config = config
 bot.errors = []
-bot.version = "0.1.1"
+bot.version = "0.2.0"
 
 
 @bot.event
@@ -76,9 +76,10 @@ async def on_ready():
     bot.app_info = await bot.application_info()
 
     log.info(
-        f"\nLogged in as: {bot.user.name} - "
-        f"{bot.user.id}\ndpy version: {discord.__version__}\n"
-        f"bot version: {bot.version}\n"
+        f"\nLogged in as: {bot.user.name} - {bot.user.id}"
+        f"\ndpy version: {discord.__version__}"
+        f"\nbot version: {bot.version}"
+        "\n"
     )
 
     bot.session = aiohttp.ClientSession()

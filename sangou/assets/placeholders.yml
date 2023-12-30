@@ -125,6 +125,12 @@ warn_targetbot:
   - "{smug} I'm sorry {authorname}, I'm afraid I can't do that."
   - "{unamused} {authorname}, I am not a test subject like you."
   - "{angry} Please leave me alone, {authorname}!"
+  
+# Used if a command times out.
+warn_timedout:
+  - "{normal} Your command timed out."
+  - "{sleep} I got bored waiting, so I timed out your command."
+  - "{angry} I can't wait for your response forever! Command timed out."
 
 # === INFORMATION ===
 
