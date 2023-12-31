@@ -46,8 +46,8 @@ class ModArchives(Cog):
                     "- "
                     + filename
                     + " `"
-                    + str(os.path.getsize(path + "/" + filename) / 1048576)
-                    + " MB`."
+                    + self.bot.filesize(os.path.getsize(path + "/" + filename))
+                    + "`."
                     for filename in [
                         filename
                         for filename in os.listdir(path)
@@ -75,8 +75,8 @@ class ModArchives(Cog):
                             "- "
                             + filename
                             + " `"
-                            + str(os.path.getsize(path + "/" + filename) / 1048576)
-                            + " MB`."
+                            + self.bot.filesize(os.path.getsize(path + "/" + filename))
+                            + "`."
                             for filename in [
                                 filename
                                 for filename in os.listdir(path)

@@ -28,6 +28,7 @@ class Common(Cog):
         self.bot.get_used_invites = self.get_used_invites
         self.bot.await_message = self.await_message
         self.bot.await_reaction = self.await_reaction
+        self.bot.filesize = self.filesize
         self.bot.parse_time = self.parse_time
         self.bot.c_to_f = self.c_to_f
         self.bot.f_to_c = self.f_to_c
@@ -195,6 +196,14 @@ class Common(Cog):
         file = await file_resp.read()
         with open(local_filename, "wb") as f:
             f.write(file)
+
+    # This one's based on https://stackoverflow.com/a/1094933.
+    def filesize(num):
+        for unit in ("", "K", "M", "G", "T"):
+            if abs(num) < 1024.0:
+                return f"{num:3.2f} {unit}B"
+            num /= 1024.0
+        return f"{num:.2f} PB"
 
     # 2000 is maximum limit of discord
     async def slice_message(self, text, size=2000, prefix="", suffix=""):
