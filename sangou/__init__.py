@@ -68,7 +68,7 @@ bot.help_command = None
 bot.log = log
 bot.config = config
 bot.errors = []
-bot.version = "0.2.0"
+bot.version = "0.2.1"
 
 
 @bot.event
