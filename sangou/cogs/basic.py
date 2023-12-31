@@ -697,15 +697,16 @@ class Basic(Cog):
             plt.tight_layout(pad=0)
             plt.axis("off")
 
-            plt.savefig(f"{ctx.guild.id}-progressbar.png")
+            progressbar = io.BytesIO()
+            plt.savefig(progressbar)
+            progressbar.seek(0)
 
             plt.close()
         await ctx.reply(
             content=f"**{datetime.now().year}** is **{percentage}**% complete.",
-            file=discord.File(f"{ctx.guild.id}-progressbar.png"),
+            file=discord.File(progressbar, filename="progressbar.png"),
             mention_author=False,
         )
-        os.remove(f"{ctx.guild.id}-progressbar.png")
 
     @commands.cooldown(1, 5, type=commands.BucketType.default)
     @commands.guild_only()
@@ -729,12 +730,13 @@ class Basic(Cog):
                 else:
                     joincounts.append(rawjoins.count(d))
             plt.plot(joindates, joincounts)
-            plt.savefig(f"{ctx.guild.id}-joingraph.png", bbox_inches="tight")
+            joingraph = io.BytesIO()
+            plt.savefig(joingraph, bbox_inches="tight")
+            joingraph.seek(0)
             plt.close()
         await ctx.reply(
-            file=discord.File(f"{ctx.guild.id}-joingraph.png"), mention_author=False
+            file=discord.File(joingraph, filename="joingraph.png"), mention_author=False
         )
-        os.remove(f"{ctx.guild.id}-joingraph.png")
 
     @commands.guild_only()
     @commands.command(aliases=["joinscore"])
