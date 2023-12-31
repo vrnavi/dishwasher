@@ -198,7 +198,7 @@ class Common(Cog):
             f.write(file)
 
     # This one's based on https://stackoverflow.com/a/1094933.
-    def filesize(num):
+    def filesize(self, num):
         for unit in ("", "K", "M", "G", "T"):
             if abs(num) < 1024.0:
                 return f"{num:3.2f} {unit}B"
