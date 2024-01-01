@@ -622,7 +622,7 @@ class ModToss(Cog):
 
                 toss_userlog(
                     message.guild.id,
-                    message.author.id.id,
+                    message.author.id,
                     message.guild.me,
                     message.jump_url,
                     toss_channel.id,
