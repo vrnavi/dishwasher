@@ -8,10 +8,6 @@ import zipfile
 from datetime import datetime, timezone, timedelta
 from discord.ext import commands
 from discord.ext.commands import Cog
-import httplib2
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from oauth2client.service_account import ServiceAccountCredentials
 from io import BytesIO
 from helpers.checks import ismod
 from helpers.datafiles import add_userlog, toss_userlog, get_tossfile, set_tossfile

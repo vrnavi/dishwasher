@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.embeds import stock_embed, author_embed
+from helpers.datafiles import fill_profile
 import aiohttp
 import re as ren
 import html
@@ -682,7 +683,13 @@ class Basic(Cog):
             start = datetime(datetime.now().year, 1, 1)
             end = datetime(datetime.now().year + 1, 1, 1)
             total = end - start
-            current = datetime.now() - start
+            profile = fill_profile(ctx.author.id)
+            if profile["timezone"]:
+                current = (
+                    datetime.now().astimezone(ZoneInfo(profile["timezone"])) - start
+                )
+            else:
+                current = datetime.now() - start
             percentage = (current / total) * 100
 
             plt.figure().set_figheight(0.5)

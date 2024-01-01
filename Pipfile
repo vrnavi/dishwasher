@@ -9,10 +9,8 @@ aiohttp = "*"
 gidgethub = "*"
 httplib2 = "*"
 matplotlib = "*"
-oauth2client = "*"
 parsedatetime = "*"
 pillow = "*"
-pydrive = "*"
 skyfield = "*"
 deepl = "*"
 unidecode = "*"
@@ -20,6 +18,8 @@ PyYAML = "*"
 googletrans = {git = "https://github.com/c-goosen/py-googletrans.git"}
 pluralkit = "*"
 yt-dlp = "*"
+easgen = "*"
+pydub = "*"
 
 [dev-packages]
 
