@@ -681,15 +681,24 @@ class Basic(Cog):
 
         No arguments."""
         async with ctx.channel.typing():
-            start = datetime(datetime.now().year, 1, 1)
-            end = datetime(datetime.now().year + 1, 1, 1)
-            total = end - start
             profile = fill_profile(ctx.author.id)
             if profile["timezone"]:
+                start = datetime(
+                    datetime.now().astimezone(ZoneInfo(profile["timezone"])).year, 1, 1
+                )
+                end = datetime(
+                    datetime.now().astimezone(ZoneInfo(profile["timezone"])).year + 1,
+                    1,
+                    1,
+                )
+                total = end - start
                 current = (
                     datetime.now().astimezone(ZoneInfo(profile["timezone"])) - start
                 )
             else:
+                start = datetime(datetime.now().year, 1, 1)
+                end = datetime(datetime.now().year + 1, 1, 1)
+                total = end - start
                 current = datetime.now() - start
             percentage = (current / total) * 100
 
