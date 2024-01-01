@@ -683,23 +683,13 @@ class Basic(Cog):
         async with ctx.channel.typing():
             profile = fill_profile(ctx.author.id)
             if profile["timezone"]:
-                start = datetime(datetime.now().year, 1, 1).astimezone(
-                    ZoneInfo(profile["timezone"])
-                )
-                end = datetime(
-                    datetime.now().year + 1,
-                    1,
-                    1,
-                ).astimezone(ZoneInfo(profile["timezone"]))
-                total = end - start
-                current = (
-                    datetime.now().astimezone(ZoneInfo(profile["timezone"])) - start
-                )
+                timezone = ZoneInfo(profile["timezone"])
             else:
-                start = datetime(datetime.now().year, 1, 1)
-                end = datetime(datetime.now().year + 1, 1, 1)
-                total = end - start
-                current = datetime.now() - start
+                timezone = datetime.now().astimezone().tzinfo
+            start = datetime(datetime.now().astimezone(timezone).year, 1, 1)
+            end = datetime(datetime.now().astimezone(timezone).year + 1, 1, 1)
+            total = end - start
+            current = datetime.now().astimezone(timezone) - start
             percentage = (current / total) * 100
 
             plt.figure().set_figheight(0.5)
@@ -720,7 +710,7 @@ class Basic(Cog):
 
             plt.close()
         await ctx.reply(
-            content=f"**{datetime.now().year}** is **{percentage}**% complete.",
+            content=f"**{datetime.now().astimezone(timezone).year}** is **{percentage}**% complete.",
             file=discord.File(progressbar, filename="progressbar.png"),
             mention_author=False,
         )
