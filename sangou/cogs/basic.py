@@ -683,14 +683,14 @@ class Basic(Cog):
         async with ctx.channel.typing():
             profile = fill_profile(ctx.author.id)
             if profile["timezone"]:
-                start = datetime(
-                    datetime.now().astimezone(ZoneInfo(profile["timezone"])).year, 1, 1
+                start = datetime(datetime.now().year, 1, 1).astimezone(
+                    ZoneInfo(profile["timezone"])
                 )
                 end = datetime(
-                    datetime.now().astimezone(ZoneInfo(profile["timezone"])).year + 1,
+                    datetime.now().year + 1,
                     1,
                     1,
-                )
+                ).astimezone(ZoneInfo(profile["timezone"]))
                 total = end - start
                 current = (
                     datetime.now().astimezone(ZoneInfo(profile["timezone"])) - start
