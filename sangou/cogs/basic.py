@@ -687,9 +687,7 @@ class Basic(Cog):
             else:
                 timezone = datetime.now().astimezone().tzinfo
             start = datetime(datetime.now(tz=timezone).year, 1, 1, tzinfo=timezone)
-            end = datetime(
-                datetime.now(tz=timezone).year + 1, 1, 1, tzinfo=timezone
-            )
+            end = datetime(datetime.now(tz=timezone).year + 1, 1, 1, tzinfo=timezone)
             total = end - start
             current = datetime.now(tz=timezone) - start
             percentage = (current / total) * 100
