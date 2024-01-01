@@ -686,14 +686,12 @@ class Basic(Cog):
                 timezone = ZoneInfo(profile["timezone"])
             else:
                 timezone = datetime.now().astimezone().tzinfo
-            start = datetime(datetime.now().astimezone(timezone).year, 1, 1).astimezone(
-                timezone
-            )
+            start = datetime(datetime.now(tz=timezone).year, 1, 1, tzinfo=timezone)
             end = datetime(
-                datetime.now().astimezone(timezone).year + 1, 1, 1
-            ).astimezone(timezone)
+                datetime.now(tz=timezone).year + 1, 1, 1, tzinfo=timezone
+            )
             total = end - start
-            current = datetime.now().astimezone(timezone) - start
+            current = datetime.now(tz=timezone) - start
             percentage = (current / total) * 100
 
             plt.figure().set_figheight(0.5)
