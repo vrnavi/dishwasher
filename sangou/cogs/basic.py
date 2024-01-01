@@ -14,6 +14,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.embeds import stock_embed, author_embed
 from helpers.datafiles import fill_profile
+from zoneinfo import ZoneInfo, available_timezones
 import aiohttp
 import re as ren
 import html
