@@ -94,7 +94,7 @@ err_checkfail:
   - "{unamused} Why am I going to do that for you...? I don't know you."
 
 # An error message for if the bot needs to DM you, but cannot.
-err_selfdmfail:
+err_dmfail:
   - "{fear} I can't do that, you won't let me DM you! Check your DM settings..."
   - "{unamused} Hey, I can't DM you... check your settings first."
 
