@@ -47,6 +47,19 @@ class TSAR(Cog):
                 content=f"There is no role named `{role}`.", mention_author=False
             )
 
+        if roledata["mindays"]:
+            usertracks = get_guildfile(ctx.guild.id, "usertrack")
+            if str(ctx.author.id) not in usertracks and roledata["mindays"] != 0:
+                return await ctx.reply(
+                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - 0}` days.",
+                    mention_author=False,
+                )
+            elif roledata["mindays"] > usertracks[str(ctx.author.id)]["truedays"]:
+                return await ctx.reply(
+                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - usertracks[str(ctx.author.id)]['truedays']}` days.",
+                    mention_author=False,
+                )
+
         if roledata["blacklisted"]:
             badroles = [
                 badrole
@@ -70,19 +83,6 @@ class TSAR(Cog):
             if any([n not in ctx.author.roles for n in mustroles]):
                 return await ctx.reply(
                     content=f"You cannot get this role, as you don't have {', '.join(['`' + r.name + '`' for r in mustroles if r not in ctx.author.roles])}.",
-                    mention_author=False,
-                )
-
-        if roledata["mindays"]:
-            usertracks = get_guildfile(ctx.guild.id, "usertrack")
-            if str(ctx.author.id) not in usertracks and roledata["mindays"] != 0:
-                return await ctx.reply(
-                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - 0}` days.",
-                    mention_author=False,
-                )
-            elif roledata["mindays"] > usertracks[str(ctx.author.id)]["truedays"]:
-                return await ctx.reply(
-                    content=f"You cannot get this role, as you must wait `{roledata['mindays'] - usertracks[str(ctx.author.id)]['truedays']}` days.",
                     mention_author=False,
                 )
 
