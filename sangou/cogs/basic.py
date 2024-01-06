@@ -9,6 +9,7 @@ import typing
 import random
 import platform
 import hashlib
+import zlib
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
@@ -418,6 +419,7 @@ class Basic(Cog):
         - `attachment`
         The attachment you wish to get the hash of."""
         raw = await attachment.read()
+        crc32hash = hex(zlib.crc32(f.read()))
         md5hash = hashlib.md5(raw).hexdigest()
         sha1hash = hashlib.sha1(raw).hexdigest()
         warning = (
@@ -426,7 +428,7 @@ class Basic(Cog):
             else ""
         )
         await ctx.reply(
-            content=f"{warning}```{attachment.filename}\n\nMD5: {md5hash}\nSHA1: {sha1hash}```",
+            content=f"{warning}```{attachment.filename}\n\nCRC32: {crc32hash[2:]}\nMD5: {md5hash}\nSHA1: {sha1hash}```",
             mention_author=False,
         )
 
