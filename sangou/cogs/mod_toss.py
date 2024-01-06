@@ -478,7 +478,7 @@ class ModToss(Cog):
             )
 
         if archive:
-            if not staff_channel or not log_channel:
+            if not staff_channel and not log_channel:
                 return await ctx.reply(
                     content="You don't have anywhere for me to send the archives to.\nPlease configure either a staff channel or a moderation log channel, and then try again.",
                     mention_author=False,
