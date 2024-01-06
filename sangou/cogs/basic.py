@@ -418,13 +418,14 @@ class Basic(Cog):
 
         - `attachment`
         The attachment you wish to get the hash of."""
-        raw = await attachment.read()
-        crc32hash = hex(zlib.crc32(raw))
-        md5hash = hashlib.md5(raw).hexdigest()
-        sha1hash = hashlib.sha1(raw).hexdigest()
+        async with ctx.channel.typing():
+            raw = await attachment.read()
+            crc32hash = hex(zlib.crc32(raw))
+            md5hash = hashlib.md5(raw).hexdigest()
+            sha1hash = hashlib.sha1(raw).hexdigest()
         warning = (
             "Your file hash may be different, as Discord modifies images!\n"
-            if "image/" in attachment.content_type
+            if attachment.content_type and "image/" in attachment.content_type
             else ""
         )
         await ctx.reply(
