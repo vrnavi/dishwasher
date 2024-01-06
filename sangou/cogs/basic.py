@@ -414,7 +414,7 @@ class Basic(Cog):
     async def hash(self, ctx, attachment: discord.Attachment):
         """This converts an attachment to multiple hash values.
 
-        It will pull MD5 and SHA1.
+        It will pull CRC32, MD5, and SHA1.
 
         - `attachment`
         The attachment you wish to get the hash of."""
