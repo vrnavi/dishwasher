@@ -419,7 +419,7 @@ class Basic(Cog):
         - `attachment`
         The attachment you wish to get the hash of."""
         raw = await attachment.read()
-        crc32hash = hex(zlib.crc32(f.read()))
+        crc32hash = hex(zlib.crc32(raw))
         md5hash = hashlib.md5(raw).hexdigest()
         sha1hash = hashlib.sha1(raw).hexdigest()
         warning = (
