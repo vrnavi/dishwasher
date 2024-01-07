@@ -614,12 +614,12 @@ class Basic(Cog):
 
     @commands.command()
     async def jump(self, ctx):
-        """This posts a link to the first message inthe channel.
+        """This posts a link to the first message in the channel.
 
         Not much more to it.
 
         No arguments."""
-        async for message in channel.history(oldest_first=True):
+        async for message in ctx.channel.history(oldest_first=True):
             return await ctx.reply(content=message.jump_url, mention_author=False)
 
     @commands.command(aliases=["p"])
