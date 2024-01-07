@@ -612,6 +612,16 @@ class Basic(Cog):
             )
             return
 
+    @commands.command()
+    async def jump(self, ctx):
+        """This posts a link to the first message inthe channel.
+
+        Not much more to it.
+
+        No arguments."""
+        async for message in channel.history(oldest_first=True):
+            return await ctx.reply(content=message.jump_url, mention_author=False)
+
     @commands.command(aliases=["p"])
     async def ping(self, ctx):
         """This shows the bot's ping to Discord.
