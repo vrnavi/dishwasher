@@ -303,10 +303,10 @@ class Reply(Cog):
                 await self.msgref(message)
             except discord.errors.Forbidden:
                 if (
-                    message.channel.permissions_for(message.guild.me).add_reactions()
+                    message.channel.permissions_for(message.guild.me).add_reactions
                     and message.channel.permissions_for(
                         message.guild.me
-                    ).manage_messages()
+                    ).manage_messages
                 ):
                     await message.author.timeout(datetime.timedelta(minutes=10))
                     return await message.reply(
