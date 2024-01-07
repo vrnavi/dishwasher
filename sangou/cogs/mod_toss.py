@@ -693,13 +693,20 @@ class ModToss(Cog):
         set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
 
         await toss_channel.set_permissions(member, read_messages=True)
-        await toss_channel.send(
+        tossmsg = await toss_channel.send(
             content=f"🔁 {self.username_system(member)} rejoined while tossed."
         )
         if staff_channel:
-            await staff_channel.send(
+            tossmsg = await staff_channel.send(
                 content=f"🔁 {self.username_system(member)} ({member.id}) rejoined while tossed. Continuing in {toss_channel.mention}..."
             )
+        toss_userlog(
+            member.guild.id,
+            member.id,
+            member.guild.me,
+            tossmsg.jump_url,
+            toss_channel.id,
+        )
         return
 
     @Cog.listener()
