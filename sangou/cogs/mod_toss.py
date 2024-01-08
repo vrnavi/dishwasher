@@ -152,11 +152,11 @@ class ModToss(Cog):
     @commands.guild_only()
     @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
-    @commands.command()
+    @commands.command(aliases=["tossed", "session"])
     async def sessions(self, ctx):
         """This shows the open toss sessions.
 
-        There's not much more to this.
+        Use this in a toss channel to show who's in it.
 
         No arguments."""
         if not self.enabled(ctx.guild.id):
@@ -166,7 +166,12 @@ class ModToss(Cog):
         embed.color = ctx.author.color
         tosses = get_tossfile(ctx.guild.id, "tosses")
 
-        for c in get_config(ctx.guild.id, "toss", "tosschannels"):
+        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
+            channels = [ctx.channel.name]
+        else:
+            channels = get_config(ctx.guild.id, "toss", "tosschannels")
+
+        for c in channels:
             if c in [g.name for g in ctx.guild.channels]:
                 if c not in tosses:
                     embed.add_field(
