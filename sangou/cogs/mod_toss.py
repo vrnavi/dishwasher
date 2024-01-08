@@ -173,10 +173,10 @@ class ModToss(Cog):
 
         for c in channels:
             if c in [g.name for g in ctx.guild.channels]:
-                if c not in tosses:
+                if c not in tosses or not tosses[c]["tossed"]:
                     embed.add_field(
                         name=f"🟡 #{c}",
-                        value="__Empty__\n> Please delete the channel.",
+                        value="__Empty__\n> Please close the channel.",
                         inline=False,
                     )
                 else:
