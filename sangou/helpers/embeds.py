@@ -89,6 +89,48 @@ def stock_embed(bot):
     return embed
 
 
+def quote_embed(bot, qmsg, omsg, label="Quoted"):
+    embed = stock_embed(bot)
+    embed.color = qmsg.author.color
+    embed.timestamp = qmsg.created_at
+    if qmsg.clean_content:
+        limit = 500
+        if len(qmsg.clean_content) <= limit or '"' + omsg.jump_url + '"' in omsg:
+            embed.description = "> " + "\n> ".join(qmsg.clean_content.split("\n"))
+        else:
+            embed.description = (
+                "> "
+                + "\n> ".join(qmsg.clean_content[:limit].split("\n"))
+                + "...\n\n"
+                + f'**Message is over {limit} long.**\nUse `"LINK"` to show full message.'
+            )
+    embed.set_footer(
+        text=f"{label} by {omsg.author}",
+        icon_url=omsg.author.display_avatar.url,
+    )
+    embed.set_author(
+        name=f"💬 {qmsg.author} said in #{qmsg.channel.name}...",
+        icon_url=qmsg.author.display_avatar.url,
+        url=qmsg.jump_url,
+    )
+    if qmsg.attachments and qmsg.attachments[0].content_type[:6] == "image/":
+        if qmsg.attachments[0].is_spoiler():
+            embed.set_image(url="https://files.catbox.moe/tpgdvl.png")
+        else:
+            embed.set_image(url=qmsg.attachments[0].url)
+            if len(qmsg.attachments) > 1:
+                if not embed.description:
+                    embed.description = ""
+                embed.description += (
+                    f"\n\n🖼️ __Original post has `{len(qmsg.attachments)}` images.__"
+                )
+    elif qmsg.embeds and qmsg.embeds[0].image:
+        embed.set_image(url=qmsg.embeds[0].image.url)
+    elif qmsg.stickers:
+        embed.set_image(url=qmsg.stickers[0].url)
+    return embed
+
+
 async def sympage(bot, ctx, embeds, symbols):
     index = 0
 

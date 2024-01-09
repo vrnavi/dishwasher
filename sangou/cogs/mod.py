@@ -10,7 +10,7 @@ from helpers.checks import ismod, isadmin, ismanager
 from helpers.datafiles import add_userlog
 from helpers.placeholders import random_msg
 from helpers.sv_config import get_config
-from helpers.embeds import stock_embed, author_embed, mod_embed
+from helpers.embeds import stock_embed, author_embed, mod_embed, quote_embed
 import io
 
 
@@ -484,6 +484,45 @@ class Mod(Cog):
             + f"**With Purge**: {history.index(message.id) + 3}",
             mention_author=False,
         )
+
+    @commands.guild_only()
+    @commands.check(ismod)
+    @commands.bot_has_permissions(add_reactions=True)
+    @commands.command(aliases=["notify"])
+    async def alert(
+        self,
+        ctx,
+        member: discord.Member,
+        channel: typing.Union[discord.abc.GuildChannel, discord.Thread] = None,
+    ):
+        """This alerts you when a user says a message.
+
+        If you don't specify a `channel`, the whole
+        server will be watched for a new message.
+        The bot will wait up to one day for a message,
+        but it may end sooner if the bot is restarted.
+        Poke Ren to fix this at some point.
+
+        - `member`
+        The member you'd like to watch for a message from.
+        - `channel`
+        The channel you'd like to be alerted for. Optional."""
+
+        def check(m):
+            if channel:
+                return m.author.id == member.id and m.channel.id == channel.id
+            else:
+                return m.author.id == member.id
+
+        await ctx.message.add_reaction("⏳")
+        try:
+            message = await self.bot.wait_for("message", timeout=86400, check=check)
+        except asyncio.TimeoutError:
+            resp = await ctx.channel.send(content=ctx.author.mention)
+            return await msg.edit(content="🤷⏲️", delete_after=5)
+        resp = await ctx.channel.send(content=ctx.author.mention)
+        embed = quote_embed(self.bot, message, ctx.message, "Alerted")
+        return await resp.edit(content=None, embed=embed)
 
     @commands.guild_only()
     @commands.check(ismod)
