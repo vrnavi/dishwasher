@@ -525,7 +525,7 @@ class ModToss(Cog):
             if dotzip:
                 with open(
                     f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}/{filename} (files).zip",
-                    "w",
+                    "wb",
                 ) as zipfile:
                     zipfile.write(dotzip.getbuffer())
 
