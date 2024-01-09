@@ -550,7 +550,7 @@ class ModToss(Cog):
                     name="📁 Files",
                     value=f"{filename} (files).zip"
                     + "\n"
-                    + f"`{len(zipfile.ZipFile(dotzip, 'w', zipfile.ZIP_DEFLATED).infolist())}` files in the zip file.",
+                    + f"`{len(zipfile.ZipFile(dotzip, 'r', zipfile.ZIP_DEFLATED).namelist())}` files in the zip file.",
                     inline=True,
                 )
 
