@@ -520,14 +520,14 @@ class ModToss(Cog):
             with open(
                 f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}/{filename}.txt",
                 "w",
-            ) as txtfile:
-                txtfile.write(dotraw)
+            ) as filetxt:
+                filetxt.write(dotraw)
             if dotzip:
                 with open(
                     f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}/{filename} (files).zip",
                     "wb",
-                ) as zipfile:
-                    zipfile.write(dotzip.getbuffer())
+                ) as filezip:
+                    filezip.write(dotzip.getbuffer())
 
             embed = stock_embed(self.bot)
             embed.title = "📦 Toss Session Closed"

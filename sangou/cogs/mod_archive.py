@@ -99,16 +99,19 @@ class ModArchives(Cog):
     @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
     @archives.command()
-    async def open(self, ctx, user: discord.User, *, archive: typing.Union[int, str]):
-        """This send an archive to your DMs.
+    async def open(
+        self, ctx, user: discord.User, *, archive: typing.Union[int, str] = None
+    ):
+        """This sends an archive to your DMs.
 
         Note that it will trace you!
         Archive should be an index for toss archives,
         or a filename for a user archive.
+        Leave the archive blank to open ALL archives.
 
         - `user`
         The user to find archives for.
-        - `index`
+        - `archive`
         The index of the archive to pull. Optional."""
         if ctx.guild.get_member(user.id):
             user = ctx.guild.get_member(user.id)
@@ -143,7 +146,7 @@ class ModArchives(Cog):
                 "timestamp": int(datetime.datetime.now().timestamp()),
             }
             traces["users"][str(user.id)].append(log_data)
-        else:
+        elif type(archive) == int:
             if uid not in userlog:
                 embed.title = "📂 About that archive..."
                 embed.description = "> This user isn't in the system!"
@@ -180,7 +183,8 @@ class ModArchives(Cog):
                 "timestamp": int(datetime.datetime.now().timestamp()),
             }
             traces["sessions"][str(caseid)].append(log_data)
-
+        else:
+            return
         try:
             await ctx.author.send(
                 content=returnmsg,
