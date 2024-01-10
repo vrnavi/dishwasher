@@ -141,6 +141,7 @@ class Mod(Cog):
             ctx, str(target)
         )
 
+        failmsg = ""
         if ctx.guild.get_member(target.id) is not None:
             dm_message = f"**You were banned** from `{ctx.guild.name}`."
             if reason:
@@ -151,7 +152,6 @@ class Mod(Cog):
                 if get_config(ctx.guild.id, "staff", "appealurl")
                 else "."
             )
-            failmsg = ""
             try:
                 await target.send(dm_message)
             except discord.errors.Forbidden:
@@ -241,6 +241,7 @@ class Mod(Cog):
             ctx, str(target)
         )
 
+        failmsg = ""
         if ctx.guild.get_member(target.id) is not None:
             dm_message = f"**You were banned** from `{ctx.guild.name}`."
             if reason:
@@ -251,7 +252,6 @@ class Mod(Cog):
                 else "."
             )
             dm_message += f"\n\nThis ban does not expire{appealmsg}"
-            failmsg = ""
             try:
                 await target.send(dm_message)
             except discord.errors.Forbidden:
@@ -840,6 +840,7 @@ class Mod(Cog):
                 "warns",
             )
 
+        failmsg = ""
         if ctx.guild.get_member(target.id) is not None:
             msg = f"**You were warned** on `{ctx.guild.name}`."
             if reason:
@@ -852,7 +853,6 @@ class Mod(Cog):
             msg += (
                 f"\n\nPlease read the rules{rulesmsg} " f"This is warn #{warn_count}."
             )
-            failmsg = ""
             try:
                 await target.send(msg)
             except discord.errors.Forbidden:
