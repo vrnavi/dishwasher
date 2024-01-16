@@ -20,6 +20,7 @@ pluralkit = "*"
 yt-dlp = "*"
 easgen = "*"
 pydub = "*"
+diff-match-patch = "*"
 
 [dev-packages]
 
