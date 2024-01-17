@@ -8,7 +8,7 @@ from discord.ext.commands import Cog
 
 class Diff(Cog):
     @commands.command()
-    async def diff(self, ctx: commands.Context, old: str | None, new: str | None):
+    async def diff(self, ctx: commands.Context, old: str = None, new: str = None):
         is_file = False
         # Checks if the user has uploaded 2 files - does something else in this case!
         if len(ctx.message.attachments) >= 2 and (old is None and new is None):
