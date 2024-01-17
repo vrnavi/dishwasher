@@ -5,6 +5,7 @@ import typing
 import datetime
 
 from io import BytesIO
+import zipfile
 
 from discord.ext import commands
 from discord.ext.commands import Cog
@@ -127,11 +128,11 @@ class ModArchives(Cog):
 
         if type(archive) == str:
             path = f"data/servers/{ctx.guild.id}/toss/archives/users/{uid}"
-            if not os.path.exists(path) and [f for f in os.listdir(path)]:
+            if not os.path.exists(path) or not os.listdir(path):
                 embed.title = "📂 About that archive..."
                 embed.description = "> This user doesn't have any archives!"
                 return await ctx.reply(embed=embed, mention_author=False)
-            if archive not in [f for f in os.listdir(path)]:
+            elif archive not in os.listdir(path):
                 embed.title = "📂 About that archive..."
                 embed.description = "> That's not a valid archive!"
                 return await ctx.reply(embed=embed, mention_author=False)
@@ -184,7 +185,32 @@ class ModArchives(Cog):
             }
             traces["sessions"][str(caseid)].append(log_data)
         else:
-            return
+            path = f"data/servers/{ctx.guild.id}/toss/archives/users/{uid}"
+            if not os.path.exists(path) or not os.listdir(path):
+                embed.title = "📂 About that archive..."
+                embed.description = "> This user doesn't have any archives!"
+                return await ctx.reply(embed=embed, mention_author=False)
+            b = BytesIO()
+            z = zipfile.ZipFile(b, "w", zipfile.ZIP_DEFLATED)
+
+            if str(user.id) not in traces["users"]:
+                traces["users"][str(user.id)] = []
+            for filename in os.listdir(path):
+                if not os.path.isfile(os.path.join(path, filename)):
+                    continue
+                with open(os.path.join(path, filename), "r") as file:
+                    z.writestr(filename, file.read())
+                log_data = {
+                    "issuer_id": ctx.author.id,
+                    "file": filename,
+                    "timestamp": int(datetime.datetime.now().timestamp()),
+                }
+                traces["users"][str(user.id)].append(log_data)
+
+            z.close()
+            b.seek(0)
+            returnmsg = "Here's " + user.name + "'s files."
+            filelist = [discord.File(b, "datapack.zip")]
         try:
             await ctx.author.send(
                 content=returnmsg,
