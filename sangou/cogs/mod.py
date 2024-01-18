@@ -825,7 +825,7 @@ class Mod(Cog):
         if ctx.guild.get_member(target.id):
             target = ctx.guild.get_member(target.id)
             if self.check_if_target_is_staff(target):
-                return await ctx.send("I cannot ban Staff members.")
+                return await ctx.send("I cannot warn Staff members.")
 
         if reason:
             warn_count = add_userlog(
