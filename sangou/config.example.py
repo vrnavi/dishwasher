@@ -19,12 +19,16 @@ long_desc = (
     + "Built and coded by [renavi](https://0ccu.lt), forked from [robocop-ng](https://github.com/reswitched/robocop-ng)."
 )
 
+# [cogs.basic/google] CSE (Custom Search Engine) ID
+cseid = None
+# cogs.basic/google] API Key
+google_key = None
 # [cogs.prefixes] Maximum prefixes allowed.
 # This setting will cap at 25 prefixes regardless.
 maxprefixes = 6
 # [cogs.messagescan] DeepL Translator API key.
 # Enables DeepL translation output.
 deepl_key = None  # Example: "token_goes_here"
-# [cogs.basic] Catbox Account Key.
+# [cogs.basic/catbox] Catbox Account Key.
 # Will default to anonymous upload if not supplied.
 catbox_key = None  # Example: "token_goes_here"

@@ -10,9 +10,7 @@ import random
 import platform
 import hashlib
 import zlib
-import functools
 from datetime import datetime, timezone
-from googlesearch import search
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.embeds import stock_embed, author_embed
@@ -90,12 +88,16 @@ class Basic(Cog):
 
         - `query`
         The thing you want to search Google for. Optional."""
+        if not self.bot.config.cseid or not self.bot.config.google_key:
+            return ctx.reply(
+                content="Google searching hasn't been set up.", mention_author=False
+            )
         try:
             async with ctx.channel.typing():
-                results = await self.bot.loop.run_in_executor(
-                    None, functools.partial(search, query, advanced=True)
+                results = await self.bot.aioget(
+                    f"https://www.googleapis.com/customsearch/v1?cx={self.bot.config.cseid}&q={query}&key={self.bot.config.google_key}"
                 )
-                results = list(results)
+                results = json.loads(results)
         except:
             return await ctx.reply(content="HTML error.", mention_author=False)
         allowed_mentions = discord.AllowedMentions(replied_user=False)
@@ -105,11 +107,11 @@ class Basic(Cog):
         def content():
             return (
                 "**"
-                + results[idx].title
+                + results["items"][idx]["title"]
                 + "**\n<"
-                + results[idx].url
+                + results["items"][idx]["link"]
                 + ">\n```"
-                + results[idx].description
+                + results["items"][idx]["snippet"]
                 + "```"
             )
 
@@ -118,7 +120,11 @@ class Basic(Cog):
             await holder.add_reaction(e)
 
         def reactioncheck(r, u):
-            return u.id == ctx.author.id and str(r.emoji) in navigation_reactions
+            return (
+                u.id == ctx.author.id
+                and r.message.id == holder.id
+                and str(r.emoji) in navigation_reactions
+            )
 
         while True:
             try:
@@ -180,7 +186,11 @@ class Basic(Cog):
             await holder.add_reaction(e)
 
         def reactioncheck(r, u):
-            return u.id == ctx.author.id and str(r.emoji) in navigation_reactions
+            return (
+                u.id == ctx.author.id
+                and r.message.id == holder.id
+                and str(r.emoji) in navigation_reactions
+            )
 
         while True:
             try:
