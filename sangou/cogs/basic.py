@@ -10,7 +10,9 @@ import random
 import platform
 import hashlib
 import zlib
+import functools
 from datetime import datetime, timezone
+from googlesearch import search
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.embeds import stock_embed, author_embed
@@ -77,22 +79,93 @@ class Basic(Cog):
             )
         )
 
+    @commands.cooldown(1, 10, type=commands.BucketType.user)
+    @commands.bot_has_permissions(add_reactions=True, embed_links=True)
+    @commands.command(aliases=["search"])
+    async def google(self, ctx, *, query: str):
+        """This searches Google for a query.
+
+        Did you know? Some people can't seem to look up things
+        by themselves. Now you can do it for them!
+
+        - `query`
+        The thing you want to search Google for. Optional."""
+        try:
+            async with ctx.channel.typing():
+                results = await self.bot.loop.run_in_executor(
+                    None, functools.partial(search, query, advanced=True)
+                )
+                results = list(results)
+        except:
+            return await ctx.reply(content="HTML error.", mention_author=False)
+        allowed_mentions = discord.AllowedMentions(replied_user=False)
+        navigation_reactions = ["⏹", "⬅️", "➡"]
+        idx = 0
+
+        def content():
+            return (
+                "**"
+                + results[idx].title
+                + "**\n<"
+                + results[idx].url
+                + ">\n```"
+                + results[idx].description
+                + "```"
+            )
+
+        holder = await ctx.reply(content=content(), mention_author=False)
+        for e in navigation_reactions:
+            await holder.add_reaction(e)
+
+        def reactioncheck(r, u):
+            return u.id == ctx.author.id and str(r.emoji) in navigation_reactions
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=30.0, check=reactioncheck
+                )
+            except asyncio.TimeoutError:
+                for react in navigation_reactions:
+                    await holder.remove_reaction(react, ctx.bot.user)
+                return
+            if str(reaction) == "⏹":
+                return await holder.delete()
+            if str(reaction) == "⬅️":
+                if idx != 0:
+                    idx -= 1
+                try:
+                    await holder.remove_reaction("⬅️", ctx.author)
+                except:
+                    pass
+            elif str(reaction) == "➡":
+                if idx != 9:
+                    idx += 1
+                try:
+                    await holder.remove_reaction("➡", ctx.author)
+                except:
+                    pass
+            await holder.edit(
+                content=content(),
+                allowed_mentions=allowed_mentions,
+            )
+
     @commands.bot_has_permissions(add_reactions=True, embed_links=True)
     @commands.command(aliases=["yt"])
-    async def youtube(self, ctx, *, search: str):
+    async def youtube(self, ctx, *, query: str):
         """This searches YouTube for a video.
 
         You can use the reactions to switch between results.
         The stop icon will delete it, in case you find nothing.
 
-        - `search`
+        - `query`
         The thing you want to search YouTube for."""
         try:
             html = await self.bot.aioget(
-                f"https://www.youtube.com/results?search_query={search}"
+                f"https://www.youtube.com/results?search_query={query}"
             )
         except:
-            await ctx.reply(content="HTML error.", mention_author=False)
+            return await ctx.reply(content="HTML error.", mention_author=False)
         allowed_mentions = discord.AllowedMentions(replied_user=False)
         navigation_reactions = ["⏹", "⬅️", "➡"]
         idx = 0
@@ -128,7 +201,7 @@ class Basic(Cog):
                 except:
                     pass
             elif str(reaction) == "➡":
-                if idx != 10:
+                if idx != 9:
                     idx += 1
                 try:
                     await holder.remove_reaction("➡", ctx.author)

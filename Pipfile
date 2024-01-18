@@ -21,6 +21,7 @@ yt-dlp = "*"
 easgen = "*"
 pydub = "*"
 diff-match-patch = "*"
+googlesearch-python = "*"
 
 [dev-packages]
 
