@@ -49,7 +49,7 @@ class Reply(Cog):
                 return
             await message.add_reaction("<:pleasereplyping:1171017026274340904>")
             pokemsg = await message.reply(content=reference_author.mention)
-            await self.bot.await_message(message.channel, reference_author, 3600)
+            await self.bot.await_message(message.channel, reference_author, 86400)
             return await pokemsg.delete()
 
         if reference_author in message.mentions:
