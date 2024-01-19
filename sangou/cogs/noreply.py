@@ -48,9 +48,9 @@ class Reply(Cog):
             if profile["replypref"] != "pleasereplyping":
                 return
             await message.add_reaction("<:pleasereplyping:1171017026274340904>")
-            return await message.reply(
-                content=reference_author.mention, delete_after=10
-            )
+            pokemsg = await message.reply(content=reference_author.mention)
+            await self.bot.await_message(message.channel, reference_author, 3600)
+            return await pokemsg.delete()
 
         if reference_author in message.mentions:
             profile = fill_profile(reference_author.id)
