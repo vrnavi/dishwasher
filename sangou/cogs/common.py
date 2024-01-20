@@ -28,6 +28,7 @@ class Common(Cog):
         self.bot.get_used_invites = self.get_used_invites
         self.bot.await_message = self.await_message
         self.bot.await_reaction = self.await_reaction
+        self.bot.convert_temperature = self.convert_temperature
         self.bot.filesize = self.filesize
         self.bot.parse_time = self.parse_time
         self.bot.c_to_f = self.c_to_f
@@ -187,6 +188,25 @@ class Common(Cog):
         except asyncio.TimeoutError:
             return None
         return (reaction, user)
+
+    def convert_temperature(self, temp, inunit, outunit):
+        """Converts from one temperature unit to another."""
+        if inunit.lower() == "c":
+            if outunit.lower() == "f":
+                out = (temp * 9 / 5) + 32
+            elif outunit.lower() == "k":
+                out = temp + 273.15
+        elif inunit.lower() == "f":
+            if outunit.lower() == "c":
+                out = (temp - 32) * 5 / 9
+            elif outunit.lower() == "k":
+                out = (temp - 32) * 5 / 9 + 273.15
+        elif inunit.lower() == "k":
+            if outunit.lower() == "f":
+                out = (temp - 273.15) * 9 / 5 + 32
+            elif outunit.lower() == "c":
+                out = temp - 273.15
+        return out
 
     # This function is based on https://stackoverflow.com/a/35435419/3286892
     # by link2110 (https://stackoverflow.com/users/5890923/link2110)

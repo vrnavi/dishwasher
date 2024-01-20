@@ -21,7 +21,7 @@ long_desc = (
 
 # [cogs.basic/google] CSE (Custom Search Engine) ID
 cseid = None
-# cogs.basic/google] API Key
+# [cogs.basic/google] API Key
 google_key = None
 # [cogs.prefixes] Maximum prefixes allowed.
 # This setting will cap at 25 prefixes regardless.

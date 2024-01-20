@@ -53,6 +53,49 @@ class Basic(Cog):
             f"**Your IP is:** {random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}.{random.choice(range(1,256))}"
         )
 
+    @commands.command(aliases=["temp"])
+    async def temperature(
+        self,
+        ctx,
+        temp: float,
+        unit: typing.Literal["C", "c", "F", "f", "K", "k"],
+        convert: typing.Literal["C", "c", "F", "f", "K", "k"] = None,
+    ):
+        """This converts a temperature to a different unit.
+
+        Unit should be the unit of your temperature, and
+        convert should be the unit you want. Leave convert
+        blank to see all available conversions.
+
+        - `temp`
+        The temperature you want to convert.
+        - `unit`
+        The unit of the temperature you want to convert.
+        - `convert`
+        The unit you want to convert to. Optional."""
+        # This code is garbage.
+        # I wrote it at 2 in the morning.
+        # I am not sorry.
+        # Please leave a comment saying "Ren sucks" if you choose to make this any better.
+        if convert:
+            out = round(self.bot.convert_temperature(temp, unit, convert), 2)
+            return await ctx.reply(
+                content=f"`{temp}{'°' if unit.lower() != 'k' else ' '}{unit.upper()} is {out}{'°' if convert.lower() != 'k' else ' '}{convert.upper()}.`",
+                mention_author=False,
+            )
+        else:
+            msg = f"`{temp}{'°' if unit.lower() != 'k' else ' '}{unit.upper()} converted to...`"
+            for convert in ["c", "f", "k"]:
+                names = {"c": "Celsius", "f": "Fahrenheit", "k": "Kelvin"}
+                if unit == convert:
+                    continue
+                out = round(self.bot.convert_temperature(temp, unit, convert), 2)
+                msg += f"\n- `{out}{'°' if convert.lower() != 'k' else ''}` {names[convert]}."
+            return await ctx.reply(
+                content=msg,
+                mention_author=False,
+            )
+
     @commands.command(aliases=["whatsmyid", "myid"])
     async def whatismyid(self, ctx):
         """This just gives you your User ID.
