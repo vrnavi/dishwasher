@@ -76,28 +76,6 @@ class Meme(Cog):
         No arguments."""
         await ctx.send(f"🍂 you found me 🍂")
 
-    @commands.command(hidden=True)
-    async def melissa(self, ctx, amount=200):
-        """The pinnacle of my comedy.
-
-        There's not much to this that you need to know.
-
-        - `amount`
-        How many messages?"""
-        melmsgs = []
-        lenmelmsgs = 0
-        lennonmelmsgs = 0
-        async for message in ctx.channel.history(limit=amount):
-            if message.author.id == 466773797240963082:
-                melmsgs.append(message)
-                lenmelmsgs += len(message.clean_content)
-            else:
-                lennonmelmsgs += len(message.clean_content)
-        return await ctx.reply(
-            content=f"Melissa sent `{len(melmsgs)}/{amount}` ({round((len(melmsgs)/amount) * 100, 2)}%) messages, with `{lenmelmsgs}/{lenmelmsgs+lennonmelmsgs}` ({round((lenmelmsgs/(lenmelmsgs+lennonmelmsgs)) * 100, 2)}%) characters.",
-            mention_author=False,
-        )
-
     @commands.check(ismod)
     @commands.command(hidden=True, name="bam")
     async def bam_member(self, ctx, target: discord.Member):
