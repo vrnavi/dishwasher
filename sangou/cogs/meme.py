@@ -94,7 +94,7 @@ class Meme(Cog):
             else:
                 lennonmelmsgs += len(message.clean_content)
         return await ctx.reply(
-            content=f"Melissa sent `{len(melmsgs)}/{amount}` messages, with `{lenmelmsgs}/{lenmelmsgs+lennonmelmsgs}` characters.",
+            content=f"Melissa sent `{len(melmsgs)}/{amount}` ({(len(melmsgs)/amount) * 100}%) messages, with `{lenmelmsgs}/{lenmelmsgs+lennonmelmsgs}` ({(lenmelmsgs/(lenmelmsgs+lennonmelmsgs)) * 100}) characters.",
             mention_author=False,
         )
 
