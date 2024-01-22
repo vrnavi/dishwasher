@@ -374,6 +374,7 @@ class Messagescan(Cog):
             all((user.bot, user.id != self.bot.user.id))
             or str(reaction) not in self.langs
             or reaction.count != 1
+            or not reaction.message.content
             or not reaction.message.channel.permissions_for(user).send_messages
             or not get_config(reaction.message.guild.id, "reaction", "translateenable")
         ):
