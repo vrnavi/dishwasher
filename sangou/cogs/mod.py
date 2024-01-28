@@ -580,7 +580,7 @@ class Mod(Cog):
             channel = ctx.channel
 
         def is_bot(m):
-            return all((m.author.bot, m.author.discriminator != "0000"))
+            return any((m.author.bot, m.author.discriminator != "0000"))
 
         deleted = len(await channel.purge(limit=limit, check=is_bot))
         await ctx.send(f"🚮 `{deleted}` bot messages purged.", delete_after=5)
