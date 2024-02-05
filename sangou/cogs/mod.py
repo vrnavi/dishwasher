@@ -400,15 +400,9 @@ class Mod(Cog):
         embed.description = f"{target.mention} was unbanned by {ctx.author.mention} [{ctx.channel.mention}] [[Jump]({ctx.message.jump_url})]"
         author_embed(embed, target)
         mod_embed(embed, target, ctx.author)
-
-        if reason:
-            embed.add_field(name=f"📝 Reason", value=f"{reason}", inline=False)
-        else:
-            embed.add_field(
-                name=f"📝 Reason",
-                value=f"**No reason provided!**\nPlease use `{ctx.prefix}unban <user> [reason]` in the future.",
-                inline=False,
-            )
+        if not reason:
+            reason = f"**No reason provided!**\nPlease use `{ctx.prefix}unban <user> [reason]` in the future."
+        embed.add_field(name=f"📝 Reason", value=reason, inline=False)
 
         await mlog.send(embed=embed)
 

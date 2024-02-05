@@ -56,16 +56,19 @@ def fill_config(sid):
                 with open(f"{server_data}/{sid}/tsar.json", "r") as f:
                     tsars = json.load(f)
                 config["roles"] = []
-                for name, data in tsars.items():
-                    config["roles"].append(
-                        {
-                            "name": name,
-                            "role": data["roleid"],
-                            "days": data["mindays"],
-                            "blacklisted": data["blacklisted"],
-                            "required": data["required"],
-                        }
-                    )
+                if tsars:
+                    for name, data in tsars.items():
+                        config["roles"].append(
+                            {
+                                "name": name,
+                                "role": data["roleid"],
+                                "days": data["mindays"],
+                                "blacklisted": data["blacklisted"],
+                                "required": data["required"],
+                            }
+                        )
+                else:
+                    config["roles"] = None
                 os.remove(f"{server_data}/{sid}/tsar.json")
             else:
                 config["roles"] = None

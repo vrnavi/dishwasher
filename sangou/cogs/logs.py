@@ -588,20 +588,6 @@ class Logs2(Cog):
         except:
             pass
 
-        # Forum Default Reaction Emoji
-        try:
-            if (
-                channel_before.default_reaction_emoji
-                != channel_after.default_reaction_emoji
-            ):
-                embed.add_field(
-                    name="👍 Forum Default Emoji Change",
-                    value=f"❌ {channel_before.default_reaction_emoji}\n⬇️\n⭕ {channel_after.default_reaction_emoji}",
-                    inline=False,
-                )
-        except:
-            pass
-
         # Forum Default Sort Order
         try:
             if channel_before.default_sort_order != channel_after.default_sort_order:
@@ -613,7 +599,7 @@ class Logs2(Cog):
         except:
             pass
 
-        # Forum Default Sort Order
+        # Forum Default Layout
         try:
             if channel_before.default_layout != channel_after.default_layout:
                 embed.add_field(

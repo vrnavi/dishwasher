@@ -49,8 +49,6 @@ class CogBurstReacts(commands.Cog, name="Burst reactions handler"):
             return
 
         # Send information to log channel
-        mlog = await self.bot.fetch_channel(mlog)
-
         embed = stock_embed(self.bot)
         embed.title = "🗑️ Autoremoved a Super Reaction"
         embed.description = f"{author}`'s {emoji} was removed. [{message.jump_url}]"
