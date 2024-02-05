@@ -114,6 +114,19 @@ class Meme(Cog):
             f"{datetime.datetime.now().year} is the year of Linux on the Desktop"
         )
 
+    @commands.guild_only()
+    @commands.command(aliases=["mingpods"], hidden=True)
+    async def mingpod(self, ctx):
+        """This ming the pods.
+
+        Please use only in emergency of case.
+
+        No arguments."""
+        await ctx.reply(
+            f"Pod Automing: {ctx.author.mention} (by **{ctx.author}**)",
+            mention_author=False,
+        )
+
     @commands.command(hidden=True)
     async def umigame(self, ctx):
         """そのくるしみにきづくにはあまりにものろまだったようで
