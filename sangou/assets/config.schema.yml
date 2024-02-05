@@ -1,0 +1,239 @@
+type: object
+properties:
+  logging:
+    type: object
+    properties:
+      modlog:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      serverlog:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      userlog:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+  staff:
+    type: object
+    properties:
+      adminrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      modrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      exstaffrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      botrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      raidrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      staffchannel:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      watchchannel:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      rulesurl:
+        type: 
+          - string
+          - "null"
+      appealurl:
+        type: 
+          - string
+          - "null"
+      noreplythreshold:
+        type: 
+          - integer
+          - "null"
+  toss:
+    type: object
+    properties:
+      tossrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      tosscategory:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      tosschannels:
+        type: 
+          - array
+          - "null"
+        items:
+          type:
+            - integer
+            - string
+          minimum: 100000000000000000
+      tosstopic:
+        type: 
+          - string
+          - "null"
+  surveyr:
+    type: object
+    properties:
+      surveychannel:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      startingcase:
+        type: 
+          - integer
+          - "null"
+      loggingtypes:
+        type: 
+          - array
+          - "null"
+        items:
+          enum:
+            - ban
+            - unban
+            - kick
+            - softban
+            - timeout
+            - promotion
+            - demotion
+      loggingroles:
+        type: 
+          - array
+          - "null"
+        items:
+          type:
+            - integer
+            - string
+          minimum: 100000000000000000
+  cotd:
+    type: object
+    properties:
+      cotdrole:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
+      cotdname:
+        type:
+          - string
+          - "null"
+  reaction:
+    type: object
+    properties:
+      embedenable:
+        type: 
+          - boolean
+          - "null"
+      translateenable:
+        type: 
+          - boolean
+          - "null"
+      burstreactsenable:
+        type: 
+          - boolean
+          - "null"
+      autoreadableenable:
+        type: 
+          - boolean
+          - "null"
+      paidforprofileeffectsenable:
+        type: 
+          - boolean
+          - "null"
+  roles:
+    type: 
+      - array
+      - "null"
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type:
+            - integer
+            - string
+          minimum: 100000000000000000
+        days:
+          type: 
+            - integer
+            - "null"
+        blacklisted:
+          type: 
+            - array
+            - "null"
+          items:
+            type:
+              - integer
+              - string
+            minimum: 100000000000000000
+        required:
+          type: 
+            - array
+            - "null"
+          items:
+            type:
+              - integer
+              - string
+            minimum: 100000000000000000
+  overrides:
+    type: 
+      - array
+      - "null"
+    items:
+      type: object
+      properties:
+        command:
+          type: string
+        roles:
+          type: array
+          items:
+            type:
+              - integer
+              - string
+            minimum: 100000000000000000
+        restrict:
+          type: boolean
+  metadata:
+    type: object
+    properties:
+      version:
+        const: 5
+        

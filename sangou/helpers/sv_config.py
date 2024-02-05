@@ -3,94 +3,76 @@ import shutil
 import copy
 import json
 import os
+from jsonschema import validate
 
 server_data = "data/servers"
 with open("assets/config.example.yml", "r") as f:
-    stock_config = yaml.safe_load(f)
+    config_stock = yaml.safe_load(f)
+with open("assets/config.schema.yml", "r") as f:
+    config_schema = yaml.safe_load(f)
 
-model_config = {
-    "logging": {
-        "modlog": "channelid",
-        "serverlog": "channelid",
-        "userlog": "channelid",
-    },
-    "staff": {
-        "adminrole": "roleid",
-        "modrole": "roleid",
-        "exstaffrole": "roleid",
-        "botrole": "roleid",
-        "raidrole": "roleid",
-        "staffchannel": "channelid",
-        "rulesurl": str,
-        "appealurl": str,
-        "watchchannel": "channelid",
-        "noreplythreshold": int,
-    },
-    "toss": {
-        "tossrole": "channelid",
-        "tosscategory": "catid",
-        "tosschannels": list,
-        "tosstopic": str,
-    },
-    "surveyr": {
-        "surveychannel": "channelid",
-        "startingcase": int,
-        "loggingtypes": list,
-        "loggingroles": "listroleid",
-    },
-    "cotd": {
-        "cotdrole": "roleid",
-        "cotdname": str,
-    },
-    "reaction": {
-        "embedenable": bool,
-        "translateenable": bool,
-        "burstreactsenable": bool,
-        "autoreadableenable": bool,
-        "paidforprofileeffectsenable": bool,
-    },
-    "metadata": {
-        "version": int,
-    },
-}
+
+def validate_config(config):
+    validate(config, config_schema)
 
 
 def make_config(sid):
     if not os.path.exists(f"{server_data}/{sid}"):
         os.makedirs(f"{server_data}/{sid}")
     shutil.copyfile("assets/config.example.yml", f"{server_data}/{sid}/config.yml")
-    return stock_config
+    return config_stock
 
 
 def get_config(sid, part, key):
-    configs = fill_config(sid)
+    config = fill_config(sid)
 
-    return configs[part][key]
+    return config[part][key]
 
 
 def fill_config(sid):
-    configs = (
+    config = (
         get_raw_config(sid)
         if os.path.exists(f"{server_data}/{sid}/config.yml")
         else make_config(sid)
     )
 
-    if configs["metadata"]["version"] < stock_config["metadata"]["version"]:
+    if config["metadata"]["version"] < config_stock["metadata"]["version"]:
         # Version update code.
 
         # * to 3.
-        if configs["metadata"]["version"] < 3:
-            configs["staff"]["adminrole"] = None
-            configs["staff"]["modrole"] = configs["staff"]["staffrole"]
-            del configs["staff"]["staffrole"]
+        if config["metadata"]["version"] < 3:
+            config["staff"]["adminrole"] = None
+            config["staff"]["modrole"] = config["staff"]["staffrole"]
+            del config["staff"]["staffrole"]
 
         # * to 4.
-        if configs["metadata"]["version"] < 4:
-            del configs["toss"]["drivefolder"]
-            configs["toss"]["tosstopic"] = None
-        set_raw_config(sid, configs)
+        if config["metadata"]["version"] < 4:
+            del config["toss"]["drivefolder"]
+            config["toss"]["tosstopic"] = None
 
-    return configs
+        # * to 5.
+        if config["metadata"]["version"] < 5:
+            if os.path.exists(f"{server_data}/{sid}/tsar.json"):
+                with open(f"{server_data}/{sid}/tsar.json", "r") as f:
+                    tsars = json.load(f)
+                config["roles"] = []
+                for name, data in tsars.items():
+                    config["roles"].append(
+                        {
+                            "name": name,
+                            "role": data["roleid"],
+                            "days": data["mindays"],
+                            "blacklisted": data["blacklisted"],
+                            "required": data["required"],
+                        }
+                    )
+                os.remove(f"{server_data}/{sid}/tsar.json")
+            else:
+                config["roles"] = None
+            config["overrides"] = None
+        set_raw_config(sid, config)
+
+    return config
 
 
 def get_raw_config(sid):
@@ -100,6 +82,6 @@ def get_raw_config(sid):
 
 
 def set_raw_config(sid, contents):
-    contents["metadata"]["version"] = stock_config["metadata"]["version"]
+    contents["metadata"]["version"] = config_stock["metadata"]["version"]
     with open(f"{server_data}/{sid}/config.yml", "w") as f:
         yaml.dump(contents, f, sort_keys=False)

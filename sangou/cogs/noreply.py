@@ -57,9 +57,16 @@ class Reply(Cog):
 
             async def violation():
                 staff_role = (
-                    get_config(message.guild.id, "staff", "modrole")
-                    if get_config(message.guild.id, "staff", "modrole")
-                    else get_config(message.guild.id, "staff", "adminrole")
+                    self.bot.pull_role(
+                        message.guild, get_config(message.guild.id, "staff", "modrole")
+                    )
+                    if self.bot.pull_role(
+                        message.guild, get_config(message.guild.id, "staff", "modrole")
+                    )
+                    else self.bot.pull_role(
+                        message.guild,
+                        get_config(message.guild.id, "staff", "adminrole"),
+                    )
                 )
                 if (
                     not staff_role

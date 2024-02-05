@@ -20,8 +20,12 @@ class OneShot(Cog):
         It merges admins and mods together, sorry!
 
         No arguments."""
-        adminrole = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "adminrole"))
-        modrole = ctx.guild.get_role(get_config(ctx.guild.id, "staff", "modrole"))
+        adminrole = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "staff", "adminrole")
+        )
+        modrole = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "staff", "modrole")
+        )
 
         if not adminrole and not modrole:
             return await ctx.reply(
@@ -110,13 +114,17 @@ class OneShot(Cog):
         """[S] Toggles your Staff role.
 
         If you have Staff, it will replace it with Ex-Staff, and vice versa."""
-        staff_role = ctx.guild.get_role(
-            get_config(ctx.guild.id, "staff", "modrole")
-            if get_config(ctx.guild.id, "staff", "modrole")
-            else get_config(ctx.guild.id, "staff", "adminrole")
+        staff_role = (
+            self.bot.pull_role(ctx.guild, get_config(ctx.guild.id, "staff", "modrole"))
+            if self.bot.pull_role(
+                ctx.guild, get_config(ctx.guild.id, "staff", "modrole")
+            )
+            else self.bot.pull_role(
+                ctx.guild, get_config(ctx.guild.id, "staff", "adminrole")
+            )
         )
-        exstaff_role = ctx.guild.get_role(
-            get_config(ctx.guild.id, "staff", "exstaffrole")
+        exstaff_role = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "staff", "exstaffrole")
         )
 
         if staff_role in ctx.author.roles:

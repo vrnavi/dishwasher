@@ -6,12 +6,14 @@ import datetime
 import asyncio
 import typing
 import random
+import emoji
 from helpers.checks import ismod, isadmin, ismanager
 from helpers.datafiles import add_userlog
 from helpers.placeholders import random_msg
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed, mod_embed, quote_embed
 import io
+import re
 
 
 class Mod(Cog):
@@ -22,8 +24,14 @@ class Mod(Cog):
 
     def check_if_target_is_staff(self, target):
         return any(
-            r.id == get_config(target.guild.id, "staff", "modrole")
-            or r.id == get_config(target.guild.id, "staff", "adminrole")
+            r
+            == self.bot.pull_role(
+                target.guild, get_config(target.guild.id, "staff", "modrole")
+            )
+            or r
+            == self.bot.pull_role(
+                target.guild, get_config(target.guild.id, "staff", "adminrole")
+            )
             for r in target.roles
         )
 
@@ -77,10 +85,11 @@ class Mod(Cog):
         await target.kick(reason=f"[ Kick by {ctx.author} ] {reason}")
         await ctx.send(f"**{target.mention}** was KICKED.{failmsg}")
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Colour.from_str("#FFFF00")
@@ -168,10 +177,11 @@ class Mod(Cog):
         )
         await ctx.send(f"**{target.mention}** is now BANNED.\n{failmsg}")
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Colour.from_str("#FF0000")
@@ -271,10 +281,11 @@ class Mod(Cog):
             f"**{target.mention}** is now BANNED.\n{day_count} days of messages were deleted.\n{failmsg}"
         )
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Colour.from_str("#FF0000")
@@ -309,9 +320,11 @@ class Mod(Cog):
         The target to ban."""
         msg = await ctx.send(f"🚨 **MASSBAN IN PROGRESS...** 🚨")
         targets_int = [int(target) for target in targets.strip().split(" ")]
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
-        if mlog:
-            mlog = await self.bot.fetch_channel(mlog)
+
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
+
         for target in targets_int:
             target_user = await self.bot.fetch_user(target)
             target_member = ctx.guild.get_member(target)
@@ -375,10 +388,11 @@ class Mod(Cog):
         await ctx.guild.unban(target, reason=f"[ Unban by {ctx.author} ] {reason}")
         await ctx.send(f"{safe_name} is now UNBANNED.")
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Colour.from_str("#00FF00")
@@ -444,10 +458,11 @@ class Mod(Cog):
         )
         await ctx.send(f"{safe_name} is now silently BANNED.")
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Colour.from_str("#FF0000")
@@ -548,10 +563,11 @@ class Mod(Cog):
         deleted = len(await channel.purge(limit=limit))
         await ctx.send(f"🚮 `{deleted}` messages purged.", delete_after=5)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -580,15 +596,16 @@ class Mod(Cog):
             channel = ctx.channel
 
         def is_bot(m):
-            return all((m.author.bot, m.author.discriminator != "0000"))
+            return any((m.author.bot, m.author.discriminator == "0000"))
 
         deleted = len(await channel.purge(limit=limit, check=is_bot))
         await ctx.send(f"🚮 `{deleted}` bot messages purged.", delete_after=5)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -630,10 +647,11 @@ class Mod(Cog):
         deleted = len(await channel.purge(limit=limit, check=is_mentioned))
         await ctx.send(f"🚮 `{deleted}` messages from {target} purged.", delete_after=5)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -675,10 +693,11 @@ class Mod(Cog):
             f"🚮 `{deleted}` messages containing `{string}` purged.", delete_after=5
         )
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -704,16 +723,24 @@ class Mod(Cog):
         if not channel:
             channel = ctx.channel
 
+        emote_re = re.compile(r":[A-Za-z0-9_]+:", re.IGNORECASE)
+
         def has_emote(m):
-            return m.clean_content[:2] == "<:" and m.clean_content[-1:] == ">"
+            return any(
+                (
+                    emoji.emoji_count(m.content),
+                    emote_re.findall(m.content),
+                )
+            )
 
         deleted = len(await channel.purge(limit=limit, check=has_emote))
         await ctx.send(f"🚮 `{deleted}` emotes purged.", delete_after=5)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -748,10 +775,11 @@ class Mod(Cog):
         deleted = len(await channel.purge(limit=limit, check=has_embed))
         await ctx.send(f"🚮 `{deleted}` embeds purged.", delete_after=5)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -787,10 +815,11 @@ class Mod(Cog):
                 await msg.clear_reactions()
         await ctx.send(f"🚮 `{deleted}` reactions purged.", delete_after=5)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.lighter_gray()
@@ -872,10 +901,11 @@ class Mod(Cog):
             ctx, str(target)
         )
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Colour.from_str("#FFFF00")

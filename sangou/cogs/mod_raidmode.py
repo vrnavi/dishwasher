@@ -74,8 +74,9 @@ class ModRaidmode(Cog):
             ["⬜", "🟩"]
             + [
                 "🟨"
-                if get_config(ctx.guild.id, "staff", "raidrole")
-                and ctx.guild.get_role(get_config(ctx.guild.id, "staff", "raidrole"))
+                if self.bot.pull_role(
+                    ctx.guild, get_config(ctx.guild.id, "staff", "raidrole")
+                )
                 else "🚫"
             ]
             + ["🟥"]
@@ -122,7 +123,10 @@ class ModRaidmode(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         await self.bot.wait_until_ready()
-        if not get_config(member.guild.id, "staff", "staffchannel"):
+        staffchannel = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "staff", "staffchannel")
+        )
+        if not staffchannel:
             return
         raidmode = get_guildfile(member.guild.id, "raidmode")
         if "setting" not in raidmode:
@@ -139,9 +143,7 @@ class ModRaidmode(Cog):
             embed.add_field(
                 name="🔍 First message:", value="Currently watching...", inline=False
             )
-            callout = await member.guild.get_channel(
-                get_config(member.guild.id, "staff", "staffchannel")
-            ).send(embed=embed)
+            callout = await staffchannel.send(embed=embed)
 
             def check(m):
                 return (
@@ -172,20 +174,21 @@ class ModRaidmode(Cog):
             embed.title = "👢 Kick"
             rmstr = "`🟥 High`"
             await member.kick(
-                reason="Dishwasher's Raidmode is set to `🟥 High`. Try again later."
+                reason="Sangou's Raidmode is set to `🟥 High`. Try again later."
             )
         else:
             embed.title = "📥 User Joined"
         if raidmode["setting"] == 2:
             rmstr = "`🟨 Medium`"
-            if get_config(
-                member.guild.id, "staff", "raidrole"
-            ) or member.guild.get_role(
-                get_config(member.guild.id, "staff", "raidrole")
+            if self.bot.pull_role(
+                member.guild, get_config(member.guild.id, "staff", "raidrole")
             ):
                 await member.add_roles(
                     member.guild.get_role(
-                        get_config(member.guild.id, "staff", "raidrole")
+                        self.bot.pull_role(
+                            member.guild,
+                            get_config(member.guild.id, "staff", "raidrole"),
+                        )
                     )
                 )
         if raidmode["setting"] == 1:

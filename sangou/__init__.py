@@ -44,6 +44,13 @@ def get_userprefix(uid):
     return profile["prefixes"]
 
 
+def get_useralias(uid):
+    profile = get_userfile(uid, "profile")
+    if not profile:
+        return []
+    return profile["aliases"]
+
+
 def get_prefix(bot, message):
     prefixes = []
     for prefix in config.prefixes:
@@ -68,7 +75,7 @@ bot.help_command = None
 bot.log = log
 bot.config = config
 bot.errors = []
-bot.version = "0.2.1"
+bot.version = "0.3.0"
 
 
 @bot.event
@@ -225,12 +232,24 @@ async def on_message(message):
             return a.id == message.id
 
         while True:
+            if ctx.prefix:
+                aliases = get_useralias(message.author.id)
+                for alias in aliases:
+                    command, alias = list(alias.items())[0]
+                    if message.content.replace(ctx.prefix, "").startswith(alias):
+                        message.content = message.content.replace(alias, command)
+                        ctx = await bot.get_context(message)
+                        break
+            if ctx.valid:
+                break
             try:
-                b, a = await bot.wait_for("message_edit", timeout=15.0, check=check)
+                author, message = await bot.wait_for(
+                    "message_edit", timeout=15.0, check=check
+                )
             except (asyncio.TimeoutError, discord.errors.NotFound):
                 return
             else:
-                ctx = await bot.get_context(a)
+                ctx = await bot.get_context(message)
                 if ctx.valid:
                     break
     await bot.invoke(ctx)

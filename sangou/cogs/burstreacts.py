@@ -43,7 +43,7 @@ class CogBurstReacts(commands.Cog, name="Burst reactions handler"):
         # Remove reaction
         await message.remove_reaction(emoji, author)
 
-        mlog = get_config(guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(guild, get_config(guild.id, "logging", "modlog"))
 
         if not mlog:
             return

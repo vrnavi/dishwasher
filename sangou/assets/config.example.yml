@@ -4,12 +4,13 @@
 # again by using the "configs stock" command.
 
 # For any setting asking for an ID, you can put
-# the name of it as well, and the bot will convert
-# it to an ID automatically when you go to upload it.
-# Note that it will use the first one it finds, and it is
-# case-sensitive.
+# the name of it as well, and the bot will be able
+# to use it just fine. Note that it will use the
+# first one it finds, and it is case-sensitive.
 # For example:
-# modrole: "Server Staff"
+# modrole: "Staff"
+# Will work like:
+# modrole: 259199371361517569
 
 logging:
   # The bot will forward moderation actions to this channel ID.
@@ -30,7 +31,7 @@ staff:
   botrole: 
   # The role ID for new users, if Raidmode is set to Medium.
   raidrole: 
-  # The role ID for the Staff channel.
+  # The channel ID for the Staff channel.
   staffchannel: 
   # The channel ID which the bot will forward watched users to.
   watchchannel: 
@@ -52,7 +53,7 @@ toss:
   # The channel names that the bot will use when creating sessions.
   # You may only have up to 25.
   tosschannels:
-    - 
+
   # The topic for each toss channel.
   tosstopic:
 
@@ -64,10 +65,10 @@ surveyr:
   startingcase: 
   # Pick from "ban", "unban", "kick", "softban", "timeout", "promotion", "demotion".
   loggingtypes:
-    - 
+
   # If using "promotion" or "demotion" in Logging Types, place the role IDs you wish to monitor here.
   loggingroles:
-    - 
+
 
 cotd:
   # The role ID to use for a Color of The Day system.
@@ -77,16 +78,38 @@ cotd:
 
 reaction:
   # If the bot may pull message links and format them nicely.
-  embedenable: false
+  embedenable:
   # If the bot may translate messages using reacted flags.
-  translateenable: false
+  translateenable:
   # If the bot may autodelete super reactions.
-  burstreactsenable: false
+  burstreactsenable:
   # If the bot may automatically adjust names to be readable.
-  autoreadableenable: false
+  autoreadableenable:
   # If the bot may randomly laugh at users who have profile effects.
   # Some people get mad at this feature's existence for some reason.
-  paidforprofileeffectsenable: false
+  paidforprofileeffectsenable:
+  
+roles:
+  # Any potential roles to be used with "pls role" should be put here.
+  # Please see the following example.
+  #
+  # - name: Strange Journal    # What you want to call this role.
+  #   role: 303555716109565955 # ID of the role.
+  #   days: 7                  # Minimum days required to get.
+  #   blacklisted:             # Any roles you wish to keep from getting this role.
+  #     - 257050851611377666
+  #   required:                # Any roles that must be had before getting this role.
+
+  
+overrides:
+  # To override a command for use with more roles than allowed by default,
+  # or to restrict a command to certain roles, configure it here.
+  # Please see the following example.
+  #
+  # - command: kick            # The command you want to override.
+  #   roles:                   # The roles this override should apply for.
+  #     - 259199371361517569
+  #   restrict: false          # Whether to allow (false) or restrict this command to (true) these roles.
 
 metadata:
-  version: 4
+  version: 5

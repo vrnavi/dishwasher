@@ -33,7 +33,9 @@ class ModReport(Cog):
                 mention_author=False,
             )
         for guild in guilds:
-            if not get_config(guild.id, "staff", "staffchannel"):
+            if not self.bot.pull_channel(
+                guild, get_config(guild.id, "staff", "staffchannel")
+            ):
                 guilds.remove(guild)
         if not guilds:
             return await ctx.reply(
@@ -69,8 +71,8 @@ class ModReport(Cog):
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
         guild = guilds[int(response.content) - 1]
-        channel = guild.get_channel_or_thread(
-            get_config(guild.id, "staff", "staffchannel")
+        channel = self.bot.pull_channel(
+            guild, get_config(guild.id, "staff", "staffchannel")
         )
         await message.edit(
             content=f"**Guild:** {guild.name}",
@@ -126,13 +128,15 @@ class ModReport(Cog):
             allowed_mentions=discord.AllowedMentions(replied_user=False),
         )
         ping = False
-        if get_config(guild.id, "staff", "adminrole") or get_config(
-            guild.id, "staff", "modrole"
-        ):
+        if self.bot.pull_role(
+            guild, get_config(guild.id, "staff", "adminrole")
+        ) or self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole")):
             role = guild.get_role(
-                get_config(guild.id, "staff", "modrole")
-                if get_config(guild.id, "staff", "modrole")
-                else get_config(guild.id, "staff", "adminrole")
+                self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
+                if self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
+                else self.bot.pull_role(
+                    guild, get_config(guild.id, "staff", "adminrole")
+                )
             )
             message = await ctx.send(
                 content="**Would you like ping the Staff?**\nPlease use this for urgent matters!"

@@ -23,10 +23,13 @@ long_desc = (
 cseid = None
 # [cogs.basic/google] API Key
 google_key = None
-# [cogs.prefixes] Maximum prefixes allowed.
+# [cogs.shortcuts/prefixes] Maximum prefixes allowed.
 # This setting will cap at 25 prefixes regardless.
 maxprefixes = 6
-# [cogs.messagescan] DeepL Translator API key.
+# [cogs.shortcuts/aliases] Maximum aliases allowed.
+# This setting will cap at 25 aliases regardless.
+maxaliases = 6
+# [cogs.messagescan/translate] DeepL Translator API key.
 # Enables DeepL translation output.
 deepl_key = None  # Example: "token_goes_here"
 # [cogs.basic/catbox] Catbox Account Key.

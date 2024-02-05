@@ -27,15 +27,14 @@ class Surveyr(Cog):
         self.nocfgmsg = "Surveyr isn't set up for this server."
         self.bancooldown = {}
 
-    def enabled(self, gid):
-        if (
-            not get_config(gid, "surveyr", "surveychannel")
-            or type(get_config(gid, "surveyr", "startingcase")) != int
-            or not get_config(gid, "surveyr", "loggingtypes")
-        ):
-            return False
-        else:
-            return True
+    def enabled(self, g):
+        return all(
+            (
+                self.bot.pull_channel(g, get_config(g.id, "surveyr", "surveychannel")),
+                type(get_config(g.id, "surveyr", "startingcase")) == int,
+                get_config(g.id, "surveyr", "loggingtypes"),
+            )
+        )
 
     def case_handler(self, cases, surveys):
         if cases.isdigit():
@@ -94,7 +93,7 @@ class Surveyr(Cog):
         Please see the [documentation](https://3gou.0ccu.lt/as-a-moderator/the-survey-system/) for more info.
 
         No arguments."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         surveys = get_guildfile(ctx.guild.id, "surveys")
         if not surveys:
@@ -136,12 +135,13 @@ class Surveyr(Cog):
         The actioning Staff.
         - `reason`
         The reason for the action."""
-        if not self.enabled:
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         surveys = get_guildfile(ctx.guild.id, "surveys")
-        survey_channel = get_config(ctx.guild.id, "surveyr", "surveychannel")
-
-        msg = await ctx.guild.get_channel(survey_channel).send(content="⌛")
+        survey_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
+        )
+        msg = await survey_channel.send(content="⌛")
         caseid, timestamp = new_survey(
             ctx.guild.id, member.id, msg.id, user.id, reason, survey_type
         )
@@ -168,7 +168,7 @@ class Surveyr(Cog):
         The IDs to edit. Can be single (`15`) or multiple (`15..18`).
         - `reason`
         The reason to apply to the cases."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
@@ -192,8 +192,8 @@ class Surveyr(Cog):
         for case in cases:
             try:
                 survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
-                msg = await ctx.guild.get_channel(
-                    get_config(ctx.guild.id, "surveyr", "surveychannel")
+                msg = await self.bot.pull_channel(
+                    ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
                 ).fetch_message(survey["post_id"])
 
                 edit_survey(
@@ -226,7 +226,7 @@ class Surveyr(Cog):
 
         - `caseids`
         The IDs to censor. Can be single (`15`) or multiple (`15..18`)."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
@@ -260,8 +260,8 @@ class Surveyr(Cog):
                 # todo: remove when discord completes its rollout
                 if int(member.discriminator):
                     censored_username += "#" + member.discriminator
-                msg = await ctx.guild.get_channel(
-                    get_config(ctx.guild.id, "surveyr", "surveychannel")
+                msg = await self.bot.pull_channel(
+                    ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
                 ).fetch_message(survey["post_id"])
                 content = msg.content.split("\n")
                 content[
@@ -287,7 +287,7 @@ class Surveyr(Cog):
 
         - `caseids`
         The IDs to uncensor. Can be single (`15`) or multiple (`15..18`)."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
@@ -312,8 +312,8 @@ class Surveyr(Cog):
             try:
                 survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
                 member = await self.bot.fetch_user(survey["target_id"])
-                msg = await ctx.guild.get_channel(
-                    get_config(ctx.guild.id, "surveyr", "surveychannel")
+                msg = await self.bot.pull_channel(
+                    ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
                 ).fetch_message(survey["post_id"])
                 content = msg.content.split("\n")
                 content[1] = f"**User:** " + self.username_system(member)
@@ -337,7 +337,7 @@ class Surveyr(Cog):
 
         - `caseid`
         The ID to repost up to. Must be single (`15`)."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(
             caseid + "..l", get_guildfile(ctx.guild.id, "surveys")
@@ -360,8 +360,8 @@ class Surveyr(Cog):
                 await warningmsg.edit(content="Operation timed out.", delete_after=5)
                 return
 
-        surveychannel = ctx.guild.get_channel(
-            get_config(ctx.guild.id, "surveyr", "surveychannel")
+        surveychannel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
         )
 
         for case in cases:
@@ -405,7 +405,7 @@ class Surveyr(Cog):
 
         - `caseids`
         The IDs to dump. Can be single (`15`) or multiple (`15..18`)."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
         if not cases:
@@ -432,12 +432,14 @@ class Surveyr(Cog):
     @Cog.listener()
     async def on_member_remove(self, member):
         await self.bot.wait_until_ready()
-        if not self.enabled(member.guild.id) or "kick" not in get_config(
+        if not self.enabled(member.guild) or "kick" not in get_config(
             member.guild.id, "surveyr", "loggingtypes"
         ):
             return
         guild = member.guild
-        survey_channel = get_config(member.guild.id, "surveyr", "surveychannel")
+        survey_channel = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "surveyr", "surveychannel")
+        )
 
         # Waiting for Discord's mistimed audit log entry.
         entry = None
@@ -460,7 +462,7 @@ class Surveyr(Cog):
 
         user, reason = self.format_handler(entry)
 
-        msg = await guild.get_channel(survey_channel).send(content="⌛")
+        msg = await survey_channel.send(content="⌛")
         caseid, timestamp = new_survey(
             guild.id, member.id, msg.id, user.id, reason, "kicks"
         )
@@ -478,11 +480,13 @@ class Surveyr(Cog):
     @Cog.listener()
     async def on_member_ban(self, guild, member):
         await self.bot.wait_until_ready()
-        if not self.enabled(guild.id) or "ban" not in get_config(
+        if not self.enabled(guild) or "ban" not in get_config(
             guild.id, "surveyr", "loggingtypes"
         ):
             return
-        survey_channel = get_config(guild.id, "surveyr", "surveychannel")
+        survey_channel = self.bot.pull_channel(
+            guild, get_config(guild.id, "surveyr", "surveychannel")
+        )
 
         # Waiting for Discord's mistimed audit log entry.
         entry = None
@@ -505,7 +509,7 @@ class Surveyr(Cog):
 
         user, reason = self.format_handler(entry)
 
-        msg = await guild.get_channel(survey_channel).send(content="⌛")
+        msg = await survey_channel.send(content="⌛")
         caseid, timestamp = new_survey(
             guild.id, member.id, msg.id, user.id, reason, "bans"
         )
@@ -527,7 +531,7 @@ class Surveyr(Cog):
             await guild.fetch_ban(member)
             self.bancooldown[guild.id].remove(member.id)
         except discord.NotFound:
-            reason = get_guildfile(ctx.guild.id, "surveys")[str(caseid)]["reason"]
+            reason = get_guildfile(guild.id, "surveys")[str(caseid)]["reason"]
             edit_survey(guild.id, caseid, entry.user.id, reason, "softbans")
             msg = await guild.get_channel(survey_channel).fetch_message(msg.id)
             content = msg.content.split("\n")
@@ -540,13 +544,15 @@ class Surveyr(Cog):
     async def on_member_unban(self, guild, member):
         await self.bot.wait_until_ready()
         if (
-            not self.enabled(guild.id)
+            not self.enabled(guild)
             or "unban" not in get_config(guild.id, "surveyr", "loggingtypes")
             or guild.id in self.bancooldown
             and member.id in self.bancooldown[guild.id]
         ):
             return
-        survey_channel = get_config(guild.id, "surveyr", "surveychannel")
+        survey_channel = self.bot.pull_channel(
+            guild, get_config(guild.id, "surveyr", "surveychannel")
+        )
 
         # Waiting for Discord's mistimed audit log entry.
         entry = None
@@ -569,7 +575,7 @@ class Surveyr(Cog):
 
         user, reason = self.format_handler(entry)
 
-        msg = await guild.get_channel(survey_channel).send(content="⌛")
+        msg = await survey_channel.send(content="⌛")
         caseid, timestamp = new_survey(
             guild.id, member.id, msg.id, user.id, reason, "unbans"
         )
@@ -588,7 +594,7 @@ class Surveyr(Cog):
     async def on_member_update(self, member_before, member_after):
         await self.bot.wait_until_ready()
         if (
-            not self.enabled(member_after.guild.id)
+            not self.enabled(member_after.guild)
             or "timeout"
             not in get_config(member_after.guild.id, "surveyr", "loggingtypes")
             and "role"
@@ -596,7 +602,10 @@ class Surveyr(Cog):
         ):
             return
         guild = member_after.guild
-        survey_channel = get_config(member_after.guild.id, "surveyr", "surveychannel")
+        survey_channel = self.bot.pull_channel(
+            member_after.guild,
+            get_config(member_after.guild.id, "surveyr", "surveychannel"),
+        )
 
         if (
             "timeout" in get_config(member_after.guild.id, "surveyr", "loggingtypes")
@@ -624,7 +633,7 @@ class Surveyr(Cog):
 
             user, reason = self.format_handler(entry)
 
-            msg = await guild.get_channel(survey_channel).send(content="⌛")
+            msg = await survey_channel.send(content="⌛")
             caseid, timestamp = new_survey(
                 guild.id, member_after.id, msg.id, user.id, reason, "timeouts"
             )
@@ -650,17 +659,17 @@ class Surveyr(Cog):
                 ):
                     continue
                 elif role not in member_before.roles and role in member_after.roles:
-                    if role.id == get_config(
-                        member_after.guild.id, "staff", "exstaffrole"
-                    ):
-                        continue
+                    # if role.id == get_config(
+                    #     member_after.guild.id, "staff", "exstaffrole"
+                    # ):
+                    #     continue
                     # Special Role Added
                     role_add.append(role.id)
                 elif role in member_before.roles and role not in member_after.roles:
-                    if role.id == get_config(
-                        member_after.guild.id, "staff", "exstaffrole"
-                    ):
-                        continue
+                    # if role.id == get_config(
+                    #     member_after.guild.id, "staff", "exstaffrole"
+                    # ):
+                    #     continue
                     # Special Role Removed
                     role_remove.append(role.id)
 
@@ -689,7 +698,7 @@ class Surveyr(Cog):
                 member_after.guild.id, "surveyr", "loggingtypes"
             ):
                 for role in role_add:
-                    msg = await guild.get_channel(survey_channel).send(content="⌛")
+                    msg = await survey_channel.send(content="⌛")
                     caseid, timestamp = new_survey(
                         guild.id, member_after.id, msg.id, user.id, reason, "roleadds"
                     )
@@ -705,7 +714,7 @@ class Surveyr(Cog):
 
             if "demote" in get_config(member_after.guild.id, "surveyr", "loggingtypes"):
                 for role in role_remove:
-                    msg = await guild.get_channel(survey_channel).send(content="⌛")
+                    msg = await survey_channel.send(content="⌛")
                     caseid, timestamp = new_survey(
                         guild.id,
                         member_after.id,

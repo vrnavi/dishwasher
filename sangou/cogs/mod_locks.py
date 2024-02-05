@@ -26,13 +26,17 @@ class ModLocks(Cog):
     async def unlock_for_staff(self, channel: discord.TextChannel, issuer):
         await self.set_sendmessage(
             channel,
-            get_config(channel.guild.id, "staff", "adminrole"),
+            self.bot.pull_role(
+                channel.guild, get_config(channel.guild.id, "staff", "adminrole")
+            ),
             True,
             issuer,
         )
         await self.set_sendmessage(
             channel,
-            get_config(channel.guild.id, "staff", "modrole"),
+            self.bot.pull_role(
+                channel.guild, get_config(channel.guild.id, "staff", "modrole")
+            ),
             True,
             issuer,
         )
@@ -40,7 +44,9 @@ class ModLocks(Cog):
     async def unlock_for_bots(self, channel: discord.TextChannel, issuer):
         await self.set_sendmessage(
             channel,
-            get_config(channel.guild.id, "staff", "botrole"),
+            self.bot.pull_role(
+                channel.guild, get_config(channel.guild.id, "staff", "botrole")
+            ),
             True,
             issuer,
         )
@@ -62,17 +68,25 @@ class ModLocks(Cog):
         Whether to yell at the users or not."""
         if not channel:
             channel = ctx.channel
-        adminroleid = get_config(ctx.guild.id, "staff", "adminrole")
-        modroleid = get_config(ctx.guild.id, "staff", "modrole")
-        botroleid = get_config(ctx.guild.id, "staff", "botrole")
+        adminrole = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "staff", "adminrole")
+        )
+        modrole = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "staff", "modrole")
+        )
+        botrole = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "staff", "botrole")
+        )
 
-        if not adminroleid and not modroleid:
+        if not adminrole and not modrole:
             return await ctx.reply(
                 content="Neither an `adminrole` or a `modrole` are configured...",
                 mention_author=False,
             )
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
 
         # Take a snapshot of current channel state before making any changes
         if ctx.guild.id not in self.snapshots:
@@ -105,12 +119,12 @@ class ModLocks(Cog):
                     continue
                 roles.append(r.id)
 
-        if adminroleid in roles:
-            roles.remove(adminroleid)
-        if modroleid in roles:
-            roles.remove(modroleid)
-        if botroleid in roles:
-            roles.remove(botroleid)
+        if adminrole and adminrole.id in roles:
+            roles.remove(adminrole.id)
+        if modrole and modrole.id in roles:
+            roles.remove(modrole.id)
+        if botrole and botrole.id in roles:
+            roles.remove(botrole.id)
 
         for role in roles:
             await self.set_sendmessage(channel, role, False, ctx.author)
@@ -127,9 +141,7 @@ class ModLocks(Cog):
 
         await ctx.reply(public_msg, mention_author=False)
         if mlog:
-            msg = f"🔒 **Lockdown**: {ctx.channel.mention} by {ctx.author}"
-            mlog = await self.bot.fetch_channel(mlog)
-            await mlog.send(msg)
+            await mlog.send(f"🔒 **Lockdown**: {ctx.channel.mention} by {ctx.author}")
 
     @commands.guild_only()
     @commands.check(ismod)
@@ -144,7 +156,9 @@ class ModLocks(Cog):
         The channel to unlock."""
         if not channel:
             channel = ctx.channel
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
 
         # Restore from snapshot state.
         overwrites = self.snapshots[ctx.guild.id][channel.id]
@@ -165,9 +179,7 @@ class ModLocks(Cog):
 
         await ctx.reply("🔓 Channel unlocked.", mention_author=False)
         if mlog:
-            msg = f"🔓 **Unlock**: {ctx.channel.mention} by {ctx.author}"
-            mlog = await self.bot.fetch_channel(mlog)
-            await mlog.send(msg)
+            await mlog.send(f"🔓 **Unlock**: {ctx.channel.mention} by {ctx.author}")
 
     @commands.guild_only()
     @commands.check(ismod)

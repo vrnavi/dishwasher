@@ -24,15 +24,14 @@ class ModToss(Cog):
         self.spamcounter = {}
         self.nocfgmsg = "Tossing isn't enabled for this server."
 
-    def enabled(self, gid):
-        if (
-            not get_config(gid, "toss", "tossrole")
-            or not get_config(gid, "toss", "tosscategory")
-            or not get_config(gid, "toss", "tosschannels")
-        ):
-            return False
-        else:
-            return True
+    def enabled(self, g):
+        return all(
+            (
+                self.bot.pull_role(g, get_config(g.id, "toss", "tossrole")),
+                self.bot.pull_category(g, get_config(g.id, "toss", "tosscategory")),
+                get_config(g.id, "toss", "tosschannels"),
+            )
+        )
 
     def pacify_name(self, name):
         return discord.utils.escape_markdown(name.replace("@", "@ "))
@@ -55,12 +54,18 @@ class ModToss(Cog):
         roleban = [
             r
             for r in member.guild.roles
-            if r.id == get_config(member.guild.id, "toss", "tossrole")
+            if r
+            == self.bot.pull_role(
+                member.guild, get_config(member.guild.id, "toss", "tossrole")
+            )
         ]
         if roleban:
-            if get_config(member.guild.id, "toss", "tossrole") in [
-                r.id for r in member.roles
-            ]:
+            if (
+                self.bot.pull_role(
+                    member.guild, get_config(member.guild.id, "toss", "tossrole")
+                )
+                in member.roles
+            ):
                 if hard:
                     return len([r for r in member.roles if not (r.managed)]) == 2
                 return True
@@ -81,12 +86,12 @@ class ModToss(Cog):
         return session
 
     async def new_session(self, guild):
-        staff_role = guild.get_role(
-            get_config(guild.id, "staff", "modrole")
-            if get_config(guild.id, "staff", "modrole")
-            else get_config(guild.id, "staff", "adminrole")
+        staff_role = (
+            self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
+            if self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
+            else self.bot.pull_role(guild, get_config(guild.id, "staff", "adminrole"))
         )
-        bot_role = guild.get_role(get_config(guild.id, "staff", "botrole"))
+        bot_role = self.bot.pull_role(guild, get_config(guild.id, "staff", "botrole"))
         tosses = get_tossfile(guild.id, "tosses")
 
         for c in get_config(guild.id, "toss", "tosschannels"):
@@ -106,8 +111,8 @@ class ModToss(Cog):
                 toss_channel = await guild.create_text_channel(
                     c,
                     reason="Sangou Toss",
-                    category=guild.get_channel(
-                        get_config(guild.id, "toss", "tosscategory")
+                    category=self.bot.pull_category(
+                        guild, get_config(guild.id, "toss", "tosscategory")
                     ),
                     overwrites=overwrites,
                     topic=get_config(guild.id, "toss", "tosstopic"),
@@ -116,7 +121,9 @@ class ModToss(Cog):
                 return toss_channel
 
     async def perform_toss(self, user, staff, toss_channel):
-        toss_role = user.guild.get_role(get_config(user.guild.id, "toss", "tossrole"))
+        toss_role = self.bot.pull_role(
+            user.guild, get_config(user.guild.id, "toss", "tossrole")
+        )
         roles = []
         for rx in user.roles:
             if rx != user.guild.default_role and rx != toss_role:
@@ -159,7 +166,7 @@ class ModToss(Cog):
         Use this in a toss channel to show who's in it.
 
         No arguments."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         embed = stock_embed(self.bot)
         embed.title = "👁‍🗨 Toss Channel Sessions..."
@@ -210,19 +217,29 @@ class ModToss(Cog):
 
         - `users`
         The users to toss."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
 
         tosses = get_tossfile(ctx.guild.id, "tosses")
 
-        staff_channel = get_config(ctx.guild.id, "staff", "staffchannel")
-        modlog_channel = get_config(ctx.guild.id, "logging", "modlog")
-        staff_role = ctx.guild.get_role(
-            get_config(ctx.guild.id, "staff", "modrole")
-            if get_config(ctx.guild.id, "staff", "modrole")
-            else get_config(ctx.guild.id, "staff", "adminrole")
+        staff_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
         )
-        toss_role = ctx.guild.get_role(get_config(ctx.guild.id, "toss", "tossrole"))
+        modlog_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
+        staff_role = (
+            self.bot.pull_role(ctx.guild, get_config(ctx.guild.id, "staff", "modrole"))
+            if self.bot.pull_role(
+                ctx.guild, get_config(ctx.guild.id, "staff", "modrole")
+            )
+            else self.bot.pull_role(
+                ctx.guild, get_config(ctx.guild.id, "staff", "adminrole")
+            )
+        )
+        toss_role = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "toss", "tossrole")
+        )
 
         output = ""
         invalid = []
@@ -285,7 +302,7 @@ class ModToss(Cog):
             )
 
             if staff_channel:
-                await ctx.guild.get_channel(staff_channel).send(
+                await staff_channel.send(
                     f"{self.username_system(us)} has been tossed in `#{ctx.channel.name}` by {self.username_system(ctx.author)}. {us.mention}\n"
                     f"**ID:** {us.id}\n"
                     f"**Created:** <t:{int(us.created_at.timestamp())}:R> on <t:{int(us.created_at.timestamp())}:f>\n"
@@ -300,9 +317,7 @@ class ModToss(Cog):
                 embed.title = "🚷 Toss"
                 embed.description = f"{us.mention} was tossed by {ctx.author.mention} [`#{ctx.channel.name}`] [[Jump]({ctx.message.jump_url})]"
                 mod_embed(embed, us, ctx.author)
-
-                mlog = await self.bot.fetch_channel(modlog_channel)
-                await mlog.send(embed=embed)
+                await modlog_channel.send(embed=embed)
 
         output += "\n" + "\n".join(
             [f"{self.username_system(us)} has been tossed." for us in users]
@@ -357,7 +372,7 @@ class ModToss(Cog):
 
         - `users`
         The users to untoss. Optional."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):
             return await ctx.reply(
@@ -372,8 +387,12 @@ class ModToss(Cog):
                 for u in tosses[ctx.channel.name]["tossed"].keys()
             ]
 
-        staff_channel = get_config(ctx.guild.id, "staff", "staffchannel")
-        toss_role = ctx.guild.get_role(get_config(ctx.guild.id, "toss", "tossrole"))
+        staff_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+        )
+        toss_role = self.bot.pull_role(
+            ctx.guild, get_config(ctx.guild.id, "toss", "tossrole")
+        )
         output = ""
         invalid = []
 
@@ -387,7 +406,8 @@ class ModToss(Cog):
                     "warn_targetself", authorname=ctx.author.name
                 )
             elif (
-                str(us.id) not in tosses[ctx.channel.name] and toss_role not in us.roles
+                str(us.id) not in tosses[ctx.channel.name]["tossed"]
+                and toss_role not in us.roles
             ):
                 output += "\n" + f"{self.username_system(us)} is not already tossed."
             else:
@@ -431,7 +451,7 @@ class ModToss(Cog):
                 + f"{self.username_system(us)} has been untossed.\n**Roles Restored:** {restored}"
             )
             if staff_channel:
-                await ctx.guild.get_channel(staff_channel).send(
+                await staff_channel.send(
                     f"{self.username_system(us)} has been untossed in {ctx.channel.mention} by {self.username_system(ctx.author)}.\n**Roles Restored:** {restored}"
                 )
 
@@ -461,7 +481,7 @@ class ModToss(Cog):
 
         - `archive`
         Whether to archive the session or not. Optional."""
-        if not self.enabled(ctx.guild.id):
+        if not self.enabled(ctx.guild):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
         if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):
             return await ctx.reply(
@@ -469,11 +489,11 @@ class ModToss(Cog):
                 mention_author=False,
             )
 
-        staff_channel = self.bot.get_channel(
-            get_config(ctx.guild.id, "staff", "staffchannel")
+        staff_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
         )
-        log_channel = self.bot.get_channel(
-            get_config(ctx.guild.id, "logging", "modlog")
+        log_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
         )
         tosses = get_tossfile(ctx.guild.id, "tosses")
 
@@ -569,25 +589,33 @@ class ModToss(Cog):
         if (
             not message.guild
             or message.author.bot
-            or not self.enabled(message.guild.id)
+            or not self.enabled(message.guild)
             or self.is_rolebanned(message.author)
             or self.get_session(message.author)
-            or message.guild.get_role(get_config(message.guild.id, "staff", "modrole"))
+            or self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "modrole")
+            )
             in message.author.roles
-            or message.guild.get_role(
-                get_config(message.guild.id, "staff", "adminrole")
+            or self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "adminrole")
             )
             in message.author.roles
         ):
             return
 
-        staff_channel = message.guild.get_channel(
-            get_config(message.guild.id, "staff", "staffchannel")
+        staff_channel = self.bot.pull_channel(
+            message.guild, get_config(message.guild.id, "staff", "staffchannel")
         )
-        staff_role = message.guild.get_role(
-            get_config(message.guild.id, "staff", "modrole")
-            if get_config(message.guild.id, "staff", "modrole")
-            else get_config(message.guild.id, "staff", "adminrole")
+        staff_role = (
+            self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "modrole")
+            )
+            if self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "modrole")
+            )
+            else self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "adminrole")
+            )
         )
 
         if message.author.id not in self.spamcounter:
@@ -655,10 +683,10 @@ class ModToss(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         await self.bot.wait_until_ready()
-        if not self.enabled(member.guild.id):
+        if not self.enabled(member.guild):
             return
-        staff_channel = member.guild.get_channel(
-            get_config(member.guild.id, "staff", "staffchannel")
+        staff_channel = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "staff", "staffchannel")
         )
 
         tosses = get_tossfile(member.guild.id, "tosses")
@@ -672,8 +700,8 @@ class ModToss(Cog):
                     )
                     break
             if toss_channel:
-                toss_role = member.guild.get_role(
-                    get_config(member.guild.id, "toss", "tossrole")
+                toss_role = self.bot.pull_role(
+                    member.guild, get_config(member.guild.id, "toss", "tossrole")
                 )
                 await member.add_roles(toss_role, reason="User tossed.")
                 tosses[toss_channel.name]["tossed"][str(member.id)] = tosses[
@@ -717,7 +745,7 @@ class ModToss(Cog):
     @Cog.listener()
     async def on_member_remove(self, member):
         await self.bot.wait_until_ready()
-        if not self.enabled(member.guild.id):
+        if not self.enabled(member.guild):
             return
 
         session = self.get_session(member)
@@ -732,10 +760,10 @@ class ModToss(Cog):
         del tosses[session]["tossed"][str(member.id)]
         set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
 
-        staff_channel = member.guild.get_channel(
-            get_config(member.guild.id, "staff", "staffchannel")
+        staff_channel = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "staff", "staffchannel")
         )
-        toss_channel = discord.utils.get(member.guild.channels, name=session)
+        toss_channel = self.bot.pull_channel(member.guild, session)
         try:
             await member.guild.fetch_ban(member)
             out = f"🔨 {self.username_system(member)} got banned while tossed."
@@ -751,7 +779,7 @@ class ModToss(Cog):
     @Cog.listener()
     async def on_member_update(self, before, after):
         await self.bot.wait_until_ready()
-        if not self.enabled(after.guild.id):
+        if not self.enabled(after.guild):
             return
         while self.busy:
             await asyncio.sleep(1)
@@ -768,7 +796,7 @@ class ModToss(Cog):
     @Cog.listener()
     async def on_guild_channel_delete(self, channel):
         await self.bot.wait_until_ready()
-        if self.enabled(channel.guild.id) and channel.name in get_config(
+        if self.enabled(channel.guild) and channel.name in get_config(
             channel.guild.id, "toss", "tosschannels"
         ):
             tosses = get_tossfile(channel.guild.id, "tosses")

@@ -235,10 +235,12 @@ class ModLogs(Cog):
             content=f"I've cleared all of {target}'s {eventtype}.", mention_author=False
         )
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
+
         msg = (
             f"🗑 **Cleared {eventtype}**: {ctx.author.mention} cleared"
             f" all {eventtype} events of {target.mention} | "
@@ -286,10 +288,12 @@ class ModLogs(Cog):
         set_guildfile(ctx.guild.id, "userlog", json.dumps(userlog))
         await ctx.reply(content=f"I've deleted that event.", mention_author=False)
 
-        mlog = get_config(ctx.guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
+        )
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
+
         msg = (
             f"🗑 **Deleted {eventtype}**: "
             f"{ctx.author.mention} removed "

@@ -152,6 +152,7 @@ def fill_profile(userid):
     profile = get_userfile(userid, "profile")
     stockprofile = {
         "prefixes": [],
+        "aliases": [],
         "timezone": None,
         "replypref": None,
     }

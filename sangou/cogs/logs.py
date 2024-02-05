@@ -28,10 +28,11 @@ class Logs2(Cog):
     async def on_member_join(self, member):
         await self.bot.wait_until_ready()
 
-        ulog = get_config(member.guild.id, "logging", "userlog")
+        ulog = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "logging", "userlog")
+        )
         if not ulog:
             return
-        ulog = await self.bot.fetch_channel(ulog)
 
         invite_used = await self.bot.get_used_invites(member)
 
@@ -73,12 +74,14 @@ class Logs2(Cog):
             after.author.bot
             or not after.guild
             or before.clean_content == after.clean_content
-            or not get_config(after.guild.id, "logging", "userlog")
         ):
             return
-        ulog = await self.bot.fetch_channel(
-            get_config(after.guild.id, "logging", "userlog")
+
+        ulog = self.bot.pull_channel(
+            after.guild, get_config(after.guild.id, "logging", "userlog")
         )
+        if not ulog:
+            return
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.light_gray()
@@ -112,15 +115,14 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_message_delete(self, message):
         await self.bot.wait_until_ready()
-        if (
-            message.author.bot
-            or not message.guild
-            or not get_config(message.guild.id, "logging", "userlog")
-        ):
+        if message.author.bot or not message.guild:
             return
-        ulog = await self.bot.fetch_channel(
-            get_config(message.guild.id, "logging", "userlog")
+
+        ulog = self.bot.pull_channel(
+            message.guild, get_config(message.guild.id, "logging", "userlog")
         )
+        if not ulog:
+            return
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.dark_gray()
@@ -142,8 +144,13 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_member_remove(self, member):
         await self.bot.wait_until_ready()
-        ulog = get_config(member.guild.id, "logging", "userlog")
-        mlog = get_config(member.guild.id, "logging", "modlog")
+
+        ulog = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "logging", "userlog")
+        )
+        mlog = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "logging", "modlog")
+        )
         if not ulog and not mlog:
             return
 
@@ -177,7 +184,6 @@ class Logs2(Cog):
                     )
                     if not mlog:
                         return
-                    mlog = await self.bot.fetch_channel(mlog)
 
                     user = member
                     staff = alog[0].user
@@ -194,7 +200,6 @@ class Logs2(Cog):
 
         if not ulog:
             return
-        ulog = await self.bot.fetch_channel(ulog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.darker_gray()
@@ -227,10 +232,9 @@ class Logs2(Cog):
             "bans",
         )
 
-        mlog = get_config(guild.id, "logging", "modlog")
+        mlog = self.bot.pull_channel(guild, get_config(guild.id, "logging", "modlog"))
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         user = member
         staff = alog[0].user
@@ -249,10 +253,10 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_member_unban(self, guild, user):
         await self.bot.wait_until_ready()
-        mlog = get_config(guild.id, "logging", "modlog")
+
+        mlog = self.bot.pull_channel(guild, get_config(guild.id, "logging", "modlog"))
         if not mlog:
             return
-        mlog = await self.bot.fetch_channel(mlog)
 
         alog = [
             entry
@@ -282,11 +286,12 @@ class Logs2(Cog):
         await self.bot.wait_until_ready()
 
         for guild in self.bot.guilds:
-            ulog = get_config(guild.id, "logging", "userlog")
+            ulog = self.bot.pull_channel(
+                guild, get_config(guild.id, "logging", "userlog")
+            )
             member = guild.get_member(user_after.id)
             if not ulog or not member:
                 continue
-            ulog = await self.bot.fetch_channel(ulog)
 
             embed = stock_embed(self.bot)
             embed.color = member.color
@@ -316,10 +321,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_member_update(self, member_before, member_after):
         await self.bot.wait_until_ready()
-        ulog = get_config(member_after.guild.id, "logging", "userlog")
+
+        ulog = self.bot.pull_channel(
+            member_after.guild, get_config(member_after.guild.id, "logging", "userlog")
+        )
         if not ulog:
             return
-        ulog = await self.bot.fetch_channel(ulog)
 
         embed = stock_embed(self.bot)
         embed.color = member_after.color
@@ -333,7 +340,7 @@ class Logs2(Cog):
             for role in member_after.guild.roles:
                 if role == member_after.guild.default_role:
                     continue
-                if not member_after.guild.get_role(role):
+                if not member_after.guild.get_role(role.id):
                     # Role was deleted.
                     return
                 if role in member_before.roles and role in member_after.roles:
@@ -371,10 +378,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_update(self, guild_before, guild_after):
         await self.bot.wait_until_ready()
-        slog = get_config(guild_after.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            guild_after, get_config(guild_after.id, "logging", "serverlog")
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.from_str("#FFCC00")
@@ -414,10 +423,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_channel_create(self, channel):
         await self.bot.wait_until_ready()
-        slog = get_config(channel.guild.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            channel.guild, get_config(channel.guild.id, "logging", "serverlog")
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.from_str("#00FFFF")
@@ -430,10 +441,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_channel_delete(self, channel):
         await self.bot.wait_until_ready()
-        slog = get_config(channel.guild.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            channel.guild, get_config(channel.guild.id, "logging", "serverlog")
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.from_str("#FF00FF")
@@ -446,10 +459,13 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_channel_update(self, channel_before, channel_after):
         await self.bot.wait_until_ready()
-        slog = get_config(channel_after.guild.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            channel_after.guild,
+            get_config(channel_after.guild.id, "logging", "serverlog"),
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = discord.Color.from_str("#FFFF00")
@@ -643,10 +659,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_role_create(self, role):
         await self.bot.wait_until_ready()
-        slog = get_config(role.guild.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            role.guild, get_config(role.guild.id, "logging", "serverlog")
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = role.color
@@ -663,10 +681,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_role_delete(self, role):
         await self.bot.wait_until_ready()
-        slog = get_config(role.guild.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            role.guild, get_config(role.guild.id, "logging", "serverlog")
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = role.color
@@ -682,10 +702,12 @@ class Logs2(Cog):
     @Cog.listener()
     async def on_guild_role_update(self, role_before, role_after):
         await self.bot.wait_until_ready()
-        slog = get_config(role_after.guild.id, "logging", "serverlog")
+
+        slog = self.bot.pull_channel(
+            role_after.guild, get_config(role_after.guild.id, "logging", "serverlog")
+        )
         if not slog:
             return
-        slog = await self.bot.fetch_channel(slog)
 
         embed = stock_embed(self.bot)
         embed.color = role_after.color

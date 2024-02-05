@@ -21,6 +21,8 @@ yt-dlp = "*"
 easgen = "*"
 pydub = "*"
 diff-match-patch = "*"
+jsonschema = "*"
+emoji = "*"
 
 [dev-packages]
 
