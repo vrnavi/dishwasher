@@ -124,10 +124,15 @@ class Shortcuts(Cog):
         - `alias`
         The alias to add."""
         profile = fill_profile(ctx.author.id)
-        command = self.bot.get_command(command)
-        if not command:
+        botcommand = self.bot.get_command(command)
+        if not botcommand:
             return await ctx.reply(
                 content=f"`{command}` is not a valid command.",
+                mention_author=False,
+            )
+        if self.bot.get_command(alias):
+            return await ctx.reply(
+                content=f"`{alias}` is already a command.",
                 mention_author=False,
             )
         maxaliases = config.maxaliases if config.maxaliases <= 25 else 25
@@ -137,7 +142,7 @@ class Shortcuts(Cog):
                 mention_author=False,
             )
 
-        profile["aliases"].append({command.qualified_name: alias})
+        profile["aliases"].append({botcommand.qualified_name: alias})
         set_userfile(ctx.author.id, "profile", json.dumps(profile))
         return await ctx.reply(content="Alias added.", mention_author=False)
 
