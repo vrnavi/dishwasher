@@ -110,43 +110,40 @@ async def on_command(ctx):
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
-    err_info = sys.exc_info()
-    format_args = repr(args) if args else " "
-    format_kwargs = repr(kwargs) if kwargs else " "
-    log.error(f"Error on {event_method}: {err_info}")
+    err = sys.exc_info()
+    err_tb = "\n".join(traceback.format_exception(*err))
+    log.error(f"Code error in {event_method}...\n{err_tb}")
+
+    ctx = None
+    if args:
+        for arg in args:
+            if type(arg) == discord.Message:
+                ctx = await bot.get_context(arg)
+    bot.errors.append((err, ctx, (args, kwargs)))
 
     err_embed = discord.Embed(
         color=discord.Color.from_str("#FF0000"),
         title="🔥 Code Error",
+        description=f"In `{event_method}`...",
         timestamp=datetime.datetime.now(),
     )
-    err_embed.add_field(
-        name=f"Given args:",
-        value=f"```{format_args}```",
-        inline=False,
-    )
-    err_embed.add_field(
-        name=f"Given kwargs:",
-        value=f"```{format_kwargs}```",
-        inline=False,
-    )
 
-    if len(err_info) > 1024:
-        split_msg = list(
-            [err_info[i : i + 1020] for i in range(0, len(err_info), 1020)]
-        )
-        err_embed.description = f"An error occurred...\n```{event_method}```"
+    if len(err_tb) > 1024:
+        split_msg = list([err_tb[i : i + 1020] for i in range(0, len(err_tb), 1020)])
+
         ctr = 1
         for f in split_msg:
             err_embed.add_field(
-                name=f"🧩 Fragment {ctr}",
+                name=f"🧩 Traceback Fragment {ctr}",
                 value=f"```{f}```",
                 inline=False,
             )
             ctr += 1
     else:
-        err_embed.description = (
-            f"An error occurred...\n```{event_method}: {err_info}```"
+        err_embed.add_field(
+            name=f"🔍 Traceback:",
+            value=f"```{err_tb}```",
+            inline=False,
         )
 
     err_embed.set_footer(text=bot.user.name, icon_url=bot.user.display_avatar)
@@ -162,14 +159,25 @@ async def on_command_error(ctx, error):
         return
 
     log.error(
-        f"An error occurred with `{ctx.message.content}` from "
+        f"An error occurred with `{ctx.command}` from "
         f"{ctx.message.author} ({ctx.message.author.id}):\n"
         f"{type(error)}: {error}"
     )
 
-    bot.errors.append((ctx, error))
-
-    if isinstance(error, commands.NoPrivateMessage):
+    if isinstance(error, commands.CommandInvokeError) and (
+        "Cannot send messages to this user" not in str(error)
+    ):
+        err = (type(error.__cause__), error.__cause__, error.__cause__.__traceback__)
+        err_tb = "\n".join(traceback.format_exception(*err, chain=False))
+        bot.errors.append((err, ctx, ()))
+        log.error(f"Code error in command {ctx.command}...\n{err_tb}")
+        return await ctx.send(
+            "This command broke!"
+            + f"\nPaging {ctx.guild.get_member(120698901236809728).mention}!"
+            if ctx.guild.get_member(120698901236809728)
+            else "\nPlease get help in the support server!"
+        )
+    elif isinstance(error, commands.NoPrivateMessage):
         return await ctx.send(random_msg("err_serversonly"))
     elif isinstance(error, commands.PrivateMessageOnly):
         return await ctx.send(random_msg("err_dmsonly"))

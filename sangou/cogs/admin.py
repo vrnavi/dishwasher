@@ -27,6 +27,7 @@ class Admin(Cog):
         self.previous_eval_code = None
         self.last_exec_result = None
         self.previous_exec_code = None
+        self.loaded_exception = ()
 
     @commands.check(ismanager)
     @commands.command(name="exit", aliases=["quit", "bye"])
@@ -56,7 +57,7 @@ class Admin(Cog):
         allowed_mentions = discord.AllowedMentions(replied_user=False)
         errlist = list(reversed(self.bot.errors))
         idx = 0
-        navigation_reactions = ["⬅️", "➡"]
+        navigation_reactions = ["⬅️", "➡", "⏺️"]
         embed = stock_embed(self.bot)
         embed.color = discord.Color.green()
         holder = await ctx.reply(embed=embed, mention_author=False)
@@ -68,25 +69,52 @@ class Admin(Cog):
 
         while True:
             page = errlist[idx]
-            errctx = page[0]
-            errmsg = page[1]
-
-            guildmsg = (
-                f"**Guild:** {errctx.guild.name}\n**Channel:** {errctx.channel.name}\n**Link:** {errctx.message.jump_url}\n"
-                if errctx.guild
-                else ""
-            )
-
+            err = page[0]
+            errctx = page[1]
             embed.title = f"⚠️ Error {len(self.bot.errors) - idx}"
-            embed.set_author(
-                name=errctx.author, icon_url=errctx.author.display_avatar.url
-            )
-            embed.description = (
-                f"**Command:** `{errctx.message.content}`\n"
-                f"**User:** {errctx.message.author} ({errctx.message.author.id})\n"
-                f"{guildmsg}"
-                f"```{type(errmsg)}: {errmsg}```"
-            )
+
+            if embed.fields:
+                embed.clear_fields()
+
+            if errctx:
+                embed.description = (
+                    f"**Command:** `{errctx.message.content}`\n"
+                    f"**User:** {errctx.message.author} ({errctx.message.author.id})\n"
+                )
+                if errctx.guild:
+                    embed.description += (
+                        f"**Guild:** {errctx.guild.name}\n**Channel:** {errctx.channel.name}\n**Link:** {errctx.message.jump_url}\n"
+                        if errctx.guild
+                        else ""
+                    )
+                embed.set_author(
+                    name=errctx.author, icon_url=errctx.author.display_avatar.url
+                )
+            else:
+                embed.set_author(
+                    name=self.bot.user, icon_url=self.bot.user.display_avatar.url
+                )
+
+            err_tb = "\n".join(traceback.format_exception(*err))
+            if len(err_tb) > 1024:
+                split_msg = list(
+                    [err_tb[i : i + 1020] for i in range(0, len(err_tb), 1020)]
+                )
+
+                ctr = 1
+                for f in split_msg:
+                    embed.add_field(
+                        name=f"🧩 Traceback Fragment {ctr}",
+                        value=f"```{f}```",
+                        inline=False,
+                    )
+                    ctr += 1
+            else:
+                embed.add_field(
+                    name=f"🔍 Traceback:",
+                    value=f"```{err_tb}```",
+                    inline=False,
+                )
 
             await holder.edit(embed=embed, allowed_mentions=allowed_mentions)
 
@@ -116,6 +144,17 @@ class Admin(Cog):
                     idx += 1
                 try:
                     await holder.remove_reaction("➡", ctx.author)
+                except:
+                    pass
+            elif str(reaction) == "⏺️":
+                if self.loaded_exception:
+                    self.loaded_exception = ()
+                    await ctx.reply(content="Unloaded.", mention_author=False)
+                else:
+                    self.loaded_exception = tuple([errctx] + list(page[2]))
+                    await ctx.reply(content="Loaded.", mention_author=False)
+                try:
+                    await holder.remove_reaction("⏺️", ctx.author)
                 except:
                     pass
 
@@ -442,6 +481,8 @@ class Admin(Cog):
                 # last result
                 "_": self.last_eval_result,
                 "_p": self.previous_eval_code,
+                # loaded error
+                "e": self.loaded_exception,
             }
             env.update(globals())
 
