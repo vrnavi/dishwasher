@@ -5,11 +5,15 @@ Since `0.3.0`, all new release changelogs will be posted here in addition to the
 - This changelog's format __***`roughly`***__ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - This project's version format __***`roughly`***__ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.3.1](https://github.com/vrnavi/sangou/releases/tag/0.3.0) - 2024-02-06
+
+### Added
+- Debugging tools. Don't worry about it.
 
 ### Fixed
 - Fixed checks being out of order.
 - Fixed prefix and alias checking assuming profile entries exist.
+- Fixed alias and prefix commands stepping over each other, causing prefix to break.
 
 ## [0.3.0](https://github.com/vrnavi/sangou/releases/tag/0.3.0) - 2024-02-05
 
