@@ -68,11 +68,7 @@ class Reply(Cog):
                         get_config(message.guild.id, "staff", "adminrole"),
                     )
                 )
-                if (
-                    not staff_role
-                    or not message.guild.get_role(staff_role)
-                    or message.author.get_role(staff_role)
-                ):
+                if not staff_role:
                     return
                 if message.guild.id not in self.violations:
                     self.violations[message.guild.id] = {}
@@ -112,7 +108,7 @@ class Reply(Cog):
                 )
                 if self.violations[message.guild.id][message.author.id] == violationmax:
                     await message.reply(
-                        content=f"{message.guild.get_role(staff_role).mention}, {message.author.mention} reached `{violationmax}` reply ping violations.",
+                        content=f"{staff_role.mention}, {message.author.mention} reached `{violationmax}` reply ping violations.",
                         mention_author=False,
                     )
                     self.violations[message.guild.id][message.author.id] = 0
