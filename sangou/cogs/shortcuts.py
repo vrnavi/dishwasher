@@ -43,8 +43,8 @@ class Shortcuts(Cog):
                 embed.add_field(name=i + 1, value=f"{value}")
         await ctx.reply(embed=embed, mention_author=False)
 
-    @prefixes.command()
-    async def add(self, ctx, *, arg: str):
+    @prefixes.command(name="add")
+    async def add_prefix(self, ctx, *, arg: str):
         """This adds a new prefix.
 
         Prefixes with spaces are welcome.
@@ -63,8 +63,8 @@ class Shortcuts(Cog):
                 mention_author=False,
             )
 
-    @prefixes.command()
-    async def remove(self, ctx, number: int):
+    @prefixes.command(name="remove")
+    async def remove_prefix(self, ctx, number: int):
         """This removes a prefix.
 
         Refer to the index in the prefixes command.
@@ -113,8 +113,8 @@ class Shortcuts(Cog):
                 embed.add_field(name=i + 1, value=value)
         await ctx.reply(embed=embed, mention_author=False)
 
-    @aliases.command()
-    async def add(self, ctx, command, alias):
+    @aliases.command(name="add")
+    async def add_alias(self, ctx, command, alias):
         """This adds a new alias.
 
         Aliases with spaces are welcome.
@@ -146,8 +146,8 @@ class Shortcuts(Cog):
         set_userfile(ctx.author.id, "profile", json.dumps(profile))
         return await ctx.reply(content="Alias added.", mention_author=False)
 
-    @aliases.command()
-    async def remove(self, ctx, number: int):
+    @aliases.command(name="remove")
+    async def remove_alias(self, ctx, number: int):
         """This removes an alias.
 
         Refer to the index in the aliases command.
