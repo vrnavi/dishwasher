@@ -174,7 +174,7 @@ async def on_command_error(ctx, error):
         return await ctx.send(
             "This command broke!"
             + f"\nPaging {ctx.guild.get_member(120698901236809728).mention}!"
-            if ctx.guild.get_member(120698901236809728)
+            if ctx.guild and ctx.guild.get_member(120698901236809728)
             else "\nPlease get help in the support server!"
         )
     elif isinstance(error, commands.NoPrivateMessage):
