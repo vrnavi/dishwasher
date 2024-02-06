@@ -48,12 +48,12 @@ class TSAR(Cog):
             usertracks = get_guildfile(ctx.guild.id, "usertrack")
             if str(ctx.author.id) not in usertracks and foundrole["days"] != 0:
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you must wait `{roledata['days'] - 0}` days.",
+                    content=f"You cannot get this role, as you must wait `{foundrole['days'] - 0}` days.",
                     mention_author=False,
                 )
             elif foundrole["days"] > usertracks[str(ctx.author.id)]["truedays"]:
                 return await ctx.reply(
-                    content=f"You cannot get this role, as you must wait `{roledata['days'] - usertracks[str(ctx.author.id)]['truedays']}` days.",
+                    content=f"You cannot get this role, as you must wait `{foundrole['days'] - usertracks[str(ctx.author.id)]['truedays']}` days.",
                     mention_author=False,
                 )
 
