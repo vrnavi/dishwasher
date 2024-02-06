@@ -84,8 +84,8 @@ class Surveyr(Cog):
         )
         return part + " (" + str(user.id) + ")"
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(invoke_without_command=True, aliases=["s"])
     async def survey(self, ctx):
         """This shows a list of recent surveys.
@@ -111,8 +111,8 @@ class Surveyr(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def manualsurvey(
         self,
@@ -156,8 +156,8 @@ class Surveyr(Cog):
         )
         return
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["r"])
     async def reason(self, ctx, caseids: str, *, reason: str):
         """This edits a survey reason.
@@ -216,8 +216,8 @@ class Surveyr(Cog):
         edited = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
         await ctx.reply(content=f"Edited `{edited}`.", mention_author=False)
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["c"])
     async def censor(self, ctx, caseids: str):
         """This censors a survey name.
@@ -277,8 +277,8 @@ class Surveyr(Cog):
         censored = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
         await ctx.reply(content=f"Censored `{censored}`.", mention_author=False)
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["u"])
     async def uncensor(self, ctx, caseids: str):
         """This uncensors a survey name.
@@ -327,8 +327,8 @@ class Surveyr(Cog):
         uncensored = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
         await ctx.reply(content=f"Uncensored `{uncensored}`.", mention_author=False)
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["re"])
     async def repost(self, ctx, caseid: str):
         """This reposts survey messages up to a case ID.

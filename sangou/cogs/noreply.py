@@ -176,8 +176,8 @@ class Reply(Cog):
                     await violation()
                 return
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def reset(self, ctx, target: discord.Member):
         """This resets reply ping violations for a user.

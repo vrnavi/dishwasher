@@ -156,9 +156,9 @@ class ModToss(Cog):
 
         return bad_roles_msg, prev_roles
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["tossed", "session"])
     async def sessions(self, ctx):
         """This shows the open toss sessions.
@@ -205,10 +205,10 @@ class ModToss(Cog):
                 embed.add_field(name=f"🟢 #{c}", value="__Available__", inline=False)
         await ctx.reply(embed=embed, mention_author=False)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.bot_has_permissions(manage_roles=True, manage_channels=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["roleban"])
     async def toss(self, ctx, users: commands.Greedy[discord.Member]):
         """This tosses a user.
@@ -359,11 +359,10 @@ class ModToss(Cog):
                 pokemsg = await toss_channel.send(ctx.author.mention)
                 await pokemsg.edit(content="🫳⏰", delete_after=5)
 
-    @commands.guild_only()
-    @commands.bot_has_permissions(kick_members=True)
-    @commands.check(ismod)
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.bot_has_permissions(manage_roles=True, manage_channels=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["unroleban"])
     async def untoss(self, ctx, users: commands.Greedy[discord.Member] = None):
         """This untosses a user.
@@ -470,9 +469,9 @@ class ModToss(Cog):
 
         await ctx.reply(content=output, mention_author=False)
 
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def close(self, ctx, archive=True):
         """This closes a toss session.

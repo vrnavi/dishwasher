@@ -20,9 +20,9 @@ class ModArchives(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.group(invoke_without_command=True)
     async def archives(self, ctx, user: discord.User):
         """Views a list of saved archives for a user.
@@ -96,9 +96,9 @@ class ModArchives(Cog):
 
         return await ctx.reply(embed=embed, mention_author=False)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @archives.command()
     async def open(
         self, ctx, user: discord.User, *, archive: typing.Union[int, str] = None
@@ -221,9 +221,9 @@ class ModArchives(Cog):
         except:
             return await ctx.reply(content="I can't DM you!", mention_author=False)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @archives.command()
     async def trace(self, ctx, user: discord.User, *, archive: typing.Union[int, str]):
         """This views the tracelog for an archive.
@@ -311,8 +311,8 @@ class ModArchives(Cog):
 
         return await ctx.reply(embed=embed, mention_author=False)
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command()
     async def orbitlog(
         self,

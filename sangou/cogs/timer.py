@@ -25,7 +25,6 @@ class Timer(Cog):
         self.hourly.cancel()
         self.daily.cancel()
 
-    @commands.guild_only()
     @commands.check(ismanager)
     @commands.command()
     async def listjobs(self, ctx):
@@ -47,7 +46,6 @@ class Timer(Cog):
                     )
         await ctx.send(embed=embed)
 
-    @commands.guild_only()
     @commands.check(ismanager)
     @commands.command(aliases=["removejob"])
     async def deletejob(self, ctx, timestamp: str, job_type: str, job_name: str):

@@ -12,9 +12,9 @@ class ModTimed(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def timeban(
         self, ctx, target: discord.User, duration: str, *, reason: str = ""

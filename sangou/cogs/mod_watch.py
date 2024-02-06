@@ -17,9 +17,9 @@ class ModWatch(Cog):
     def enabled(self, g):
         return self.bot.pull_channel(g, get_config(g.id, "staff", "watchchannel"))
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_guild_permissions(embed_links=True, create_public_threads=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def watch(self, ctx, target: discord.User):
         """This puts a user under watch.
@@ -64,9 +64,9 @@ class ModWatch(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_guild_permissions(embed_links=True, manage_threads=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def unwatch(self, ctx, target: discord.User):
         """This removes a user under watch.

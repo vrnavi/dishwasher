@@ -159,8 +159,8 @@ class Erase(Cog):
                     set_guildfile(g.id, "erasures", json.dumps(erasequeue))
             await asyncio.sleep(60)
 
-    @commands.guild_only()
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.guild_only()
     @commands.command()
     async def erase(self, ctx, verify=None):
         """This deletes all record of you from the server.

@@ -67,9 +67,9 @@ class Messagescan(Cog):
             "🇨🇳": {"name": "Simplified Chinese", "deeplcode": "ZH", "gtcode": "zh-cn"},
         }
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def snipe(self, ctx):
         """This shows the last deleted message in a channel.
@@ -101,9 +101,9 @@ class Messagescan(Cog):
                 mention_author=False,
             )
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def snipf(self, ctx):
         """This shows the last edited message in a channel.

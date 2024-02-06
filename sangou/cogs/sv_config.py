@@ -16,9 +16,9 @@ class sv_config(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.guild_only()
-    @commands.check(isadmin)
     @commands.bot_has_permissions(embed_links=True, attach_files=True)
+    @commands.check(isadmin)
+    @commands.guild_only()
     @commands.group(aliases=["config"], invoke_without_command=True)
     async def configs(self, ctx):
         """This gets the configuration for your server.
@@ -58,9 +58,9 @@ class sv_config(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
-    @commands.check(isadmin)
     @commands.bot_has_permissions(attach_files=True)
+    @commands.check(isadmin)
+    @commands.guild_only()
     @configs.command()
     async def stock(self, ctx):
         """This gets the latest stock configuration.
@@ -75,8 +75,8 @@ class sv_config(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @configs.command()
     async def set(self, ctx, attachment: discord.Attachment):
         """This sets the guild configuration.

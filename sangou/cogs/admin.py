@@ -39,8 +39,8 @@ class Admin(Cog):
         await ctx.message.reply(content=random_msg("quit_deaths"), mention_author=False)
         await self.bot.close()
 
-    @commands.check(ismanager)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismanager)
     @commands.command(name="errors")
     async def _errors(self, ctx):
         """Shows logged command errors.
@@ -119,8 +119,8 @@ class Admin(Cog):
                 except:
                     pass
 
-    @commands.check(ismanager)
     @commands.bot_has_permissions(attach_files=True)
+    @commands.check(ismanager)
     @commands.command()
     async def getdata(self, ctx):
         """This returns the bot's data files.
@@ -139,8 +139,8 @@ class Admin(Cog):
             await ctx.reply(content=random_msg("err_dmfail"), mention_author=False)
         os.remove("data_export.zip")
 
-    @commands.dm_only()
     @commands.check(ismanager)
+    @commands.dm_only()
     @commands.command()
     async def setdata(self, ctx, attachment: discord.Attachment):
         """This replaces the bot's data files.
@@ -156,8 +156,8 @@ class Admin(Cog):
         os.remove("data.zip")
         await ctx.reply(content=f"Data saved.", mention_author=False)
 
-    @commands.check(ismanager)
     @commands.bot_has_permissions(attach_files=True)
+    @commands.check(ismanager)
     @commands.command(aliases=["getserverdata"])
     async def getsdata(self, ctx, server: discord.Guild = None):
         """This returns the server files.
@@ -205,8 +205,8 @@ class Admin(Cog):
         os.remove(f"data/{server.id}.zip")
         await ctx.reply(content=f"{server.name}'s data saved.", mention_author=False)
 
-    @commands.check(ismanager)
     @commands.bot_has_permissions(attach_files=True)
+    @commands.check(ismanager)
     @commands.command(aliases=["getuserdata"])
     async def getudata(self, ctx, user: discord.User = None):
         """This returns the user files.
@@ -254,8 +254,8 @@ class Admin(Cog):
         os.remove(f"data/users/{user.id}")
         await ctx.reply(content=f"{user}'s data saved.", mention_author=False)
 
-    @commands.check(ismanager)
     @commands.bot_has_permissions(attach_files=True)
+    @commands.check(ismanager)
     @commands.command()
     async def getlogs(self, ctx):
         """This gets the bot's log file.
@@ -301,8 +301,8 @@ class Admin(Cog):
             guildmsg += f"\n- {g.name} with `{g.member_count}` members."
         await ctx.reply(content=guildmsg, mention_author=False)
 
-    @commands.guild_only()
     @commands.check(ismanager)
+    @commands.guild_only()
     @commands.command()
     async def permcheck(
         self,
@@ -336,8 +336,8 @@ class Admin(Cog):
             mention_author=False,
         )
 
-    @commands.check(ismanager)
     @commands.bot_has_permissions(manage_threads=True)
+    @commands.check(ismanager)
     @commands.command()
     async def threadlock(self, ctx, channel: discord.TextChannel):
         """This locks every thread in a channel.

@@ -35,9 +35,9 @@ class Mod(Cog):
             for r in target.roles
         )
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(kick_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["boot"])
     async def kick(self, ctx, target: discord.Member, *, reason: str = ""):
         """This kicks a user.
@@ -109,9 +109,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["yeet"])
     async def ban(self, ctx, target: discord.User, *, reason: str = ""):
         """This bans a user.
@@ -201,9 +201,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["bandel"])
     async def dban(
         self, ctx, day_count: int, target: discord.User, *, reason: str = ""
@@ -305,9 +305,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def massban(self, ctx, *, targets: str):
         """This mass bans user IDs.
@@ -367,9 +367,9 @@ class Mod(Cog):
 
         await msg.edit(content=f"All {len(targets_int)} users are now BANNED.")
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def unban(self, ctx, target: discord.User, *, reason: str = ""):
         """This unbans a user.
@@ -406,9 +406,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["silentban"])
     async def sban(self, ctx, target: discord.User, *, reason: str = ""):
         """This bans a user silently.
@@ -475,8 +475,8 @@ class Mod(Cog):
             )
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["count"])
     async def msgcount(self, ctx, message: discord.Message):
         """This counts up to a certain message.
@@ -494,9 +494,9 @@ class Mod(Cog):
             mention_author=False,
         )
 
+    @commands.bot_has_permissions(add_reactions=True)
     @commands.check(ismod)
     @commands.guild_only()
-    @commands.bot_has_permissions(add_reactions=True)
     @commands.command(aliases=["notify"])
     async def alert(
         self,
@@ -533,9 +533,9 @@ class Mod(Cog):
         embed = quote_embed(self.bot, message, ctx.message, "Alerted")
         return await resp.edit(content=None, embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.group(invoke_without_command=True, aliases=["clear"])
     async def purge(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """This clears a given number of messages.
@@ -573,9 +573,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @purge.command()
     async def bots(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """This clears a given number of bot messages.
@@ -611,9 +611,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @purge.command(name="from")
     async def _from(
         self,
@@ -655,9 +655,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @purge.command(name="with")
     async def _with(
         self,
@@ -701,9 +701,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @purge.command(aliases=["emoji"])
     async def emotes(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """This clears a given number of emotes.
@@ -746,9 +746,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @purge.command()
     async def embeds(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """This clears a given number of messages with embeds.
@@ -785,9 +785,9 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_messages=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @purge.command(aliases=["reactions"])
     async def reacts(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """This clears a given number of reactions.
@@ -825,8 +825,8 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def warn(self, ctx, target: discord.User, *, reason: str = ""):
         """This warns a user.
@@ -919,8 +919,8 @@ class Mod(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["addnote"])
     async def note(self, ctx, target: discord.User, *, note: str):
         """This adds a note to a user.
@@ -934,8 +934,8 @@ class Mod(Cog):
         add_userlog(ctx.guild.id, target.id, ctx.author, note, "notes")
         await ctx.reply(f"I added that note for you.")
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command(aliases=["echo"])
     async def say(self, ctx, *, text: str):
         """This makes the bot repeat some text.
@@ -946,8 +946,8 @@ class Mod(Cog):
         The text to repeat."""
         await ctx.send(text)
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command(aliases=["send"])
     async def speak(
         self,
@@ -972,8 +972,8 @@ class Mod(Cog):
             await self.bot.invoke(newctx)
         await ctx.reply("👍", mention_author=False)
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command()
     async def reply(
         self,
@@ -998,8 +998,8 @@ class Mod(Cog):
             await self.bot.invoke(newctx)
         await ctx.reply("👍", mention_author=False)
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command()
     async def react(
         self,
@@ -1019,8 +1019,8 @@ class Mod(Cog):
         await message.add_reaction(emoji)
         await ctx.reply("👍", mention_author=False)
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command()
     async def typing(
         self,

@@ -94,8 +94,8 @@ class TSAR(Cog):
                 content=f"`{actualrole}` was added to your roles.", mention_author=False
             )
 
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
+    @commands.guild_only()
     @commands.command()
     async def roles(self, ctx):
         """This lists all available roles.

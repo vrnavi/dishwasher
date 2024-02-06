@@ -20,9 +20,9 @@ class ModRaidmode(Cog):
         self.bot = bot
         self.raidmode = []
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def raidmode(self, ctx):
         """This sets raidmode for the server.

@@ -51,9 +51,9 @@ class ModLocks(Cog):
             issuer,
         )
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["lockdown"])
     async def lock(self, ctx, channel: discord.TextChannel = None, soft: bool = False):
         """This prevents people from typing in a channel.
@@ -143,9 +143,9 @@ class ModLocks(Cog):
         if mlog:
             await mlog.send(f"🔒 **Lockdown**: {ctx.channel.mention} by {ctx.author}")
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def unlock(self, ctx, channel: discord.TextChannel = None):
         """This allows people to type in a channel again.
@@ -181,9 +181,9 @@ class ModLocks(Cog):
         if mlog:
             await mlog.send(f"🔓 **Unlock**: {ctx.channel.mention} by {ctx.author}")
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def lockout(self, ctx, target: discord.Member):
         """This locks a specific user out of a channel.
@@ -208,9 +208,9 @@ class ModLocks(Cog):
         await ctx.channel.set_permissions(target, send_messages=False)
         await ctx.reply(content=f"{target} has been locked out.", mention_author=False)
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_channels=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def unlockout(self, ctx, target: discord.Member):
         """This unlocks a specific user out of a channel.

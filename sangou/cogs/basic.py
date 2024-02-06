@@ -767,8 +767,8 @@ class Basic(Cog):
         self.bot.log.info(message_text)
         await tmp.edit(content=message_text)
 
-    @commands.guild_only()
     @commands.bot_has_permissions(add_reactions=True)
+    @commands.guild_only()
     @commands.command()
     async def poll(self, ctx, poll_title: str, *options: str):
         """This starts a poll for you.
@@ -811,8 +811,8 @@ class Basic(Cog):
             await poll.add_reaction(poll_emoji[n])
 
     @commands.cooldown(1, 5, type=commands.BucketType.default)
-    @commands.guild_only()
     @commands.bot_has_permissions(attach_files=True)
+    @commands.guild_only()
     @commands.command(aliases=["loadingbar"])
     async def progressbar(self, ctx):
         """This creates a progress bar of the current year.
@@ -856,8 +856,8 @@ class Basic(Cog):
         )
 
     @commands.cooldown(1, 5, type=commands.BucketType.default)
-    @commands.guild_only()
     @commands.bot_has_permissions(attach_files=True)
+    @commands.guild_only()
     @commands.command()
     async def joingraph(self, ctx):
         """This shows the graph of users that joined.
@@ -913,8 +913,8 @@ class Basic(Cog):
                 )
         await ctx.reply(content=message, mention_author=False)
 
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
+    @commands.guild_only()
     @commands.group(invoke_without_command=True)
     async def info(self, ctx, *, target: discord.User = None):
         """This gets user information.
@@ -993,8 +993,8 @@ class Basic(Cog):
 
         await ctx.reply(embed=embed, mention_author=False)
 
-    @commands.guild_only()
     @commands.bot_has_permissions(embed_links=True)
+    @commands.guild_only()
     @info.command()
     async def role(self, ctx, *, role: discord.Role = None):
         """This gets role information.

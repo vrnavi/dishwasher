@@ -109,11 +109,11 @@ class ModLogs(Cog):
 
         return embeds
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(
         embed_links=True, add_reactions=True, manage_messages=True
     )
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(name="logs")
     async def logs_cmd(self, ctx, target: discord.User):
         """This shows the user`logs` for a user.
@@ -130,9 +130,9 @@ class ModLogs(Cog):
 
         await sympage(self.bot, ctx, embeds, ["📇", "📝", "🚷", "⚠️", "👢", "⛔"])
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command(aliases=["listnotes", "usernotes"])
     async def notes(self, ctx, target: discord.User):
         """This shows the notes for a user.
@@ -197,8 +197,8 @@ class ModLogs(Cog):
                 mention_author=False,
             )
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command()
     async def clearevents(self, ctx, target: discord.User, eventtype):
         """This clears events for a user.
@@ -249,8 +249,8 @@ class ModLogs(Cog):
         )
         await mlog.send(msg)
 
-    @commands.guild_only()
     @commands.check(isadmin)
+    @commands.guild_only()
     @commands.command()
     async def delevent(self, ctx, target: discord.User, eventtype, index: int):
         """This deletes an event for a user.

@@ -20,9 +20,9 @@ class NameCheck(Cog):
         self.bot = bot
         self.readablereq = 1
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_nicknames=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def decancer(self, ctx, target: discord.Member):
         """This cleans unicode from a username.
@@ -41,9 +41,9 @@ class NameCheck(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(manage_nicknames=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def dehoist(self, ctx, target: discord.Member):
         """This dehoists a user from the member list.

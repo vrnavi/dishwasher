@@ -137,9 +137,9 @@ class Cotd(Cog):
                 mention_author=False,
             )
 
-    @commands.guild_only()
-    @commands.check(ismod)
     @commands.bot_has_permissions(embed_links=True, manage_roles=True)
+    @commands.check(ismod)
+    @commands.guild_only()
     @commands.command()
     async def reroll(self, ctx):
         """This forcibly rerolls the CoTD.
