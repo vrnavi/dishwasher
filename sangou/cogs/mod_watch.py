@@ -121,9 +121,12 @@ class ModWatch(Cog):
                 trackerthread = await self.bot.fetch_channel(
                     userlog[str(message.author.id)]["watch"]["thread"]
                 )
-                trackermsg = self.bot.pull_channel(
+                trackerchannel = self.bot.pull_channel(
                     message.guild, get_config(message.guild.id, "staff", "watchchannel")
-                ).fetch_message(userlog[str(message.author.id)]["watch"]["message"])
+                )
+                trackermsg = await trackerchannel.fetch_message(
+                    userlog[str(message.author.id)]["watch"]["message"]
+                )
 
                 threadembed = stock_embed(self.bot)
                 threadembed.color = message.author.color
@@ -158,9 +161,12 @@ class ModWatch(Cog):
                 trackerthread = await self.bot.fetch_channel(
                     userlog[str(member.id)]["watch"]["thread"]
                 )
-                trackermsg = self.bot.pull_channel(
+                trackerchannel = self.bot.pull_channel(
                     member.guild, get_config(member.guild.id, "staff", "watchchannel")
-                ).fetch_message(userlog[str(member.id)]["watch"]["message"])
+                )
+                trackermsg = await trackerchannel.fetch_message(
+                    userlog[str(member.id)]["watch"]["message"]
+                )
                 invite_used = await self.bot.get_used_invites(member)
 
                 threadembed = stock_embed(self.bot)
@@ -200,9 +206,12 @@ class ModWatch(Cog):
                 trackerthread = await self.bot.fetch_channel(
                     userlog[str(member.id)]["watch"]["thread"]
                 )
-                trackermsg = self.bot.pull_channel(
+                trackerchannel = self.bot.pull_channel(
                     member.guild, get_config(member.guild.id, "staff", "watchchannel")
-                ).fetch_message(userlog[str(member.id)]["watch"]["message"])
+                )
+                trackermsg = await trackerchannel.fetch_message(
+                    userlog[str(member.id)]["watch"]["message"]
+                )
 
                 threadembed = stock_embed(self.bot)
                 threadembed.color = discord.Color.darker_gray()
