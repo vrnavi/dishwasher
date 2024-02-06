@@ -11,7 +11,7 @@ import datetime
 import traceback
 import itertools
 from discord.ext import commands
-from helpers.datafiles import get_userfile, get_botfile
+from helpers.datafiles import fill_profile, get_botfile
 from helpers.placeholders import random_msg
 
 
@@ -38,14 +38,14 @@ def cap_permutations(s):
 
 
 def get_userprefix(uid):
-    profile = get_userfile(uid, "profile")
+    profile = fill_profile(uid)
     if not profile:
         return []
     return profile["prefixes"]
 
 
 def get_useralias(uid):
-    profile = get_userfile(uid, "profile")
+    profile = fill_profile(uid)
     if not profile:
         return []
     return profile["aliases"]
