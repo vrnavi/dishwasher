@@ -494,8 +494,8 @@ class Mod(Cog):
             mention_author=False,
         )
 
-    @commands.guild_only()
     @commands.check(ismod)
+    @commands.guild_only()
     @commands.bot_has_permissions(add_reactions=True)
     @commands.command(aliases=["notify"])
     async def alert(
