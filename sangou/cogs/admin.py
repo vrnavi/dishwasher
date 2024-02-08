@@ -97,15 +97,15 @@ class Admin(Cog):
 
             err_tb = "\n".join(traceback.format_exception(*err))
             if len(err_tb) > 1024:
-                split_msg = list(
-                    [err_tb[i : i + 1020] for i in range(0, len(err_tb), 1020)]
+                split_msg = self.bot.slice_message(
+                    err_tb, size=1024, prefix="```", suffix="```"
                 )
 
                 ctr = 1
                 for f in split_msg:
                     embed.add_field(
                         name=f"🧩 Traceback Fragment {ctr}",
-                        value=f"```{f}```",
+                        value=f,
                         inline=False,
                     )
                     ctr += 1
@@ -496,13 +496,13 @@ class Admin(Cog):
 
             self.previous_eval_code = code
 
-            sliced_message = await self.bot.slice_message(
+            sliced_message = self.bot.slice_message(
                 repr(result), prefix="```", suffix="```"
             )
             for msg in sliced_message:
                 await ctx.send(msg)
         except:
-            sliced_message = await self.bot.slice_message(
+            sliced_message = self.bot.slice_message(
                 traceback.format_exc(), prefix="```", suffix="```"
             )
             for msg in sliced_message:
@@ -561,13 +561,11 @@ class Admin(Cog):
 
             self.previous_exec_code = code
 
-            sliced_message = await self.bot.slice_message(
-                result, prefix="```", suffix="```"
-            )
+            sliced_message = self.bot.slice_message(result, prefix="```", suffix="```")
             for msg in sliced_message:
                 await ctx.send(msg)
         except:
-            sliced_message = await self.bot.slice_message(
+            sliced_message = self.bot.slice_message(
                 traceback.format_exc(), prefix="```", suffix="```"
             )
             for msg in sliced_message:
@@ -587,7 +585,7 @@ class Admin(Cog):
         git_output = await self.bot.async_call_shell("git pull")
         allowed_mentions = discord.AllowedMentions(replied_user=False)
         if len(git_output) > 2000:
-            parts = await self.bot.slice_message(git_output, prefix="```", suffix="```")
+            parts = self.bot.slice_message(git_output, prefix="```", suffix="```")
             await tmp.edit(
                 content=f"Output too long. Sending in new message...",
                 allowed_mentions=allowed_mentions,
@@ -633,7 +631,7 @@ class Admin(Cog):
             await self.bot.load_extension(ext)
         except:
             if len(traceback.format_exc()) > 2000:
-                parts = await self.bot.slice_message(
+                parts = self.bot.slice_message(
                     traceback.format_exc(), prefix="```", suffix="```"
                 )
                 await ctx.send(content=":x: Cog loading failed, traceback:")

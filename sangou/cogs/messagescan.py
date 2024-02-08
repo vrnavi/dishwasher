@@ -131,8 +131,8 @@ class Messagescan(Cog):
             )
             # Split if too long.
             if len(lastbeforemsg.clean_content) > 1024:
-                split_before_msg = await self.bot.slice_message(
-                    lastbeforemsg.clean_content, size=1020
+                split_before_msg = self.bot.slice_message(
+                    lastbeforemsg.clean_content, size=1024, prefix=">>> "
                 )
                 embed.add_field(
                     name=f"❌ Before on <t:{int(lastbeforemsg.created_at.astimezone().timestamp())}:f>",
@@ -143,7 +143,7 @@ class Messagescan(Cog):
                 for p in split_before_msg:
                     embed.add_field(
                         name=f"🧩 Fragment {ctr}",
-                        value=f">>> {p}",
+                        value=p,
                         inline=True,
                     )
                     ctr = ctr + 1
@@ -154,8 +154,8 @@ class Messagescan(Cog):
                     inline=False,
                 )
             if len(lastaftermsg.clean_content) > 1024:
-                split_after_msg = await self.bot.slice_message(
-                    lastaftermsg.clean_content, size=1020
+                split_after_msg = self.bot.slice_message(
+                    lastaftermsg.clean_content, size=1024, prefix=">>> "
                 )
                 embed.add_field(
                     name=f"⭕ After on <t:{int(lastaftermsg.edited_at.astimezone().timestamp())}:f>",
@@ -166,7 +166,7 @@ class Messagescan(Cog):
                 for p in split_after_msg:
                     embed.add_field(
                         name=f"🧩 Fragment {ctr}",
-                        value=f">>> {p}",
+                        value=p,
                         inline=True,
                     )
                     ctr = ctr + 1

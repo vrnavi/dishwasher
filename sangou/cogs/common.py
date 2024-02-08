@@ -257,7 +257,7 @@ class Common(Cog):
         return f"{num:.2f} PB"
 
     # 2000 is maximum limit of discord
-    async def slice_message(self, text, size=2000, prefix="", suffix=""):
+    def slice_message(self, text, size=2000, prefix="", suffix=""):
         """Slices a message into multiple messages"""
         reply_list = []
         size_wo_fix = size - len(prefix) - len(suffix)
