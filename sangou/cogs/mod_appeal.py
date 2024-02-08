@@ -30,7 +30,7 @@ class ModAppeal(Cog):
             await message.add_reaction("❎")
             await message.add_reaction("✳️")
             appealthread = await message.create_thread(
-                name=f"{message.embeds[0].fields[1].value[:-5]}'s Appeal",
+                name=f"{message.embeds[0].fields[2].value}'s Appeal",
                 reason="Automatic Appeal Thread Generating by Sangou.",
             )
             staff_role = self.bot.pull_role(
