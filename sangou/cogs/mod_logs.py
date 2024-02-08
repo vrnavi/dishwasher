@@ -54,7 +54,9 @@ class ModLogs(Cog):
                 continue
             days = dayrange([instance["timestamp"] for instance in userlog[uid][event]])
             embed.add_field(
-                name=["📝 Notes", "🚷 Tosses", "⚠️ Warnings", "👢 Kicks", "⛔ Bans"][index],
+                name=["📝 Notes", "🚷 Tosses", "⚠️ Warnings", "👢 Kicks", "⛔ Bans"][
+                    index
+                ],
                 value=f"`{len(userlog[uid][event])}` in `{days}` day"
                 + ("s" if days != 1 else "")
                 + ".",
@@ -86,7 +88,10 @@ class ModLogs(Cog):
             embed = stock_embed(self.bot)
             author_embed(embed, user)
             embed.title = (
-                ["📝", "🚷", "⚠️", "👢", "⛔"][index] + " Recorded " + events[index] + "..."
+                ["📝", "🚷", "⚠️", "👢", "⛔"][index]
+                + " Recorded "
+                + events[index]
+                + "..."
             )
             if not userlog[uid][event]:
                 embed.description = "> This section is empty!"

@@ -307,9 +307,11 @@ class Basic(Cog):
 
             postanswers = "\n".join(
                 [
-                    "> " + answericons[idx] + " " + html.unescape(answer)
-                    if answer == question["results"][0]["correct_answer"]
-                    else answericons[idx] + " " + html.unescape(answer)
+                    (
+                        "> " + answericons[idx] + " " + html.unescape(answer)
+                        if answer == question["results"][0]["correct_answer"]
+                        else answericons[idx] + " " + html.unescape(answer)
+                    )
                     for idx, answer in enumerate(answers)
                 ]
             )

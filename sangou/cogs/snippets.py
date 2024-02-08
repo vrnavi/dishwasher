@@ -48,12 +48,14 @@ class Snippets(Cog):
                             aliases += f"\n➡️ " + subname
                     embed.add_field(
                         name=name,
-                        value="> "
-                        + "\n> ".join(snippet[:200].split("\n"))
-                        + "..."
-                        + aliases
-                        if len(snippet) > 200
-                        else "> " + "\n> ".join(snippet.split("\n")) + aliases,
+                        value=(
+                            "> "
+                            + "\n> ".join(snippet[:200].split("\n"))
+                            + "..."
+                            + aliases
+                            if len(snippet) > 200
+                            else "> " + "\n> ".join(snippet.split("\n")) + aliases
+                        ),
                         inline=False,
                     )
 

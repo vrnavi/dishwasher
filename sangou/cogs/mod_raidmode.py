@@ -73,11 +73,13 @@ class ModRaidmode(Cog):
         reacts = (
             ["⬜", "🟩"]
             + [
-                "🟨"
-                if self.bot.pull_role(
-                    ctx.guild, get_config(ctx.guild.id, "staff", "raidrole")
+                (
+                    "🟨"
+                    if self.bot.pull_role(
+                        ctx.guild, get_config(ctx.guild.id, "staff", "raidrole")
+                    )
+                    else "🚫"
                 )
-                else "🚫"
             ]
             + ["🟥"]
         )
