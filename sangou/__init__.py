@@ -210,7 +210,7 @@ async def on_command_error(ctx, error):
         return await ctx.send(random_msg("err_dmfail"))
 
     help_text = (
-        f"Usage of this command is: ```{ctx.prefix}{ctx.command.name} "
+        f"Usage of this command is: ```{ctx.prefix}{ctx.command.qualified_name} "
         f"{ctx.command.signature}```\nPlease see `{ctx.prefix}help"
         f"` for more info."
     )
