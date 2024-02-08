@@ -5,6 +5,13 @@ Since `0.3.0`, all new release changelogs will be posted here in addition to the
 - This changelog's format __***`roughly`***__ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - This project's version format __***`roughly`***__ follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2](https://github.com/vrnavi/sangou/releases/tag/0.3.2) - 2024-02-08
+
+### Fixed
+- Fixed the Reply Ping system being broken.
+- Fixed command argument errors not showing the full command.
+- Fixed error message viewing by using message slicing better.
+
 ## [0.3.1](https://github.com/vrnavi/sangou/releases/tag/0.3.1) - 2024-02-06
 
 ### Added
