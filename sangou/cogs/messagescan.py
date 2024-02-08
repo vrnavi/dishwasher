@@ -197,6 +197,35 @@ class Messagescan(Cog):
             content=f"**DeepL limit counter:**\n**Characters:** `{usage.character.count}/{usage.character.limit}`\n**Documents:** `{usage.document.count}/{usage.document.limit}`"
         )
 
+    @commands.bot_has_guild_permissions(add_reactions=True, manage_messages=True)
+    @commands.command()
+    async def timebomb(self, ctx, minutes: float = 5, message: discord.Message = None):
+        """This sets a timebomb for a message.
+
+        You can also react with a bomb emoji.
+        Doing so will set a five minute itmer.
+        Put a message link to do this to a specific message,
+        or don't and it will use your last message.
+
+        - `minutes`
+        The amount of minutes to wait. Optional.
+        - `message`
+        The message to timebomb. Optional."""
+        if not message:
+            skiponce = True
+            async for message in ctx.channel.history(limit=200):
+                if message.author.id != ctx.author.id:
+                    continue
+                if not skiponce:
+                    break
+                skiponce = False
+        await message.add_reaction("💣")
+        await message.add_reaction("⏲️")
+        await asyncio.sleep(minutes * 60)
+        await message.add_reaction("💥")
+        await asyncio.sleep(1)
+        await message.delete()
+
     @Cog.listener()
     async def on_message(self, message):
         await self.bot.wait_until_ready()
@@ -370,139 +399,157 @@ class Messagescan(Cog):
     @Cog.listener()
     async def on_reaction_add(self, reaction, user):
         await self.bot.wait_until_ready()
-        if (
-            all((user.bot, user.id != self.bot.user.id))
-            or str(reaction) not in self.langs
-            or reaction.count != 1
-            or not reaction.message.content
-            or not reaction.message.channel.permissions_for(user).send_messages
-            or not get_config(reaction.message.guild.id, "reaction", "translateenable")
-        ):
+        if all((user.bot, user.id != self.bot.user.id)) or reaction.count != 1:
             return
 
-        # DeepL
-        if config.deepl_key:
-            deepltranslation = deepl.Translator(
-                config.deepl_key, send_platform_info=False
-            )
-            usage = deepltranslation.get_usage()
-            if usage.character.valid:
-                dloutput = deepltranslation.translate_text(
+        # Translation
+        if (
+            str(reaction) in self.langs
+            and reaction.message.content
+            and reaction.message.channel.permissions_for(user).send_messages
+            and get_config(reaction.message.guild.id, "reaction", "translateenable")
+        ):
+            # DeepL
+            dloutput = None
+            if config.deepl_key:
+                deepltranslation = deepl.Translator(
+                    config.deepl_key, send_platform_info=False
+                )
+                usage = deepltranslation.get_usage()
+                if usage.character.valid:
+                    dloutput = deepltranslation.translate_text(
+                        reaction.message.clean_content,
+                        target_lang=self.langs[str(reaction)]["deeplcode"],
+                    )
+
+                    if dloutput.detected_source_lang == "EN":
+                        dloutflag = "🇺🇸"
+                        dloutname = "English"
+                    elif dloutput.detected_source_lang == "PT":
+                        dloutflag = "🇵🇹"
+                        dloutname = "Portuguese"
+                    else:
+                        for v in self.langs:
+                            if (
+                                self.langs[v]["deeplcode"]
+                                == dloutput.detected_source_lang
+                            ):
+                                dloutflag = v
+                                dloutname = self.langs[v]["name"]
+
+            # Google Translate
+            try:
+                googletranslation = googletrans.Translator()
+                gtoutput = googletranslation.translate(
                     reaction.message.clean_content,
-                    target_lang=self.langs[str(reaction)]["deeplcode"],
+                    dest=self.langs[str(reaction)]["gtcode"],
                 )
 
-                if dloutput.detected_source_lang == "EN":
-                    dloutflag = "🇺🇸"
-                    dloutname = "English"
-                elif dloutput.detected_source_lang == "PT":
-                    dloutflag = "🇵🇹"
-                    dloutname = "Portuguese"
+                if gtoutput.src == "en":
+                    gtoutflag = "🇺🇸"
+                    gtoutname = "English"
+                elif gtoutput.src == "pt":
+                    gtoutflag = "🇵🇹"
+                    gtoutname = "Portuguese"
                 else:
                     for v in self.langs:
-                        if self.langs[v]["deeplcode"] == dloutput.detected_source_lang:
-                            dloutflag = v
-                            dloutname = self.langs[v]["name"]
-            else:
-                dloutput = None
-        else:
-            dloutput = None
+                        if self.langs[v]["gtcode"] == gtoutput.src:
+                            gtoutflag = v
+                            gtoutname = self.langs[v]["name"]
+            except:
+                gtoutput = None
 
-        # Google Translate
-        try:
-            googletranslation = googletrans.Translator()
-            gtoutput = googletranslation.translate(
-                reaction.message.clean_content, dest=self.langs[str(reaction)]["gtcode"]
-            )
-
-            if gtoutput.src == "en":
-                gtoutflag = "🇺🇸"
-                gtoutname = "English"
-            elif gtoutput.src == "pt":
-                gtoutflag = "🇵🇹"
-                gtoutname = "Portuguese"
-            else:
-                for v in self.langs:
-                    if self.langs[v]["gtcode"] == gtoutput.src:
-                        gtoutflag = v
-                        gtoutname = self.langs[v]["name"]
-        except:
-            gtoutput = None
-
-        if not dloutput and not gtoutput:
-            return await reaction.message.reply(
-                content="Unable to translate message: neither DeepL or Google Translate responded.",
-                mention_author=False,
-            )
-
-        reacts = ["🚫" if not dloutput else "<:deepl:1177134874021347378>"] + [
-            "🚫" if not gtoutput else "<:googletrans:1177134340778500146>"
-        ]
-        state = 0 if dloutput else 1
-
-        def content():
-            outflag = dloutflag if not state else gtoutflag
-            outname = dloutname if not state else gtoutname
-            method = "DeepL" if not state else "Google"
-            embed.description = dloutput.text if not state else gtoutput.text
-            embed.set_footer(
-                text=f"{method} Translated from {outflag} {outname} by {user}",
-                icon_url=user.display_avatar.url,
-            )
-
-        embed = discord.Embed(
-            color=reaction.message.author.color,
-            timestamp=reaction.message.created_at,
-        )
-        content()
-        embed.set_author(
-            name=f"💬 {reaction.message.author} said in #{reaction.message.channel.name}...",
-            icon_url=reaction.message.author.display_avatar.url,
-            url=reaction.message.jump_url,
-        )
-        allowed_mentions = discord.AllowedMentions(replied_user=False)
-        # Use a single image from post for now.
-        if (
-            reaction.message.attachments
-            and reaction.message.attachments[0].content_type[:6] == "image/"
-        ):
-            embed.set_image(url=reaction.message.attachments[0].url)
-        elif reaction.message.embeds and reaction.message.embeds[0].image:
-            embed.set_image(url=reaction.message.embeds[0].image.url)
-        holder = await reaction.message.reply(embed=embed, mention_author=False)
-        for e in reacts:
-            await holder.add_reaction(e)
-
-        def reactioncheck(r, u):
-            return u.id == user.id and str(r.emoji) in reacts
-
-        while True:
-            try:
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", timeout=30.0, check=reactioncheck
+            if not dloutput and not gtoutput:
+                return await reaction.message.reply(
+                    content="Unable to translate message: neither DeepL or Google Translate responded.",
+                    mention_author=False,
                 )
-            except asyncio.TimeoutError:
-                for react in reacts:
-                    await holder.remove_reaction(react, self.bot.user)
-                return
-            if str(reaction) == "<:deepl:1177134874021347378>":
-                if state != 0:
-                    state = 0
-                try:
-                    await holder.remove_reaction("<:deepl:1177134874021347378>", user)
-                except:
-                    pass
-            elif str(reaction) == "<:googletrans:1177134340778500146>":
-                if state != 1:
-                    state = 1
-                try:
-                    await holder.remove_reaction(
-                        "<:googletrans:1177134340778500146>", user
-                    )
-                except:
-                    pass
+
+            reacts = ["🚫" if not dloutput else "<:deepl:1177134874021347378>"] + [
+                "🚫" if not gtoutput else "<:googletrans:1177134340778500146>"
+            ]
+            state = 0 if dloutput else 1
+
+            def content():
+                outflag = dloutflag if not state else gtoutflag
+                outname = dloutname if not state else gtoutname
+                method = "DeepL" if not state else "Google"
+                embed.description = dloutput.text if not state else gtoutput.text
+                embed.set_footer(
+                    text=f"{method} Translated from {outflag} {outname} by {user}",
+                    icon_url=user.display_avatar.url,
+                )
+
+            embed = discord.Embed(
+                color=reaction.message.author.color,
+                timestamp=reaction.message.created_at,
+            )
             content()
-            await holder.edit(embed=embed, allowed_mentions=allowed_mentions)
+            embed.set_author(
+                name=f"💬 {reaction.message.author} said in #{reaction.message.channel.name}...",
+                icon_url=reaction.message.author.display_avatar.url,
+                url=reaction.message.jump_url,
+            )
+            allowed_mentions = discord.AllowedMentions(replied_user=False)
+            # Use a single image from post for now.
+            if (
+                reaction.message.attachments
+                and reaction.message.attachments[0].content_type[:6] == "image/"
+            ):
+                embed.set_image(url=reaction.message.attachments[0].url)
+            elif reaction.message.embeds and reaction.message.embeds[0].image:
+                embed.set_image(url=reaction.message.embeds[0].image.url)
+            holder = await reaction.message.reply(embed=embed, mention_author=False)
+            for e in reacts:
+                await holder.add_reaction(e)
+
+            def reactioncheck(r, u):
+                return u.id == user.id and str(r.emoji) in reacts
+
+            while True:
+                try:
+                    reaction, user = await self.bot.wait_for(
+                        "reaction_add", timeout=30.0, check=reactioncheck
+                    )
+                except asyncio.TimeoutError:
+                    for react in reacts:
+                        await holder.remove_reaction(react, self.bot.user)
+                    return
+                if str(reaction) == "<:deepl:1177134874021347378>":
+                    if state != 0:
+                        state = 0
+                    try:
+                        await holder.remove_reaction(
+                            "<:deepl:1177134874021347378>", user
+                        )
+                    except:
+                        pass
+                elif str(reaction) == "<:googletrans:1177134340778500146>":
+                    if state != 1:
+                        state = 1
+                    try:
+                        await holder.remove_reaction(
+                            "<:googletrans:1177134340778500146>", user
+                        )
+                    except:
+                        pass
+                content()
+                await holder.edit(embed=embed, allowed_mentions=allowed_mentions)
+
+        # Timebomb
+        if (
+            str(reaction) == "💣"
+            and reaction.message.author.id == user.id
+            and reaction.message.guild
+            and reaction.message.channel.permissions_for(
+                reaction.message.guild.me
+            ).manage_messages
+        ):
+            await reaction.message.add_reaction("⏲️")
+            await asyncio.sleep(5)
+            await reaction.message.add_reaction("💥")
+            await asyncio.sleep(1)
+            await reaction.message.delete()
 
 
 async def setup(bot: Bot):

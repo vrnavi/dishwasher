@@ -168,6 +168,44 @@ class Meme(Cog):
             content="`" + random.choice(umigame) + "`", mention_author=False
         )
 
+    @commands.guild_only()
+    @commands.command(hidden=True)
+    async def egu(self, ctx):
+        """DECEARING EGG
+
+        Delicious breakfast
+
+        No arguments."""
+        egg = [
+            "Return",
+            "Regret",
+            "Eco-production",
+            "Eiffel Tower",
+            "DECEARING EGG",
+            "Delicious breakfast",
+            "DECEARING EGG",
+            "Delicious breakfast early evening soup",
+            "DECEARING EGG",
+            "Delicious antiperspir oeujeuguen",
+            "DECEARING EGG",
+            "Transportation Eastern maple Egg bag",
+            "DECEAR CLEAR DOWN EGG",
+            "Delicious antiperspir oeujeugyeu soujoueguen",
+            "DECEARING EGUEEGEGEGE EGG",
+            "Delicaceness of deep-sea squeeze trees",
+            "DECEARING EGG PREPARATION PREPARATION OF EGG",
+            "Delicious antiperspir oeujeugyeu soujoueguen soujou eekugegu",
+            "DECEARING EGUEEGEGUGE deep-sea EEGEGEGYE EGGTAG",
+            "Delicious antiperspir oeujeugyeu soujoueguen soujoueguen soujoueguoku dewaguiguigueguiguigueguigu",
+            "DECEARING EGG PREPARATION PREPARATION OF EGG",
+            "Eastern Airlines Transportation Education Transportation Education Transportation Education Transportation Education",
+            "Dynasty Eastern Airlines Eastern Eastern Antarctica Eastern Antarctica Antarctica Antiguum",
+            "Eastern Airlines Transportation Education Transportation Educational Transportation Educational Transport Education",
+            "Dynasty Elements Elements of Ezujoujuu Periodic Elements of Ezujou Ezueguoku Ekogeegu Education Transportation Education",
+            "Delicious antiperspir oeujeugyeu deejejuguen deejejugjejejjejjejjejjejjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj",
+        ]
+        await ctx.reply(content="`" + random.choice(egg) + "`", mention_author=False)
+
 
 async def setup(bot):
     await bot.add_cog(Meme(bot))
