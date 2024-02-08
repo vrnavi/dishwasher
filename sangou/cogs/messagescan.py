@@ -546,7 +546,7 @@ class Messagescan(Cog):
             ).manage_messages
         ):
             await reaction.message.add_reaction("⏲️")
-            await asyncio.sleep(5)
+            await asyncio.sleep(300)
             await reaction.message.add_reaction("💥")
             await asyncio.sleep(1)
             await reaction.message.delete()
