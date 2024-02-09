@@ -528,6 +528,35 @@ class Basic(Cog):
                 output = await response.text()
                 await ctx.reply(content=output, mention_author=False)
 
+    @commands.command(aliases=["aaa"])
+    async def jptts(self, ctx, text="あああああああああああああああああ"):
+        """Turns JP text into JP TTS.
+
+        Yukkuri shiteitte ne!
+
+        - `text`
+        The テキスト to read."""
+        response = await self.bot.session.get(
+            "https://www.a-quest.com/demo/koe2wav_rd2.php?engine=aqtk1&phont=f1&speed=100&koe="
+            + text
+        )
+        try:
+            error = await response.text()
+            error = error.replace("ERR: AquesTalk=", "")
+            if int(error) == 105:
+                return await ctx.reply(content="日本語限定！", mention_author=False)
+            elif int(error) == 16:
+                return await ctx.reply(content="無効な文字！", mention_author=False)
+            else:
+                return await ctx.reply(content="無駄！", mention_author=False)
+        except:
+            pass
+        file = await response.read()
+        await ctx.reply(
+            file=discord.File(io.BytesIO(file), filename="output.wav"),
+            mention_author=False,
+        )
+
     @commands.command(name="dec")
     async def _dec(self, ctx, num):
         """This converts base 16 to 10.

@@ -8,13 +8,11 @@ import datetime
 import json
 import config
 import random
-import requests
 import asyncio
 import shutil
 import os
 from io import StringIO
 from contextlib import redirect_stdout
-from base64 import b64encode
 from helpers.embeds import stock_embed
 from helpers.checks import ismanager
 from helpers.sv_config import get_config
