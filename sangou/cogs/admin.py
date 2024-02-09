@@ -455,20 +455,8 @@ class Admin(Cog):
 
         - `avy`
         The avy to set."""
-        avydata = await avy.read()
-        if avy.content_type == "image/gif":
-            data = b"data:image/gif;base64," + b64encode(avydata)
-            response = (
-                await self.bot.session.patch(
-                    "https://discord.com/api/v10/users/@me",
-                    json={"avatar": data.decode("utf-8")},
-                    headers={"Authorization": config.token},
-                ),
-            )
-            return await ctx.reply(content=response, mention_author=False)
-        else:
-            await self.bot.user.edit(avatar=avydata)
-            return await ctx.reply(content="Done.", mention_author=False)
+        await self.bot.user.edit(avatar=avydata)
+        return await ctx.reply(content="Done.", mention_author=False)
 
     @commands.check(ismanager)
     @commands.command(name="eval")
