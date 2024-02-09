@@ -8,11 +8,13 @@ import datetime
 import json
 import config
 import random
+import requests
 import asyncio
 import shutil
 import os
 from io import StringIO
 from contextlib import redirect_stdout
+from base64 import b64encode
 from helpers.embeds import stock_embed
 from helpers.checks import ismanager
 from helpers.sv_config import get_config
@@ -443,6 +445,29 @@ class Admin(Cog):
         return await ctx.reply(
             content="This user is now unbotbanned.", mention_author=False
         )
+
+    @commands.check(ismanager)
+    @commands.command()
+    async def setavy(self, ctx, avy: discord.Attachment):
+        """This sets the avy for a bot.
+
+        If it's a gif, will patch it in so it's animated.
+
+        - `avy`
+        The avy to set."""
+        if avy.content_type == "image/gif":
+            data = b"data:image/gif;base64," + b64encode(avy.read())
+            response = (
+                await self.bot.session.patch(
+                    "https://discord.com/api/v10/users/@me",
+                    json={"avatar": data.decode("utf-8")},
+                    headers={"Authorization": config.token},
+                ),
+            )
+            return await ctx.reply(content=response, mention_author=False)
+        else:
+            await self.bot.user.edit(avatar=avy.read())
+            return await ctx.reply(content="Done.", mention_author=False)
 
     @commands.check(ismanager)
     @commands.command(name="eval")
