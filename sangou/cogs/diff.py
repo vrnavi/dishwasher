@@ -7,11 +7,20 @@ from discord.ext.commands import Cog
 
 
 class Diff(Cog):
+
+    @commands.cooldown(1, 5, type=commands.BucketType.default)
     @commands.command()
     async def diff(self, ctx: commands.Context, old: str = None, new: str = None):
         is_file = False
         # Checks if the user has uploaded 2 files - does something else in this case!
         if len(ctx.message.attachments) >= 2 and (old is None and new is None):
+            if (
+                ctx.message.attachments[0].size > 5000000
+                or ctx.message.attachments[0].size > 5000000
+            ):
+                return await ctx.reply(
+                    content="Maximum filesize is `5 MB`.", mention_author=False
+                )
             is_file = (
                 True  # This will make it return a file at the end, instead of text.
             )
