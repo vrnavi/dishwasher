@@ -127,7 +127,7 @@ class Reply(Cog):
                     )
 
                 try:
-                    await self.bot.wait_for("reaction_add", timeout=15.0, check=check)
+                    await self.bot.wait_for("reaction_add", timeout=120.0, check=check)
                 except asyncio.TimeoutError:
                     return await message.clear_reaction("🛑")
                 except discord.errors.NotFound:
