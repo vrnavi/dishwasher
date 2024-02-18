@@ -128,6 +128,34 @@ class Meme(Cog):
         )
 
     @commands.command(hidden=True)
+    async def make(self, ctx):
+        """This makes you something.
+
+        Only if the bot feels like it, though.
+
+        No arguments?"""
+        resp = await ctx.reply(
+            content="<:sangoueat:1182927631977558086>", mention_author=False
+        )
+        await asyncio.sleep(2)
+        allowed_mentions = discord.AllowedMentions(replied_user=False)
+        await resp.edit(
+            content="<:sangouspeak:1182927625161809931>",
+            allowed_mentions=allowed_mentions,
+        )
+        await asyncio.sleep(1)
+        if ctx.author.id != 120698901236809728:
+            await resp.edit(
+                content="<:sangoubruh:1182927627388989491> No.",
+                allowed_mentions=allowed_mentions,
+            )
+        else:
+            await resp.edit(
+                content="<:sangoucry:1182927628802469958> Okay, okay, soon!",
+                allowed_mentions=allowed_mentions,
+            )
+
+    @commands.command(hidden=True)
     async def umigame(self, ctx):
         """そのくるしみにきづくにはあまりにものろまだったようで
 
