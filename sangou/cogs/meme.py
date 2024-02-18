@@ -5,6 +5,7 @@ from discord.ext.commands import Cog
 import math
 import random
 import platform
+import asyncio
 from helpers.checks import ismod
 import datetime
 
