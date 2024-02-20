@@ -165,6 +165,8 @@ class ModLogs(Cog):
         - `eventtype`
         Whether you want warns, kicks, or bans. Optional."""
         embeds = self.get_log_embeds(ctx.guild.id, ctx.author, True)
+        if len(embeds) == 1:
+            return await ctx.author.send(embed=embeds[0])
         if not eventtype:
             embeds[0].color = ctx.author.color
             await ctx.author.send(
