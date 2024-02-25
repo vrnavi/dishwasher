@@ -18,14 +18,6 @@ class Messagescan(Cog):
             r"https://(?:canary\.|ptb\.)?discord\.com/channels/[0-9]+/[0-9]+/[0-9]+",
             re.IGNORECASE,
         )
-        self.twitterlink_re = re.compile(
-            r"https://twitter\.com/[A-z0-9]+/status/[0-9]+",
-            re.IGNORECASE,
-        )
-        self.xlink_re = re.compile(
-            r"https://x\.com/[A-z0-9]+/status/[0-9]+",
-            re.IGNORECASE,
-        )
         self.tiktoklink_re = re.compile(
             r"https://(?:www\.)?tiktok\.com/@[A-z0-9]+/video/[0-9]+",
             re.IGNORECASE,
@@ -241,43 +233,25 @@ class Messagescan(Cog):
             return
 
         msglinks = self.link_re.findall(message.content)
-        twitterlinks = self.twitterlink_re.findall(
-            message.content
-        ) + self.xlink_re.findall(message.content)
         tiktoklinks = self.tiktoklink_re.findall(message.content)
-        if not any((msglinks, twitterlinks, tiktoklinks)):
+        if not any((msglinks, tiktoklinks)):
             return
 
-        for link in msglinks + twitterlinks + tiktoklinks:
+        for link in msglinks + tiktoklinks:
             parts = message.content.split(link)
             if parts[0].count("||") % 2 and parts[1].count("||") % 2:
                 try:
                     msglinks.remove(link)
                 except:
-                    try:
-                        twitterlinks.remove(link)
-                    except:
-                        tiktoklinks.remove(link)
+                    tiktoklinks.remove(link)
             elif parts[0].count("<") % 2 and parts[1].count(">") % 2:
                 try:
                     msglinks.remove(link)
                 except:
-                    try:
-                        twitterlinks.remove(link)
-                    except:
-                        tiktoklinks.remove(link)
+                    tiktoklinks.remove(link)
 
-        twlinks = ""
         ttlinks = ""
         embeds = None
-
-        if twitterlinks:
-            twlinks = "\n".join(
-                [
-                    t.replace("x.com", "vxtwitter.com")
-                    for t in [t.replace("twitter", "vxtwitter") for t in twitterlinks]
-                ]
-            )
 
         if tiktoklinks:
             ttlinks = "\n".join([t.replace("tiktok", "vxtiktok") for t in tiktoklinks])
@@ -363,9 +337,9 @@ class Messagescan(Cog):
         def deletecheck(m):
             return m.id == message.id
 
-        if any((ttlinks, twlinks, embeds)):
+        if any((ttlinks, embeds)):
             reply = await message.reply(
-                content=twlinks + ttlinks, embeds=embeds, mention_author=False
+                content=ttlinks, embeds=embeds, mention_author=False
             )
             try:
                 await message.channel.fetch_message(message.id)
