@@ -17,6 +17,13 @@ def split_content(content):
 
 
 def slice_embed(embed, content, name):
+    if not len(content) > 1020:
+        embed.add_field(
+            name=name,
+            value=f">>> {content}",
+            inline=False,
+        )
+        return
     embed.add_field(
         name=name,
         value="**Message was too long to post!** Split into fragments below.",

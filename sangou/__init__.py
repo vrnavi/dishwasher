@@ -244,8 +244,12 @@ async def on_message(message):
                 aliases = get_useralias(message.author.id)
                 for alias in aliases:
                     command, alias = list(alias.items())[0]
-                    if message.content[len(ctx.prefix):].startswith(alias):
-                        message.content = message.content[:len(ctx.prefix)] + message.content[len(ctx.prefix):].replace(alias, command, 1)
+                    if message.content[len(ctx.prefix) :].startswith(alias):
+                        message.content = message.content[
+                            : len(ctx.prefix)
+                        ] + message.content[len(ctx.prefix) :].replace(
+                            alias, command, 1
+                        )
                         ctx = await bot.get_context(message)
                         break
             if ctx.valid:

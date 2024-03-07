@@ -89,26 +89,16 @@ class Logs2(Cog):
         embed.description = f"{after.author.mention} ({after.author.id}) in {after.channel.mention} [[Jump]({after.jump_url})]"
         author_embed(embed, after.author)
 
-        beforename = (
-            f"❌ Before on <t:{int(before.created_at.astimezone().timestamp())}:f>"
+        slice_embed(
+            embed,
+            before.clean_content,
+            f"❌ Before on <t:{int(before.created_at.astimezone().timestamp())}:f>",
         )
-        if len(before.clean_content) > 1024:
-            slice_embed(embed, before.clean_content, beforename)
-        else:
-            embed.add_field(
-                name=beforename,
-                value=f">>> {before.clean_content}",
-                inline=False,
-            )
-        aftername = f"⭕ After on <t:{int(after.edited_at.astimezone().timestamp())}:f>"
-        if len(after.clean_content) > 1024:
-            slice_embed(embed, after.clean_content, aftername)
-        else:
-            embed.add_field(
-                name=aftername,
-                value=f">>> {after.clean_content}",
-                inline=False,
-            )
+        slice_embed(
+            embed,
+            after.clean_content,
+            f"⭕ After on <t:{int(after.edited_at.astimezone().timestamp())}:f>",
+        )
 
         await ulog.send(embed=embed)
 
@@ -129,15 +119,12 @@ class Logs2(Cog):
         embed.title = "🗑️ Message Delete"
         embed.description = f"{message.author.mention} ({message.author.id}) in {message.channel.mention}"
         author_embed(embed, message.author)
-        name = f"🧾 Sent on <t:{int(message.created_at.astimezone().timestamp())}:f>:"
-        if len(message.clean_content) > 1024:
-            slice_embed(embed, message.clean_content, name)
-        else:
-            embed.add_field(
-                name=name,
-                value=f">>> {message.clean_content}",
-                inline=False,
-            )
+
+        slice_embed(
+            embed,
+            message.clean_content,
+            f"🧾 Sent on <t:{int(message.created_at.astimezone().timestamp())}:f>:",
+        )
 
         await ulog.send(embed=embed)
 
@@ -486,11 +473,10 @@ class Logs2(Cog):
         # Topics
         try:
             if channel_before.topic != channel_after.topic:
-                embed.add_field(
-                    name="✍️ Topic Change",
-                    value=f"❌ {channel_before.topic}\n⬇️\n⭕ {channel_after.topic}",
-                    inline=False,
+                slice_embed(
+                    embed, "❌ ```" + channel_before.topic + "```", "✍️ Topic Change"
                 )
+                slice_embed(embed, "⭕ ```" + channel_after.topic + "```", "⬇️")
         except:
             pass
 
