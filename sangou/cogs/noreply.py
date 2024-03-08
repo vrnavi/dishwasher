@@ -29,148 +29,93 @@ class Reply(Cog):
     def cog_unload(self):
         self.counttimer.cancel()
 
-    async def msgref(self, message):
-        reference_message = await message.channel.fetch_message(
-            message.reference.message_id
+    async def add_violation(self, message):
+        staff_roles = [
+            self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "modrole")
+            ),
+            self.bot.pull_role(
+                message.guild, get_config(message.guild.id, "staff", "adminrole")
+            ),
+        ]
+        maximum = (
+            10
+            if get_config(message.guild.id, "staff", "noreplythreshold") > 10
+            else get_config(message.guild.id, "staff", "noreplythreshold")
         )
-        reference_author = reference_message.author
-
         if (
-            not message.guild.get_member(reference_author.id)
-            or reference_author.id == message.author.id
+            not maximum
+            or not any(staff_roles)
+            or any([staff_role in message.author.roles for staff_role in staff_roles])
+            or self.bot.is_owner(message.author)
         ):
             return
 
-        # If not reply pinged
-
-        if reference_author not in message.mentions:
-            profile = fill_profile(reference_author.id)
-            if profile["replypref"] != "pleasereplyping":
-                return
-            await message.add_reaction("<:pleasereplyping:1171017026274340904>")
-            pokemsg = await message.reply(content=reference_author.mention)
-            await self.bot.await_message(message.channel, reference_author, 86400)
-            return await pokemsg.delete()
-
-        if reference_author in message.mentions:
-            profile = fill_profile(reference_author.id)
-
-            async def violation():
-                staff_role = (
-                    self.bot.pull_role(
-                        message.guild, get_config(message.guild.id, "staff", "modrole")
-                    )
-                    if self.bot.pull_role(
-                        message.guild, get_config(message.guild.id, "staff", "modrole")
-                    )
-                    else self.bot.pull_role(
-                        message.guild,
-                        get_config(message.guild.id, "staff", "adminrole"),
-                    )
+        if message.guild.id not in self.violations:
+            self.violations[message.guild.id] = {}
+        if message.author.id not in self.violations[message.guild.id]:
+            self.violations[message.guild.id][message.author.id] = 0
+            usertracks = get_guildfile(message.guild.id, "usertrack")
+            if (
+                str(message.author.id) not in usertracks
+                or usertracks[str(message.author.id)]["truedays"] < 14
+            ):
+                return await message.reply(
+                    content="**Do not reply ping users who do not wish to be pinged.**\n"
+                    + "As you are new, this first time will not be a violation.",
+                    file=discord.File("assets/noreply.png"),
+                    mention_author=True,
                 )
-                if not staff_role:
-                    return
-                if message.guild.id not in self.violations:
-                    self.violations[message.guild.id] = {}
-                if message.author.id not in self.violations[message.guild.id]:
-                    self.violations[message.guild.id][message.author.id] = 0
-                    usertracks = get_guildfile(message.guild.id, "usertrack")
-                    if (
-                        str(message.author.id) not in usertracks
-                        or usertracks[str(message.author.id)]["truedays"] < 14
-                    ):
-                        return await message.reply(
-                            content="**Do not reply ping users who do not wish to be pinged.**\n"
-                            + "As you are new, this first time will not be a violation.",
-                            file=discord.File("assets/noreply.png"),
-                            mention_author=True,
-                        )
 
-                self.violations[message.guild.id][message.author.id] += 1
-                counts = [
-                    "0️⃣",
-                    "1️⃣",
-                    "2️⃣",
-                    "3️⃣",
-                    "4️⃣",
-                    "5️⃣",
-                    "6️⃣",
-                    "7️⃣",
-                    "8️⃣",
-                    "9️⃣",
-                    "🔟",
-                ]
+        self.violations[message.guild.id][message.author.id] += 1
+        if self.violations[message.guild.id][message.author.id] == maximum:
+            await message.reply(
+                content=f"{next(staff_role for staff_role in staff_roles if staff_role is not None).mention}, {message.author.mention} reached `{maximum}` reply ping violations.",
+                mention_author=False,
+            )
+            self.violations[message.guild.id][message.author.id] = 0
+            return
 
-                violationmax = (
-                    10
-                    if get_config(message.guild.id, "staff", "noreplythreshold") > 10
-                    else get_config(message.guild.id, "staff", "noreplythreshold")
-                )
-                if self.violations[message.guild.id][message.author.id] == violationmax:
-                    await message.reply(
-                        content=f"{staff_role.mention}, {message.author.mention} reached `{violationmax}` reply ping violations.",
-                        mention_author=False,
-                    )
-                    self.violations[message.guild.id][message.author.id] = 0
-                    return
+        counts = [
+            "0️⃣",
+            "1️⃣",
+            "2️⃣",
+            "3️⃣",
+            "4️⃣",
+            "5️⃣",
+            "6️⃣",
+            "7️⃣",
+            "8️⃣",
+            "9️⃣",
+            "🔟",
+        ]
 
-                await message.add_reaction(
-                    counts[self.violations[message.guild.id][message.author.id]]
-                )
-                await message.add_reaction("🛑")
+        await message.add_reaction(
+            counts[self.violations[message.guild.id][message.author.id]]
+        )
+        await message.add_reaction("🛑")
 
-                def check(r, u):
-                    return (
-                        u.id == reference_author.id
-                        and str(r.emoji) == "🛑"
-                        and r.message.id == message.id
-                    )
+        reacted = self.bot.await_reaction(
+            message, message.reference.resolved.author, ["🛑"], 120
+        )
+        if not reacted:
+            return await message.clear_reaction("🛑")
 
-                try:
-                    await self.bot.wait_for("reaction_add", timeout=120.0, check=check)
-                except asyncio.TimeoutError:
-                    return await message.clear_reaction("🛑")
-                except discord.errors.NotFound:
-                    return
-                else:
-                    self.violations[message.guild.id][message.author.id] -= 1
-                    await message.clear_reaction("🗞️")
-                    await message.clear_reaction(
-                        counts[self.violations[message.guild.id][message.author.id] + 1]
-                    )
-                    await message.clear_reaction("🛑")
-                    await message.add_reaction("👍")
-                    await message.add_reaction(
-                        counts[self.violations[message.guild.id][message.author.id]]
-                    )
-                    await asyncio.sleep(5)
-                    await message.clear_reaction("👍")
-                    await message.clear_reaction(
-                        counts[self.violations[message.guild.id][message.author.id]]
-                    )
-                    return
-
-            # If reply pinged at all
-            if profile["replypref"] == "noreplyping":
-                await message.add_reaction("<:noreplyping:1171016972222332959>")
-                await violation()
-                return
-            # If reply pinged in a window of time
-            elif profile["replypref"] == "waitbeforereplyping":
-                if message.guild.id not in self.timers:
-                    self.timers[message.guild.id] = {}
-                self.timers[message.guild.id][reference_author.id] = int(
-                    reference_message.created_at.timestamp()
-                )
-                if (
-                    int(message.created_at.timestamp()) - 30
-                    <= self.timers[message.guild.id][reference_author.id]
-                ):
-                    await message.add_reaction(
-                        "<:waitbeforereplyping:1171017084222832671>"
-                    )
-                    await violation()
-                return
+        self.violations[message.guild.id][message.author.id] -= 1
+        await message.clear_reaction("🛑")
+        await message.clear_reaction(
+            counts[self.violations[message.guild.id][message.author.id] + 1]
+        )
+        await message.add_reaction(
+            counts[self.violations[message.guild.id][message.author.id]]
+        )
+        await message.add_reaction("👍")
+        await asyncio.sleep(5)
+        await message.clear_reaction("👍")
+        await message.clear_reaction(
+            counts[self.violations[message.guild.id][message.author.id]]
+        )
+        return
 
     @commands.check(ismod)
     @commands.guild_only()
@@ -298,31 +243,81 @@ class Reply(Cog):
     async def on_message(self, message):
         await self.bot.wait_until_ready()
 
-        if message.author.bot or not message.guild:
+        if (
+            message.author.bot
+            or message.is_system()
+            or not message.guild
+            or not message.reference
+            or message.type != discord.MessageType.reply
+        ):
             return
 
-        if message.reference and message.type == discord.MessageType.reply:
+        refmessage = message.reference.resolved
+        if (
+            not refmessage
+            or refmessage.author.id == message.author.id
+            or refmessage.author not in message.guild.members
+        ):
+            return
+
+        preference = fill_profile(refmessage.author.id)["replypref"]
+        if not preference:
+            return
+
+        async def wrap_violation(message):
             try:
-                await self.msgref(message)
+                await add_violation(message)
+                return
             except discord.errors.Forbidden:
-                if (
+                if not (
                     message.channel.permissions_for(message.guild.me).add_reactions
                     and message.channel.permissions_for(
                         message.guild.me
                     ).manage_messages
+                    and message.channel.permissions_for(
+                        message.guild.me
+                    ).moderate_members
                 ):
-                    await message.author.timeout(datetime.timedelta(minutes=10))
-                    return await message.reply(
-                        content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
-                        mention_author=True,
-                    )
-                else:
                     return
+
+                await message.author.timeout(datetime.timedelta(minutes=10))
+                return await message.reply(
+                    content=f"**Congratulations, {message.author.mention}, you absolute dumbass.**\nAs your reward for blocking me to disrupt my function, here is a time out, just for you.",
+                    mention_author=True,
+                )
             except discord.errors.NotFound:
                 return await message.reply(
                     content=f"{message.author.mention} immediately deleted their own message.\n{message.author.display_name} now has `{self.violations[message.guild.id][message.author.id]}` violation(s).",
                     mention_author=True,
                 )
+
+        # If not reply pinged...
+        if prefrence == "pleasereplyping" and refmessage.author not in message.mentions:
+            await message.add_reaction("<:pleasereplyping:1171017026274340904>")
+            pokemsg = await message.reply(content=refmessage.author.mention)
+            await self.bot.await_message(message.channel, refmessage.author, 86400)
+            return await pokemsg.delete()
+
+        # If reply pinged at all...
+        elif preference == "noreplyping":
+            await message.add_reaction("<:noreplyping:1171016972222332959>")
+            await wrap_violation(message)
+            return
+
+        # If reply pinged in a window of time...
+        elif preference == "waitbeforereplyping":
+            if message.guild.id not in self.timers:
+                self.timers[message.guild.id] = {}
+            self.timers[message.guild.id][refmessage.author.id] = int(
+                refmessage.created_at.timestamp()
+            )
+            if (
+                int(message.created_at.timestamp()) - 30
+                <= self.timers[message.guild.id][reference_author.id]
+            ):
+                await message.add_reaction("<:waitbeforereplyping:1171017084222832671>")
+                await wrap_violation(message)
+            return
 
     @tasks.loop(hours=24)
     async def counttimer(self):

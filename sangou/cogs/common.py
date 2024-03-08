@@ -9,6 +9,7 @@ import math
 import parsedatetime
 import random
 from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.sv_config import get_config
 from helpers.placeholders import random_msg
 from discord.ext.commands import Cog
 
@@ -202,13 +203,13 @@ class Common(Cog):
             return None
         return message
 
-    async def await_reaction(self, channel, author, reactions, timeout=60):
+    async def await_reaction(self, message, author, reactions, timeout=60):
         """Nice wrapper for waiting for a reaction"""
 
         def check(r, u):
             return (
                 u.id == author.id
-                and r.message.id == channel.id
+                and r.message.id == message.id
                 and str(r.emoji) in reactions
             )
 
@@ -218,7 +219,7 @@ class Common(Cog):
             )
         except asyncio.TimeoutError:
             return None
-        return (reaction, user)
+        return reaction
 
     def convert_temperature(self, temp, inunit, outunit):
         """Converts from one temperature unit to another."""
