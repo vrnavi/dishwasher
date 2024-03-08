@@ -38,6 +38,8 @@ class Reply(Cog):
                 message.guild, get_config(message.guild.id, "staff", "adminrole")
             ),
         ]
+        if not get_config(message.guild.id, "staff", "noreplythreshold"):
+            return
         maximum = (
             10
             if get_config(message.guild.id, "staff", "noreplythreshold") > 10
