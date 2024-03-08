@@ -307,13 +307,16 @@ class Reply(Cog):
             return await pokemsg.delete()
 
         # If reply pinged at all...
-        elif preference == "noreplyping":
+        elif preference == "noreplyping" and refmessage.author in message.mentions:
             await message.add_reaction("<:noreplyping:1171016972222332959>")
             await wrap_violation(message)
             return
 
         # If reply pinged in a window of time...
-        elif preference == "waitbeforereplyping":
+        elif (
+            preference == "waitbeforereplyping"
+            and refmessage.author in message.mentions
+        ):
             if message.guild.id not in self.timers:
                 self.timers[message.guild.id] = {}
             self.timers[message.guild.id][refmessage.author.id] = int(
