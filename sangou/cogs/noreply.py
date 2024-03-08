@@ -258,9 +258,8 @@ class Reply(Cog):
             )
         except:
             return
-        if (
-            refmessage.author.id == message.author.id
-            or not refmessage.author not in message.guild.members
+        if refmessage.author.id == message.author.id or not message.guild.get_member(
+            refmessage.author.id
         ):
             return
 
