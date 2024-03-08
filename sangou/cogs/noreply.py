@@ -252,11 +252,15 @@ class Reply(Cog):
         ):
             return
 
-        refmessage = message.reference.resolved
+        try:
+            refmessage = await message.channel.fetch_message(
+                message.reference.message_id
+            )
+        except:
+            return
         if (
-            not refmessage
-            or refmessage.author.id == message.author.id
-            or refmessage.author not in message.guild.members
+            refmessage.author.id == message.author.id
+            or not refmessage.author not in message.guild.members
         ):
             return
 
@@ -266,7 +270,7 @@ class Reply(Cog):
 
         async def wrap_violation(message):
             try:
-                await add_violation(message)
+                await self.add_violation(message)
                 return
             except discord.errors.Forbidden:
                 if not (
@@ -292,7 +296,10 @@ class Reply(Cog):
                 )
 
         # If not reply pinged...
-        if preference == "pleasereplyping" and refmessage.author not in message.mentions:
+        if (
+            preference == "pleasereplyping"
+            and refmessage.author not in message.mentions
+        ):
             await message.add_reaction("<:pleasereplyping:1171017026274340904>")
             pokemsg = await message.reply(content=refmessage.author.mention)
             await self.bot.await_message(message.channel, refmessage.author, 86400)
