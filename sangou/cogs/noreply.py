@@ -319,7 +319,7 @@ class Reply(Cog):
             )
             if (
                 int(message.created_at.timestamp()) - 30
-                <= self.timers[message.guild.id][reference_author.id]
+                <= self.timers[message.guild.id][refmessage.author.id]
             ):
                 await message.add_reaction("<:waitbeforereplyping:1171017084222832671>")
                 await wrap_violation(message)
