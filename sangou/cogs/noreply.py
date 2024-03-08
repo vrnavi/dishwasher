@@ -292,7 +292,7 @@ class Reply(Cog):
                 )
 
         # If not reply pinged...
-        if prefrence == "pleasereplyping" and refmessage.author not in message.mentions:
+        if preference == "pleasereplyping" and refmessage.author not in message.mentions:
             await message.add_reaction("<:pleasereplyping:1171017026274340904>")
             pokemsg = await message.reply(content=refmessage.author.mention)
             await self.bot.await_message(message.channel, refmessage.author, 86400)
