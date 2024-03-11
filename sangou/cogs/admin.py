@@ -453,6 +453,7 @@ class Admin(Cog):
 
         - `avy`
         The avy to set."""
+        avydata = await avy.read()
         await self.bot.user.edit(avatar=avydata)
         return await ctx.reply(content="Done.", mention_author=False)
 
