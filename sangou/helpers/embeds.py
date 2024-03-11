@@ -76,7 +76,7 @@ def mod_embed(embed, target, staff, reason=None):
 
 def createdat_embed(embed, member):
     embed.add_field(
-        name="⏰ Account created:",
+        name="⏰ Account Created",
         value=f"<t:{int(member.created_at.astimezone().timestamp())}:f>\n<t:{int(member.created_at.astimezone().timestamp())}:R>",
         inline=True,
     )
@@ -84,7 +84,7 @@ def createdat_embed(embed, member):
 
 def joinedat_embed(embed, member):
     embed.add_field(
-        name="⏱️ Account joined:",
+        name="⏱️ Account Joined",
         value=f"<t:{int(member.joined_at.astimezone().timestamp())}:f>\n<t:{int(member.joined_at.astimezone().timestamp())}:R>",
         inline=True,
     )

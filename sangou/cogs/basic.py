@@ -978,18 +978,18 @@ class Basic(Cog):
         embed.set_author(name=f"{target}", icon_url=f"{target.display_avatar.url}")
         embed.set_thumbnail(url=f"{target.display_avatar.url}")
         embed.add_field(
-            name="⏰ Account created:",
+            name="⏰ Account Created",
             value=f"<t:{int(target.created_at.astimezone().timestamp())}:f>\n<t:{int(target.created_at.astimezone().timestamp())}:R>",
             inline=True,
         )
         if ctx.guild.get_member(target.id):
             embed.add_field(
-                name="⏱️ Account joined:",
+                name="⏱️ Account Joined",
                 value=f"<t:{int(target.joined_at.astimezone().timestamp())}:f>\n<t:{int(target.joined_at.astimezone().timestamp())}:R>",
                 inline=True,
             )
             embed.add_field(
-                name="🗃️ Joinscore:",
+                name="🗃️ Joinscore",
                 value=f"`{sorted(ctx.guild.members, key=lambda v: v.joined_at).index(target)+1}` of `{len(ctx.guild.members)}`",
                 inline=True,
             )
@@ -1009,18 +1009,18 @@ class Basic(Cog):
                 name = ""
             if emoji or name or details:
                 embed.add_field(
-                    name="💭 Status:", value=f"{emoji}{name}{details}", inline=False
+                    name="💭 Status", value=f"{emoji}{name}{details}", inline=False
                 )
             roles = []
             if len(target.roles) > 1:
-                for index, role in enumerate(target.roles):
+                for role in target.roles:
                     if role.name == "@everyone":
                         continue
                     roles.append("<@&" + str(role.id) + ">")
-                    rolelist = ",".join(reversed(roles))
+                rolelist = ",".join(reversed(roles))
             else:
                 rolelist = "None"
-            embed.add_field(name=f"🎨 Roles:", value=f"{rolelist}", inline=False)
+            embed.add_field(name=f"🎨 Roles", value=rolelist, inline=False)
 
         await ctx.reply(embed=embed, mention_author=False)
 

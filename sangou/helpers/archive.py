@@ -28,7 +28,7 @@ async def log_whole_channel(bot, channel, zip_files=False):
         header = (
             m.author.name
             + (" [BOT] " if m.author.bot else " ")
-            + m.created_at.astimezone().strftime("%m/%d/%Y %H:%M")
+            + m.created_at.astimezone().strftime("%Y/%m/%d %H:%M")
             + "\n"
         )
         if m.type == discord.MessageType.reply:
