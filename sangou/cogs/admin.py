@@ -11,6 +11,7 @@ import random
 import asyncio
 import shutil
 import os
+import base64
 from io import StringIO
 from contextlib import redirect_stdout
 from helpers.embeds import stock_embed
@@ -455,6 +456,29 @@ class Admin(Cog):
         The avy to set."""
         avydata = await avy.read()
         await self.bot.user.edit(avatar=avydata)
+        return await ctx.reply(content="Done.", mention_author=False)
+
+    @commands.check(ismanager)
+    @commands.command()
+    async def setbanner(self, ctx, banner: discord.Attachment):
+        """This sets the banner for a bot.
+
+        Not much else to it.
+
+        - `banner`
+        The banner to set."""
+        bannerdata = await banner.read()
+        headers = {
+            "authorization": "Bot " + config.token,
+            "Content-Type": "application/json",
+        }
+        self.bot.session.patch(
+            "https://discord.com/api/v10/users/@me",
+            json={
+                "banner": f"data:{banner.content_type};base64,{base64.b64encode(bannerdata).decode('utf-8')}"
+            },
+            headers=headers,
+        )
         return await ctx.reply(content="Done.", mention_author=False)
 
     @commands.check(ismanager)
