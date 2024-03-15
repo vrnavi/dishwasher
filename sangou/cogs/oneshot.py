@@ -44,6 +44,7 @@ class OneShot(Cog):
 
         if ctx.guild.owner not in members:
             members.append(ctx.guild.owner)
+        members = sorted(members, key=lambda v: v.joined_at)
 
         embed = stock_embed(self.bot)
         embed.color = color
