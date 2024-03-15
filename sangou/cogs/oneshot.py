@@ -42,6 +42,9 @@ class OneShot(Cog):
             members = list(dict.fromkeys(adminrole.members + modrole.members))
             color = modrole.color
 
+        if ctx.guild.owner not in members:
+            members.append(ctx.guild.owner)
+
         embed = stock_embed(self.bot)
         embed.color = color
         embed.title = "🛠️ Staff List"
@@ -54,7 +57,9 @@ class OneShot(Cog):
         for m in members:
             u = f"{m.mention}"
             if m.is_on_mobile():
-                u = f"{m.mention} 📱"
+                u += " 📱"
+            if m == ctx.guild.owner:
+                u += " 👑"
             if m.raw_status == "online":
                 online.append(u)
             elif m.raw_status == "offline":
