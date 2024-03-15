@@ -71,25 +71,25 @@ class OneShot(Cog):
         if online:
             embed.add_field(
                 name=f"🟢 Online [`{len(online)}`/`{len(members)}`]",
-                value=f"{','.join(online)}",
+                value=f"{', '.join(online)}",
                 inline=False,
             )
         if away:
             embed.add_field(
                 name=f"🟡 Idle [`{len(away)}`/`{len(members)}`]",
-                value=f"{','.join(away)}",
+                value=f"{', '.join(away)}",
                 inline=False,
             )
         if dnd:
             embed.add_field(
                 name=f"🔴 Do Not Disturb [`{len(dnd)}`/`{len(members)}`]",
-                value=f"{','.join(dnd)}",
+                value=f"{', '.join(dnd)}",
                 inline=False,
             )
         if offline:
             embed.add_field(
                 name=f"⚫ Offline [`{len(offline)}`/`{len(members)}`]",
-                value=f"{','.join(offline)}",
+                value=f"{', '.join(offline)}",
                 inline=False,
             )
         await ctx.reply(embed=embed, mention_author=False)
