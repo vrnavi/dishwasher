@@ -472,12 +472,11 @@ class Admin(Cog):
             "authorization": "Bot " + config.token,
             "Content-Type": "application/json",
         }
+        data = {
+            "banner": f"data:{banner.content_type};base64,{base64.b64encode(bannerdata).decode('utf-8')}"
+        }
         async with self.bot.session.patch(
-            "https://discord.com/api/v10/users/@me",
-            json={
-                "banner": f"data:{banner.content_type};base64,{base64.b64encode(bannerdata).decode('utf-8')}"
-            },
-            headers=headers,
+            "https://discord.com/api/v10/users/@me", json=data, headers=headers
         ) as response:
             return await ctx.reply(content=f"Done. {response}", mention_author=False)
 
