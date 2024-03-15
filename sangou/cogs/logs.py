@@ -83,7 +83,7 @@ class Logs2(Cog):
         if not ulog:
             return
 
-        if not after.edited_at():
+        if not after.edited_at:
             # TODO: implement logging for embeds being suppressed
             # this is just a catch-all in case it's a message flag
             # being changed or something (crossposted, embed suppressed,
