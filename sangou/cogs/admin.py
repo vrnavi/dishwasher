@@ -472,14 +472,14 @@ class Admin(Cog):
             "authorization": "Bot " + config.token,
             "Content-Type": "application/json",
         }
-        self.bot.session.patch(
+        async with self.bot.session.patch(
             "https://discord.com/api/v10/users/@me",
             json={
                 "banner": f"data:{banner.content_type};base64,{base64.b64encode(bannerdata).decode('utf-8')}"
             },
             headers=headers,
-        )
-        return await ctx.reply(content="Done.", mention_author=False)
+        ) as response:
+            return await ctx.reply(content=f"Done. {response}", mention_author=False)
 
     @commands.check(ismanager)
     @commands.command(name="eval")
