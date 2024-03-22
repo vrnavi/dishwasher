@@ -16,6 +16,8 @@ class Nopolls(Cog):
         user_id = payload["author"]["id"]
         message_id = payload["id"]
         guild_id = payload.get("guild_id", None)
+        if "poll" not in payload:
+            return
         poll = payload["poll"]
 
         # Ignore not super reactions or DM reaction add events
