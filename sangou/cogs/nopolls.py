@@ -2,13 +2,13 @@ import json
 from typing import Dict
 import discord
 import config
-from discord.ext import commands
+from discord.ext.commands import Cog
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed
 
 
 class Nopolls(Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         self.bot = bot
 
     async def poll_check(self, payload):
