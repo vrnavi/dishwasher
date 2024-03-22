@@ -52,7 +52,7 @@ class Nopolls(Cog):
 
         await mlog.send(embed=embed)
 
-    @commands.Cog.listener()
+    @Cog.listener()
     async def on_socket_raw_receive(self, msg: str):
         msg_json = json.loads(msg)
         opcode = msg_json["op"]
