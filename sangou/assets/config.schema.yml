@@ -169,6 +169,10 @@ properties:
         type: 
           - boolean
           - "null"
+      pollsenable:
+        type:
+          - boolean
+          - "null"
       autoreadableenable:
         type: 
           - boolean

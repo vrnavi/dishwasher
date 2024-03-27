@@ -33,8 +33,17 @@ class Nopolls(Cog):
         author = guild.get_member(int(payload["author"]["id"]))
         message = channel.get_partial_message(int(payload["id"]))
 
-        # Ignore unconfigured guilds is leeching off of burstreacts for now
-        if not get_config(guild.id, "reaction", "burstreactsenable"):
+        staff_roles = [
+            self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole")),
+            self.bot.pull_role(guild, get_config(guild.id, "staff", "adminrole")),
+        ]
+
+        if not get_config(guild.id, "reaction", "pollsenable") or any(
+            (
+                all((staff_roles[0], author in staff_roles[0].members)),
+                all((staff_roles[1], author in staff_roles[1].members)),
+            )
+        ):
             return
 
         await message.delete()

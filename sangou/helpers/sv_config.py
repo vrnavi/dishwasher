@@ -73,6 +73,11 @@ def fill_config(sid):
             else:
                 config["roles"] = None
             config["overrides"] = None
+
+        # * to 6.
+        if config["metadata"]["version"] < 6:
+            config["reaction"]["pollsenable"] = None
+
         set_raw_config(sid, config)
 
     return config
