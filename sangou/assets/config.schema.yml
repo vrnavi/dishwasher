@@ -239,5 +239,5 @@ properties:
     type: object
     properties:
       version:
-        const: 5
+        const: 6
         
