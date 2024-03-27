@@ -689,8 +689,8 @@ class ModToss(Cog):
                 )
                 if staff_channel:
                     embed = stock_embed(self.bot)
-                    author_embed(embed, ctx.author, True)
-                    embed.color = ctx.author.color
+                    author_embed(embed, message.author, True)
+                    embed.color = message.author.color
                     embed.title = "🚷 Toss"
                     embed.description = f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages. {message.jump_url}\n> This toss takes place in {toss_channel.mention}..."
                     createdat_embed(embed, us)

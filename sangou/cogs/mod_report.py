@@ -128,15 +128,13 @@ class ModReport(Cog):
             allowed_mentions=discord.AllowedMentions(replied_user=False),
         )
         ping = False
-        if self.bot.pull_role(
-            guild, get_config(guild.id, "staff", "adminrole")
-        ) or self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole")):
-            role = guild.get_role(
-                self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
-                if self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
-                else self.bot.pull_role(
-                    guild, get_config(guild.id, "staff", "adminrole")
-                )
+        staff_roles = [
+            self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole")),
+            self.bot.pull_role(guild, get_config(guild.id, "staff", "adminrole")),
+        ]
+        if any(staff_roles):
+            staff_role = next(
+                staff_role for staff_role in staff_roles if staff_role is not None
             )
             message = await ctx.send(
                 content="**Would you like ping the Staff?**\nPlease use this for urgent matters!"
@@ -196,7 +194,7 @@ class ModReport(Cog):
         reportlog = get_guildfile(guild.id, "reportlog")
         reportlog[int(datetime.datetime.now().timestamp())] = ctx.author.id
         set_guildfile(guild.id, "reportlog", json.dumps(reportlog))
-        await channel.send(content=role.mention if ping else "", embed=embed)
+        await channel.send(content=staff_role.mention if ping else "", embed=embed)
         await message.delete()
         return await ctx.send(
             content=f"Your report has been{' anonymously' if anon else ''} sent."
