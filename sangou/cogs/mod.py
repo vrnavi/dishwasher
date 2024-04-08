@@ -528,7 +528,7 @@ class Mod(Cog):
             message = await self.bot.wait_for("message", timeout=86400, check=check)
         except asyncio.TimeoutError:
             resp = await ctx.channel.send(content=ctx.author.mention)
-            return await msg.edit(content="🤷⏲️", delete_after=5)
+            return await resp.edit(content="🤷⏲️", delete_after=5)
         resp = await ctx.channel.send(content=ctx.author.mention)
         embed = quote_embed(self.bot, message, ctx.message, "Alerted")
         return await resp.edit(content=None, embed=embed)
