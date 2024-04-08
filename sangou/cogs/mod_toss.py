@@ -722,7 +722,7 @@ class ModToss(Cog):
                             staff_role
                             for staff_role in staff_roles
                             if staff_role is not None
-                        ).mention.mention,
+                        ).mention,
                         embed=embed,
                     )
                     await message.add_reaction("🚷")
