@@ -693,8 +693,8 @@ class ModToss(Cog):
                     embed.color = message.author.color
                     embed.title = "🚷 Toss"
                     embed.description = f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages. {message.jump_url}\n> This toss takes place in {toss_channel.mention}..."
-                    createdat_embed(embed, us)
-                    joinedat_embed(embed, us)
+                    createdat_embed(embed, message.author)
+                    joinedat_embed(embed, message.author)
                     prevlist = []
                     if len(previous_roles) > 0:
                         for role in previous_roles:
