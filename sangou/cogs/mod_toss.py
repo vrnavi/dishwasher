@@ -329,7 +329,7 @@ class ModToss(Cog):
                 )
                 if failed_roles:
                     faillist = []
-                    for role in previous_roles:
+                    for role in failed_roles:
                         faillist.append("<@&" + str(role.id) + ">")
                     faillist = ",".join(reversed(faillist))
                     embed.add_field(
