@@ -38,12 +38,12 @@ class Nopolls(Cog):
             self.bot.pull_role(guild, get_config(guild.id, "staff", "adminrole")),
         ]
 
-        if not get_config(guild.id, "reaction", "pollsenable") or any(
-            (
-                all((staff_roles[0], author in staff_roles[0].members)),
-                all((staff_roles[1], author in staff_roles[1].members)),
-            )
-        ):
+        if get_config(guild.id, "reaction", "pollsenable"):
+            if staff_roles[0] and author in staff_roles[0].members:
+                return
+            elif staff_roles[1] and author in staff_roles[1].members:
+                return
+        else:
             return
 
         await message.delete()
