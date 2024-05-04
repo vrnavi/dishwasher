@@ -78,6 +78,10 @@ def fill_config(sid):
         if config["metadata"]["version"] < 6:
             config["reaction"]["pollsenable"] = None
 
+        # * to 7.
+        if config["metadata"]["version"] < 7:
+            del config["reaction"]["pollsenable"]
+
         set_raw_config(sid, config)
 
     return config

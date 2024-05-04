@@ -83,8 +83,6 @@ reaction:
   translateenable:
   # If the bot may autodelete super reactions.
   burstreactsenable:
-  # If the bot may keep users from using polls.
-  pollsenable:
   # If the bot may automatically adjust names to be readable.
   autoreadableenable:
   # If the bot may randomly laugh at users who have profile effects.

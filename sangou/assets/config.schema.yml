@@ -169,10 +169,6 @@ properties:
         type: 
           - boolean
           - "null"
-      pollsenable:
-        type:
-          - boolean
-          - "null"
       autoreadableenable:
         type: 
           - boolean
@@ -239,5 +235,5 @@ properties:
     type: object
     properties:
       version:
-        const: 6
+        const: 7
         
