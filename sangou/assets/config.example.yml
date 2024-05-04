@@ -112,4 +112,4 @@ overrides:
   #   restrict: false          # Whether to allow (false) or restrict this command to (true) these roles.
 
 metadata:
-  version: 6
+  version: 7
