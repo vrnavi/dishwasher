@@ -152,7 +152,7 @@ class ModToss(Cog):
         if roles:
             for rr in roles:
                 if not rr.is_assignable():
-                    fail_roles.append(rr.name)
+                    fail_roles.append(rr)
                     roles.remove(rr)
             await user.remove_roles(
                 *roles,
