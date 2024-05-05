@@ -50,7 +50,7 @@ class errors(Cog):
         slice_embed(embed, err_tb, "🔍 Traceback", "```", "```")
 
         for m in config.managers:
-            await bot.get_user(m).send(embed=embed)
+            await self.bot.get_user(m).send(embed=embed)
 
     # Receives command errors.
     @Cog.listener()
@@ -65,7 +65,7 @@ class errors(Cog):
                 error.__cause__,
                 error.__cause__.__traceback__,
             )
-            bot.errors.append((err, ctx, ()))
+            self.bot.errors.append((err, ctx, ()))
             await throw_error(error, ctx, 1)
             return await ctx.send(random_msg("err_generic"))
 
@@ -131,9 +131,9 @@ class errors(Cog):
         if args:
             for arg in args:
                 if type(arg) == discord.Message:
-                    ctx = await bot.get_context(arg)
+                    ctx = await self.bot.get_context(arg)
 
-        bot.errors.append((err, ctx, (args, kwargs)))
+        self.bot.errors.append((err, ctx, (args, kwargs)))
         await throw_error(error, ctx, 0)
 
 
