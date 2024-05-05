@@ -15,10 +15,6 @@ class errors(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Testing commands.
-    def badcode(self):
-        test = 1 + "a"
-
     # Responsible for actually DMing the errors.
     async def throw_error(self, err, ctx, err_type):
         embed = stock_embed(self.bot)
@@ -40,17 +36,12 @@ class errors(Cog):
         for m in config.managers:
             await self.bot.get_user(m).send(embed=embed)
 
+    # Testing command.
     @commands.command()
     async def breakcommand(self, ctx):
         if ctx.author.id != 120698901236809728:
             return
         test = 1 + "a"
-
-    @commands.command()
-    async def breakcode(self, ctx):
-        if ctx.author.id != 120698901236809728:
-            return
-        self.badcode()
 
     # Receives command errors.
     @Cog.listener()
