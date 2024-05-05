@@ -66,7 +66,7 @@ class errors(Cog):
                 error.__cause__.__traceback__,
             )
             self.bot.errors.append((err, ctx, ()))
-            await self.throw_error(error, ctx, 1)
+            await self.throw_error(err, ctx, 1)
             return await ctx.send(random_msg("err_generic"))
 
         log.error(
