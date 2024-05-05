@@ -28,12 +28,12 @@ class errors(Cog):
             embed.color = discord.Color.from_str("#FF0000")
             embed.title = "🔥 Code Error"
             embed.description = f"In `{event_method}`!"
-            log.error(f"Code error in {event_method}!\n{err_tb}")
+            self.bot.log.error(f"Code error in {event_method}!\n{err_tb}")
         elif err_type == 1:
             embed.color = discord.Color.from_str("#FFFF00")
             embed.title = "⚠️ Code Error"
             embed.description = f"In command `{ctx.command}`!"
-            log.error(f"Code error in command {ctx.command}!\n{err_tb}")
+            self.bot.log.error(f"Code error in command {ctx.command}!\n{err_tb}")
 
         slice_embed(embed, err_tb, "🔍 Traceback", "```", "```")
 
@@ -69,7 +69,7 @@ class errors(Cog):
             await self.throw_error(err, ctx, 1)
             return await ctx.send(random_msg("err_generic"))
 
-        log.error(
+        self.bot.log.error(
             f"An error occurred with `{ctx.command}` from "
             f"{ctx.message.author} ({ctx.message.author.id}):\n"
             f"{type(error)}: {error}"
