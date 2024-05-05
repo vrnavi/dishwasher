@@ -21,13 +21,13 @@ class errors(Cog):
 
     @commands.command()
     async def breakcommand(self, ctx):
-        if ctx.author != 120698901236809728:
+        if ctx.author.id != 120698901236809728:
             return
         test = 1 + "a"
 
     @commands.command()
     async def breakcode(self, ctx):
-        if ctx.author != 120698901236809728:
+        if ctx.author.id != 120698901236809728:
             return
         self.badcode()
 
