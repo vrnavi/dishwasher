@@ -242,9 +242,13 @@ class ModToss(Cog):
                 content="PLACEHOLDER no staff or toss role configured",
                 mention_author=False,
             )
-        staff_channel = self.bot.pull_channel(
-            ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+        notify_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "toss", "notificationchannel")
         )
+        if not notify_channel:
+            notify_channel = self.bot.pull_channel(
+                ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+            )
         modlog_channel = self.bot.pull_channel(
             ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
         )
@@ -264,7 +268,7 @@ class ModToss(Cog):
             users.remove(us)
         if not users:
             await ctx.message.add_reaction("🚫")
-            return await staff_channel.send(
+            return await notify_channel.send(
                 f"Error in toss command from {ctx.author.mention}...\n- Nobody was tossed.\n```diff"
                 + errors
                 + "\n```\n"
@@ -280,7 +284,7 @@ class ModToss(Cog):
             ]
         ):
             await ctx.message.add_reaction("🚫")
-            return await staff_channel.send(
+            return await notify_channel.send(
                 f"Error in toss command from {ctx.author.mention}...\n- No toss channels available.\n```diff"
                 + errors
                 + "\n```\n"
@@ -307,7 +311,7 @@ class ModToss(Cog):
                 toss_channel.id,
             )
 
-            if staff_channel:
+            if notify_channel:
                 embed = stock_embed(self.bot)
                 author_embed(embed, us, True)
                 embed.color = ctx.author.color
@@ -337,9 +341,9 @@ class ModToss(Cog):
                         value=faillist,
                         inline=False,
                     )
-                await staff_channel.send(embed=embed)
+                await notify_channel.send(embed=embed)
 
-            if modlog_channel:
+            if modlog_channel and modlog_channel != notify_channel:
                 embed = stock_embed(self.bot)
                 embed.color = discord.Color.from_str("#FF0000")
                 embed.title = "🚷 Toss"
@@ -349,8 +353,8 @@ class ModToss(Cog):
 
         await ctx.message.add_reaction("🚷")
 
-        if errors:
-            return await staff_channel.send(
+        if errors and notify_channel:
+            return await notify_channel.send(
                 f"Error in toss command from {ctx.author.mention}...\n- Some users could not be tossed.\n```diff"
                 + errors
                 + "\n```\n"
@@ -404,9 +408,13 @@ class ModToss(Cog):
                 for u in tosses[ctx.channel.name]["tossed"].keys()
             ]
 
-        staff_channel = self.bot.pull_channel(
-            ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+        notify_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "toss", "notificationchannel")
         )
+        if not notify_channel:
+            notify_channel = self.bot.pull_channel(
+                ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+            )
         toss_role = self.bot.pull_role(
             ctx.guild, get_config(ctx.guild.id, "toss", "tossrole")
         )
@@ -463,7 +471,7 @@ class ModToss(Cog):
             await ctx.channel.set_permissions(us, overwrite=None)
 
             output += "\n" + f"{self.username_system(us)} has been untossed."
-            if staff_channel:
+            if notify_channel:
                 embed = stock_embed(self.bot)
                 author_embed(embed, us)
                 embed.color = ctx.author.color
@@ -483,7 +491,7 @@ class ModToss(Cog):
                     value=prevlist,
                     inline=False,
                 )
-                await staff_channel.send(embed=embed)
+                await notify_channel.send(embed=embed)
 
         set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
         self.busy = False
@@ -500,7 +508,7 @@ class ModToss(Cog):
 
         await ctx.reply(content=output, mention_author=False)
 
-    @commands.bot_has_permissions(embed_links=True)
+    @commands.bot_has_permissions(embed_links=True, add_reactions=True)
     @commands.check(ismod)
     @commands.guild_only()
     @commands.command()
@@ -519,9 +527,13 @@ class ModToss(Cog):
                 mention_author=False,
             )
 
-        staff_channel = self.bot.pull_channel(
-            ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+        notify_channel = self.bot.pull_channel(
+            ctx.guild, get_config(ctx.guild.id, "toss", "notificationchannel")
         )
+        if not notify_channel:
+            notify_channel = self.bot.pull_channel(
+                ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
+            )
         log_channel = self.bot.pull_channel(
             ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
         )
@@ -533,12 +545,6 @@ class ModToss(Cog):
             )
 
         if archive:
-            if not staff_channel and not log_channel:
-                return await ctx.reply(
-                    content="You don't have anywhere for me to send the archives to.\nPlease configure either a staff channel or a moderation log channel, and then try again.",
-                    mention_author=False,
-                )
-
             async with ctx.channel.typing():
                 dotraw, dotzip = await log_whole_channel(
                     self.bot, ctx.channel, zip_files=True
@@ -604,8 +610,13 @@ class ModToss(Cog):
                     inline=True,
                 )
 
-            channel = staff_channel if staff_channel else log_channel
-            await channel.send(embed=embed)
+            channel = notify_channel if notify_channel else log_channel
+            if channel:
+                await channel.send(embed=embed)
+            else:
+                await ctx.message.add_reaction("📦")
+                await asyncio.sleep(5)
+
 
         del tosses[ctx.channel.name]
         set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
@@ -633,9 +644,13 @@ class ModToss(Cog):
         ):
             return
 
-        staff_channel = self.bot.pull_channel(
-            message.guild, get_config(message.guild.id, "staff", "staffchannel")
+        notify_channel = self.bot.pull_channel(
+            message.guild, get_config(message.guild.id, "toss", "notificationchannel")
         )
+        if not notify_channel:
+            notify_channel = self.bot.pull_channel(
+                message.guild, get_config(message.guild.id, "staff", "staffchannel")
+            )
         staff_roles = [
             self.bot.pull_role(
                 message.guild, get_config(message.guild.id, "staff", "modrole")
@@ -687,7 +702,7 @@ class ModToss(Cog):
                     message.jump_url,
                     toss_channel.id,
                 )
-                if staff_channel:
+                if notify_channel:
                     embed = stock_embed(self.bot)
                     author_embed(embed, message.author, True)
                     embed.color = message.author.color
@@ -717,7 +732,7 @@ class ModToss(Cog):
                             value=faillist,
                             inline=False,
                         )
-                    await staff_channel.send(
+                    await notify_channel.send(
                         content=next(
                             staff_role
                             for staff_role in staff_roles
@@ -737,9 +752,13 @@ class ModToss(Cog):
         await self.bot.wait_until_ready()
         if not self.enabled(member.guild):
             return
-        staff_channel = self.bot.pull_channel(
-            member.guild, get_config(member.guild.id, "staff", "staffchannel")
+        notify_channel = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "toss", "notificationchannel")
         )
+        if not notify_channel:
+            notify_channel = self.bot.pull_channel(
+                member.guild, get_config(member.guild.id, "staff", "staffchannel")
+            )
 
         tosses = get_tossfile(member.guild.id, "tosses")
         toss_channel = None
@@ -781,8 +800,8 @@ class ModToss(Cog):
         tossmsg = await toss_channel.send(
             content=f"🔁 {self.username_system(member)} rejoined while tossed."
         )
-        if staff_channel:
-            tossmsg = await staff_channel.send(
+        if notify_channel:
+            tossmsg = await notify_channel.send(
                 content=f"🔁 {self.username_system(member)} ({member.id}) rejoined while tossed. Continuing in {toss_channel.mention}..."
             )
         toss_userlog(
@@ -812,9 +831,13 @@ class ModToss(Cog):
         del tosses[session]["tossed"][str(member.id)]
         set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
 
-        staff_channel = self.bot.pull_channel(
-            member.guild, get_config(member.guild.id, "staff", "staffchannel")
+        notify_channel = self.bot.pull_channel(
+            member.guild, get_config(member.guild.id, "toss", "notificationchannel")
         )
+        if not notify_channel:
+            notify_channel = self.bot.pull_channel(
+                member.guild, get_config(member.guild.id, "staff", "staffchannel")
+            )
         toss_channel = self.bot.pull_channel(member.guild, session)
         try:
             await member.guild.fetch_ban(member)
@@ -823,8 +846,8 @@ class ModToss(Cog):
             out = f"🚪 {self.username_system(member)} left while tossed."
         except discord.Forbidden:
             out = f"❓ {self.username_system(member)} was removed from the server.\nI do not have Audit Log permissions to tell why."
-        if staff_channel:
-            await staff_channel.send(out)
+        if notify_channel:
+            await notify_channel.send(out)
         if toss_channel:
             await toss_channel.send(out)
 

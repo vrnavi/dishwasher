@@ -93,6 +93,12 @@ properties:
           - string
           - "null"
         minimum: 100000000000000000
+      notificationchannel:
+        type:
+          - integer
+          - string
+          - "null"
+        minimum: 100000000000000000
       tosschannels:
         type: 
           - array
@@ -235,5 +241,5 @@ properties:
     type: object
     properties:
       version:
-        const: 7
+        const: 8
         

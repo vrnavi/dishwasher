@@ -82,6 +82,10 @@ def fill_config(sid):
         if config["metadata"]["version"] < 7:
             del config["reaction"]["pollsenable"]
 
+        # * to 8.
+        if config["metadata"]["version"] < 8:
+            config["toss"]["notificationchannel"] = config["staff"]["staffchannel"]
+
         set_raw_config(sid, config)
 
     return config

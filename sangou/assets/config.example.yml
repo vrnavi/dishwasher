@@ -50,6 +50,9 @@ toss:
   tossrole: 
   # The category ID for toss sessions to be created in.
   tosscategory: 
+  # The channel that the bot will send its tossing notifications to.
+  # If left blank, the bot will use the Staff channel instead.
+  notificationchannel: 
   # The channel names that the bot will use when creating sessions.
   # You may only have up to 25.
   tosschannels:
@@ -112,4 +115,4 @@ overrides:
   #   restrict: false          # Whether to allow (false) or restrict this command to (true) these roles.
 
 metadata:
-  version: 7
+  version: 8
