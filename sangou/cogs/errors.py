@@ -25,12 +25,12 @@ class errors(Cog):
         err_tb = "\n".join(traceback.format_exception(*err))
 
         if err_type == 0:
-            embed.color = discord.Color.from_str("FF0000")
+            embed.color = discord.Color.from_str("#FF0000")
             embed.title = "🔥 Code Error"
             embed.description = f"In `{event_method}`!"
             log.error(f"Code error in {event_method}!\n{err_tb}")
         elif err_type == 1:
-            embed.color = discord.Color.from_str("FFFF00")
+            embed.color = discord.Color.from_str("#FFFF00")
             embed.title = "⚠️ Code Error"
             embed.description = f"In command `{ctx.command}`!"
             log.error(f"Code error in command {ctx.command}!\n{err_tb}")
