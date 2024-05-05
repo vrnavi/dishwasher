@@ -190,7 +190,7 @@ class ModToss(Cog):
                     embed.add_field(
                         name=f"🟡 #{c}",
                         value="__Empty__\n> Please close the channel.",
-                        inline=False,
+                        inline=True,
                     )
                 else:
                     userlist = "\n".join(
@@ -205,10 +205,10 @@ class ModToss(Cog):
                     embed.add_field(
                         name=f"🔴 #{c}",
                         value=f"__Occupied__\n{userlist}",
-                        inline=False,
+                        inline=True,
                     )
             else:
-                embed.add_field(name=f"🟢 #{c}", value="__Available__", inline=False)
+                embed.add_field(name=f"🟢 #{c}", value="__Available__", inline=True)
         await ctx.reply(embed=embed, mention_author=False)
 
     @commands.cooldown(1, 5, commands.BucketType.guild)
@@ -616,7 +616,6 @@ class ModToss(Cog):
             else:
                 await ctx.message.add_reaction("📦")
                 await asyncio.sleep(5)
-
 
         del tosses[ctx.channel.name]
         set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
