@@ -51,6 +51,10 @@ games:
 
 # === ERRORS ===
 
+err_generic:
+  - "{cry} I'm sorry! Something broke! I let Ren know about it!"
+  - "{dizzy} Something broke while I was doing that... I let Ren know..."
+
 # An error message for commands that can be used in servers only.
 err_serversonly:
   - "{huh} Hey, you have to do this in a server... I don't know what server you want..."

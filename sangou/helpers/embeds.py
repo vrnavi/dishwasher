@@ -12,29 +12,34 @@ def username_system(user):
     return part1 + part2 + part3
 
 
-def split_content(content):
-    return list([content[i : i + 1020] for i in range(0, len(content), 1020)])
+def slice_embed(embed, text, name, prefix="", suffix=""):
+    fragment_list = []
+    size_wo_fix = 1020 - len(prefix) - len(suffix)
+    while len(text) > size_wo_fix:
+        fragment_list.append(f"{prefix}{text[:size_wo_fix]}{suffix}")
+        text = text[size_wo_fix:]
+    fragment_list.append(f"{prefix}{text}{suffix}")
 
-
-def slice_embed(embed, content, name):
-    if not len(content) > 1020:
+    if len(fragment_list) == 1:
         embed.add_field(
             name=name,
-            value=f">>> {content}",
+            value=f">>> {fragment_list[0]}",
             inline=False,
         )
         return
+
     embed.add_field(
         name=name,
-        value="**Message was too long to post!** Split into fragments below.",
+        value="**Too long to post!** Split into fragments below.",
         inline=False,
     )
-    for i, c in enumerate(split_content(content)):
+    for i, c in enumerate(fragment_list):
         embed.add_field(
             name=f"🧩 Fragment {i+1}",
             value=f">>> {c}",
             inline=False,
         )
+    return
 
 
 def author_embed(embed, obj, thumbnail=False):

@@ -12,16 +12,6 @@ class Experiments(Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def cbreak(self, ctx):
-        if (
-            not ctx.guild
-            or ctx.channel.id != 1177090985285668884
-            or ctx.author == 120698901236809728
-        ):
-            return
-        test = 1 + "a"
-
     @commands.bot_has_permissions(embed_links=True)
     @commands.command()
     async def fahstats(self, ctx, teamid: int = 1065045):

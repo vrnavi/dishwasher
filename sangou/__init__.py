@@ -1,3 +1,6 @@
+# This is the initialization file for Sangou. You're meant to run this.
+
+# Imports.
 import os
 import sys
 import logging
@@ -5,17 +8,14 @@ import logging.handlers
 import asyncio
 import aiohttp
 import config
-import random
 import discord
 import datetime
-import traceback
 import itertools
 from discord.ext import commands
 from helpers.datafiles import fill_profile, get_botfile
-from helpers.placeholders import random_msg
 
 
-# File and stdout logs.
+# Logging setup to file and stdout.
 if not os.path.exists("logs"):
     os.makedirs("logs")
 log_format = logging.Formatter(
@@ -31,6 +31,7 @@ log.addHandler(stdout_handler)
 log.addHandler(logfile_handler)
 
 
+# Utility functions.
 def cap_permutations(s):
     # thank you to https://stackoverflow.com/a/11165671
     lu_sequence = ((c.lower(), c.upper()) for c in s)
@@ -61,6 +62,7 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
+# Bot setup.
 intents = discord.Intents.all()
 intents.typing = False
 
@@ -69,7 +71,7 @@ bot = commands.Bot(
     description=config.short_desc,
     owner_ids=set(config.managers),
     intents=intents,
-    enable_debug_events=True,  # for raw events (e.g. super reactions handler)
+    enable_debug_events=True,
 )
 bot.help_command = None
 bot.log = log
@@ -78,6 +80,7 @@ bot.errors = []
 bot.version = "0.4.0"
 
 
+# Bot listeners.
 @bot.event
 async def on_ready():
     bot.app_info = await bot.application_info()
@@ -106,119 +109,6 @@ async def on_command(ctx):
     else:
         log_text += f"in DMs ({ctx.channel.id})"
     log.info(log_text)
-
-
-@bot.event
-async def on_error(event_method, *args, **kwargs):
-    err = sys.exc_info()
-    err_tb = "\n".join(traceback.format_exception(*err))
-    log.error(f"Code error in {event_method}...\n{err_tb}")
-
-    ctx = None
-    if args:
-        for arg in args:
-            if type(arg) == discord.Message:
-                ctx = await bot.get_context(arg)
-    bot.errors.append((err, ctx, (args, kwargs)))
-
-    err_embed = discord.Embed(
-        color=discord.Color.from_str("#FF0000"),
-        title="🔥 Code Error",
-        description=f"In `{event_method}`...",
-        timestamp=datetime.datetime.now(),
-    )
-
-    if len(err_tb) > 1024:
-        split_msg = list([err_tb[i : i + 1020] for i in range(0, len(err_tb), 1020)])
-
-        ctr = 1
-        for f in split_msg:
-            err_embed.add_field(
-                name=f"🧩 Traceback Fragment {ctr}",
-                value=f"```{f}```",
-                inline=False,
-            )
-            ctr += 1
-    else:
-        err_embed.add_field(
-            name=f"🔍 Traceback:",
-            value=f"```{err_tb}```",
-            inline=False,
-        )
-
-    err_embed.set_footer(text=bot.user.name, icon_url=bot.user.display_avatar)
-
-    for m in config.managers:
-        await bot.get_user(m).send(embed=err_embed)
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    # We don't want to log commands that don't exist.
-    if isinstance(error, commands.CommandNotFound):
-        return
-
-    log.error(
-        f"An error occurred with `{ctx.command}` from "
-        f"{ctx.message.author} ({ctx.message.author.id}):\n"
-        f"{type(error)}: {error}"
-    )
-
-    if isinstance(error, commands.CommandInvokeError) and (
-        "Cannot send messages to this user" not in str(error)
-    ):
-        err = (type(error.__cause__), error.__cause__, error.__cause__.__traceback__)
-        err_tb = "\n".join(traceback.format_exception(*err, chain=False))
-        bot.errors.append((err, ctx, ()))
-        log.error(f"Code error in command {ctx.command}...\n{err_tb}")
-        return await ctx.send(
-            "This command broke!"
-            + f"\nPaging {ctx.guild.get_member(120698901236809728).mention}!"
-            if ctx.guild and ctx.guild.get_member(120698901236809728)
-            else "\nPlease get help in the support server!"
-        )
-    elif isinstance(error, commands.NoPrivateMessage):
-        return await ctx.send(random_msg("err_serversonly"))
-    elif isinstance(error, commands.PrivateMessageOnly):
-        return await ctx.send(random_msg("err_dmsonly"))
-    elif (
-        isinstance(error, commands.InvalidEndOfQuotedStringError)
-        or isinstance(error, commands.ExpectedClosingQuoteError)
-        or isinstance(error, commands.UnexpectedQuoteError)
-    ):
-        return await ctx.send(random_msg("err_quotes"))
-    elif isinstance(error, commands.MissingRole):
-        return await ctx.send(random_msg("err_role") + f"```{error.missing_role}```")
-    elif isinstance(error, commands.BotMissingPermissions):
-        roles_needed = "\n+ ".join(error.missing_permissions)
-        return await ctx.send(random_msg("err_perms") + f"```diff\n+ {roles_needed}```")
-    elif isinstance(error, commands.CommandOnCooldown):
-        return await ctx.send(
-            random_msg("err_cooldown") + f"{error.retry_after:.1f} seconds."
-        )
-    elif isinstance(error, commands.CheckFailure):
-        return await ctx.send(random_msg("err_checkfail"))
-    elif isinstance(error, commands.MissingRequiredAttachment):
-        return await ctx.send(random_msg("err_noattachment"))
-    elif isinstance(error, commands.UserNotFound):
-        return await ctx.send(random_msg("err_usernotfound"))
-    elif isinstance(error, commands.MemberNotFound):
-        return await ctx.send(random_msg("err_membernotfound"))
-    elif isinstance(error, commands.CommandInvokeError) and (
-        "Cannot send messages to this user" in str(error)
-    ):
-        return await ctx.send(random_msg("err_dmfail"))
-
-    help_text = (
-        f"Usage of this command is: ```{ctx.prefix}{ctx.command.qualified_name} "
-        f"{ctx.command.signature}```\nPlease see `{ctx.prefix}help"
-        f"` for more info."
-    )
-
-    if isinstance(error, commands.BadArgument):
-        return await ctx.send(f"You gave incorrect arguments. {help_text}")
-    elif isinstance(error, commands.MissingRequiredArgument):
-        return await ctx.send(f"You gave incomplete arguments. {help_text}")
 
 
 @bot.event
@@ -267,6 +157,7 @@ async def on_message(message):
     await bot.invoke(ctx)
 
 
+# Bot startup.
 async def main():
     async with bot:
         for cog in [

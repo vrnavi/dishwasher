@@ -3,11 +3,9 @@ import traceback
 import datetime
 import discord
 import time
-import os
 import json
 import math
 import parsedatetime
-import random
 from helpers.datafiles import get_guildfile, set_guildfile
 from helpers.sv_config import get_config
 from helpers.placeholders import random_msg
@@ -17,7 +15,6 @@ from discord.ext.commands import Cog
 class Common(Cog):
     def __init__(self, bot):
         self.bot = bot
-
         self.bot.async_call_shell = self.async_call_shell
         self.bot.slice_message = self.slice_message
         self.bot.hex_to_int = self.hex_to_int
@@ -260,13 +257,13 @@ class Common(Cog):
     # 2000 is maximum limit of discord
     def slice_message(self, text, size=2000, prefix="", suffix=""):
         """Slices a message into multiple messages"""
-        reply_list = []
+        fragment_list = []
         size_wo_fix = size - len(prefix) - len(suffix)
         while len(text) > size_wo_fix:
-            reply_list.append(f"{prefix}{text[:size_wo_fix]}{suffix}")
+            fragment_list.append(f"{prefix}{text[:size_wo_fix]}{suffix}")
             text = text[size_wo_fix:]
-        reply_list.append(f"{prefix}{text}{suffix}")
-        return reply_list
+        fragment_list.append(f"{prefix}{text}{suffix}")
+        return fragment_list
 
     async def async_call_shell(
         self, shell_command: str, inc_stdout=True, inc_stderr=True
