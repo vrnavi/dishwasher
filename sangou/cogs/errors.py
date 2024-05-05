@@ -16,7 +16,7 @@ class errors(Cog):
         self.bot = bot
 
     # Testing commands.
-    def badcode():
+    def badcode(self):
         test = 1 + "a"
 
     @commands.command()
@@ -32,7 +32,7 @@ class errors(Cog):
         self.badcode()
 
     # Responsible for actually DMing the errors.
-    async def throw_error(err, ctx, err_type):
+    async def throw_error(self, err, ctx, err_type):
         embed = stock_embed(self.bot)
         err_tb = "\n".join(traceback.format_exception(*err))
 
@@ -54,7 +54,7 @@ class errors(Cog):
 
     # Receives command errors.
     @Cog.listener()
-    async def on_command_error(ctx, error):
+    async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
             return
         elif isinstance(
@@ -124,7 +124,7 @@ class errors(Cog):
 
     # Receives code errors.
     @Cog.listener()
-    async def on_error(event_method, *args, **kwargs):
+    async def on_error(self, event_method, *args, **kwargs):
         err = sys.exc_info()
 
         ctx = None
