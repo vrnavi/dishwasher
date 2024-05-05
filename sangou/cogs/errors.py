@@ -66,7 +66,7 @@ class errors(Cog):
                 error.__cause__.__traceback__,
             )
             self.bot.errors.append((err, ctx, ()))
-            await throw_error(error, ctx, 1)
+            await self.throw_error(error, ctx, 1)
             return await ctx.send(random_msg("err_generic"))
 
         log.error(
@@ -134,7 +134,7 @@ class errors(Cog):
                     ctx = await self.bot.get_context(arg)
 
         self.bot.errors.append((err, ctx, (args, kwargs)))
-        await throw_error(error, ctx, 0)
+        await self.throw_error(error, ctx, 0)
 
 
 async def setup(bot):
