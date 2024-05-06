@@ -666,7 +666,7 @@ class Basic(Cog):
 
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.command()
-    async def extract(self, ctx, file: discord.Attachment | str):
+    async def extract(self, ctx, file: typing.Union[discord.Attachment, str]):
         """Extracts text from a file or link.
 
         It will not be happy if you give it a full webpage.
