@@ -666,7 +666,9 @@ class Basic(Cog):
 
     @commands.cooldown(1, 5, commands.BucketType.guild)
     @commands.command()
-    async def extract(self, ctx, file: typing.Union[discord.Attachment, str]):
+    async def extract(
+        self, ctx, file: typing.Optional[discord.Attachment], url: str = None
+    ):
         """Extracts text from a file or link.
 
         It will not be happy if you give it a full webpage.
@@ -674,7 +676,7 @@ class Basic(Cog):
 
         - `file`
         The text file or link to a text file that you want to read."""
-        if isinstance(file, discord.Attachment):
+        if file:
             if file.size / 1048576 > 5:
                 return await ctx.reply(
                     content="<:sangoubaka:1182927626919223376> I refuse to open a file that big!",
@@ -682,9 +684,9 @@ class Basic(Cog):
                 )
             content = await file.read()
             content.decode("utf-8")
-        elif isinstance(file, str):
+        elif url:
             try:
-                content = await self.bot.aioget(file)
+                content = await self.bot.aioget(url)
             except:
                 await ctx.reply(
                     content="PLACEHOLDER connection error", mention_author=False
