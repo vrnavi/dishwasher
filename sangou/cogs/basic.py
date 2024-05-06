@@ -676,7 +676,7 @@ class Basic(Cog):
 
         - `file`
         The text file or link to a text file that you want to read."""
-        if not file and not str:
+        if not file and not url:
             raise commands.MissingRequiredArgument
         if file:
             if file.size / 1048576 > 5:
