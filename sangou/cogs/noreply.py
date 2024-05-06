@@ -291,7 +291,7 @@ class Reply(Cog):
         except:
             return
 
-        preference = self.check_override(message)
+        preference = self.check_override(refmessage)
         if not preference:
             preference = fill_profile(refmessage.author.id)["replypref"]
             if not preference:
