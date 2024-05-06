@@ -689,7 +689,7 @@ class Basic(Cog):
                 await ctx.reply(
                     content="PLACEHOLDER connection error", mention_author=False
                 )
-        split_content = self.bot.split_content(content, 2000, "```", "```")
+        split_content = self.bot.slice_message(content, 2000, "```", "```")
         for index, content_frag in enumerate(split_content):
             if index == 5:
                 return await ctx.send(
