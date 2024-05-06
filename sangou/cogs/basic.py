@@ -688,7 +688,7 @@ class Basic(Cog):
             try:
                 content = await self.bot.aioget(url)
             except:
-                await ctx.reply(
+                return await ctx.reply(
                     content="PLACEHOLDER connection error", mention_author=False
                 )
         split_content = self.bot.slice_message(content, 2000, "```", "```")
