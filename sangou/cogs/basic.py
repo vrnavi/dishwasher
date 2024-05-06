@@ -683,7 +683,7 @@ class Basic(Cog):
                     mention_author=False,
                 )
             content = await file.read()
-            content.decode("utf-8")
+            content = content.decode("utf-8")
         elif url:
             try:
                 content = await self.bot.aioget(url)
