@@ -7,7 +7,7 @@ from helpers.sv_config import get_config
 from helpers.embeds import stock_embed
 
 
-class OneShot(Cog):
+class specific(Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -154,6 +154,20 @@ class OneShot(Cog):
                 content="You are unable to use this command.", mention_author=False
             )
 
+    @Cog.listener()
+    async def on_message(self, message):
+        await self.bot.wait_until_ready()
+        if (
+            not message.guild
+            or message.guild.id != 1236369655212412968
+            or message.channel.id != 1236417696741199873
+        ):
+            return
+        general = await message.guild.fetch_channel(1236370991857532990)
+        return await general.send(
+            f"<:sangouspeak:1182927625161809931> {message.author.display_name} posted a new announcement in <#1236417696741199873>.\n<:sangoueat:1182927631977558086> Just letting you know."
+        )
+
 
 async def setup(bot):
-    await bot.add_cog(OneShot(bot))
+    await bot.add_cog(specific(bot))

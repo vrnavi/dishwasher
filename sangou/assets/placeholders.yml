@@ -51,6 +51,7 @@ games:
 
 # === ERRORS ===
 
+# A generic error message.
 err_generic:
   - "{cry} I'm sorry! Something broke! I let Ren know about it!"
   - "{dizzy} Something broke while I was doing that... I let Ren know..."
