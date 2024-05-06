@@ -674,6 +674,9 @@ class Basic(Cog):
 
         - `file`
         The text file or link to a text file that you want to read."""
+        await ctx.send(
+            str(type(file)) + "\n" + str(isinstance(file, discord.Attachment))
+        )
         if isinstance(file, discord.Attachment):
             if file.size / 1048576 > 5:
                 return await ctx.reply(
