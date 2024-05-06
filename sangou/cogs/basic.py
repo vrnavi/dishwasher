@@ -684,7 +684,7 @@ class Basic(Cog):
             content.decode("utf-8")
         elif type(file) == "str":
             try:
-                content = self.bot.aioget(file)
+                content = await self.bot.aioget(file)
             except:
                 await ctx.reply(
                     content="PLACEHOLDER connection error", mention_author=False
