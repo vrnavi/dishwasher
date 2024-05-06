@@ -677,7 +677,10 @@ class Basic(Cog):
         - `file`
         The text file or link to a text file that you want to read."""
         if not file and not url:
-            raise commands.MissingRequiredArgument
+            return await ctx.reply(
+                content="<:sangoubruh:1182927627388989491> You need to give a file, or a URL.",
+                mention_author=False,
+            )
         if file:
             if file.size / 1048576 > 5:
                 return await ctx.reply(
