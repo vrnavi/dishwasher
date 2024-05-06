@@ -664,6 +664,39 @@ class Basic(Cog):
                 mention_author=False,
             )
 
+    @commands.cooldown(1, 5, commands.BucketType.guild)
+    @commands.command()
+    async def extract(self, ctx, file: typing.Union[discord.Attachment, str]):
+        """Extracts text from a file or link.
+
+        It will not be happy if you give it a full webpage.
+        You'll wind up with a lot of HTML. Be aware!
+
+        - `file`
+        The text file or link to a text file that you want to read."""
+        if isinstance(file, discord.Attachment):
+            if file.size / 1048576 > 5:
+                return await ctx.reply(
+                    content="<:sangoubaka:1182927626919223376> I refuse to open a file that big!",
+                    mention_author=False,
+                )
+            content = await file.read()
+            content.decode("utf-8")
+        elif type(file) == "str":
+            try:
+                content = self.bot.aioget(file)
+            except:
+                await ctx.reply(
+                    content="PLACEHOLDER connection error", mention_author=False
+                )
+        split_content = self.bot.split_content(content, 2000, "```", "```")
+        for index, content_frag in enumerate(split_content):
+            if index == 5:
+                return await ctx.send(
+                    "<:sangoubruh:1182927627388989491> There's more, but I'm not spamming the chat."
+                )
+            await ctx.send(content_frag)
+
     @commands.command()
     async def help(self, ctx, *, command=None):
         """This is Sangou's help command.
