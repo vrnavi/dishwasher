@@ -29,6 +29,24 @@ class Reply(Cog):
     def cog_unload(self):
         self.counttimer.cancel()
 
+    def check_override(self, message):
+        if not message.guild:
+            return None
+        setting_roles = [
+            (self.bot.pull_role(message.guild, "Please Reply Ping"), "pleasereplyping"),
+            (
+                self.bot.pull_role(message.guild, "Wait Before Reply Ping"),
+                "waitbeforereplyping",
+            ),
+            (self.bot.pull_role(message.guild, "No Reply Pings"), "noreplyping"),
+        ]
+        for role, identifier in setting_roles:
+            if role == None:
+                continue
+            elif role in message.author.roles:
+                return identifier
+        return None
+
     async def add_violation(self, message):
         staff_roles = [
             self.bot.pull_role(
@@ -154,6 +172,13 @@ class Reply(Cog):
         See the [documentation](https://3gou.0ccu.lt/as-a-user/reply-ping-preferences/) for more info.
 
         No arguments."""
+        override = self.check_override(ctx.message)
+        if override:
+            return await ctx.reply(
+                content="<:sangouspeak:1182927625161809931> You already have an indicator role, you don't need to set your preferences here.",
+                mention_author=False,
+            )
+
         profile = fill_profile(ctx.author.id)
         embed = stock_embed(self.bot)
         embed.title = "🏓 Your reply preference..."
@@ -258,16 +283,19 @@ class Reply(Cog):
             refmessage = await message.channel.fetch_message(
                 message.reference.message_id
             )
+            if (
+                refmessage.author.id == message.author.id
+                or not message.guild.get_member(refmessage.author.id)
+            ):
+                return
         except:
             return
-        if refmessage.author.id == message.author.id or not message.guild.get_member(
-            refmessage.author.id
-        ):
-            return
 
-        preference = fill_profile(refmessage.author.id)["replypref"]
+        preference = self.check_override(message)
         if not preference:
-            return
+            preference = fill_profile(refmessage.author.id)["replypref"]
+            if not preference:
+                return
 
         async def wrap_violation(message):
             try:
