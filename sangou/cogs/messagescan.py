@@ -1,5 +1,4 @@
 import re
-import config
 import discord
 import datetime
 import asyncio
@@ -182,7 +181,9 @@ class Messagescan(Cog):
         There's not much more to this.
 
         No arguments."""
-        translation = deepl.Translator(config.deepl_key, send_platform_info=False)
+        translation = deepl.Translator(
+            self.bot.config.deepl_key, send_platform_info=False
+        )
         usage = translation.get_usage()
 
         await ctx.send(
@@ -385,9 +386,9 @@ class Messagescan(Cog):
         ):
             # DeepL
             dloutput = None
-            if config.deepl_key:
+            if self.bot.config.deepl_key:
                 deepltranslation = deepl.Translator(
-                    config.deepl_key, send_platform_info=False
+                    self.bot.config.deepl_key, send_platform_info=False
                 )
                 usage = deepltranslation.get_usage()
                 if usage.character.valid:

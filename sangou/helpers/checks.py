@@ -1,5 +1,4 @@
 import discord
-import config
 from discord.ext import commands
 from helpers.sv_config import get_config, get_raw_config
 

@@ -6,7 +6,6 @@ import inspect
 import re
 import datetime
 import json
-import config
 import random
 import asyncio
 import shutil
@@ -469,7 +468,7 @@ class Admin(Cog):
         The banner to set."""
         bannerdata = await banner.read()
         headers = {
-            "authorization": "Bot " + config.token,
+            "authorization": "Bot " + self.bot.config.token,
             "Content-Type": "application/json",
         }
         data = {
@@ -734,7 +733,7 @@ class Admin(Cog):
     @Cog.listener()
     async def on_guild_join(self, guild):
         msgs = []
-        for m in config.managers:
+        for m in self.bot.config.managers:
             msg = await self.bot.get_user(m).send(
                 content=f"{self.bot.user.name} joined `{guild}` with `{len(guild.members)}` members.\nCheck the checkmark within an hour to leave."
             )
@@ -743,7 +742,7 @@ class Admin(Cog):
 
         def check(r, u):
             return (
-                u.id in config.managers
+                u.id in self.bot.config.managers
                 and str(r.emoji) == "✅"
                 and type(r.message.channel) == discord.channel.DMChannel
             )

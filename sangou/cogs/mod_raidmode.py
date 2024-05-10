@@ -1,6 +1,5 @@
 from discord.ext import commands
 from discord.ext.commands import Cog
-import config
 import discord
 import datetime
 import asyncio

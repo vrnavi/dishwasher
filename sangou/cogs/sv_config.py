@@ -2,7 +2,6 @@ import json
 import os
 import discord
 import datetime
-import config
 import asyncio
 import yaml
 from helpers.checks import isadmin, ismanager

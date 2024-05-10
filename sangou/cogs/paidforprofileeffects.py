@@ -1,7 +1,6 @@
 import json
 from typing import Dict
 import discord
-import config
 import random
 from discord.ext import commands
 from discord.ext.commands import Cog

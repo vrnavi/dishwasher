@@ -2,7 +2,6 @@ import discord
 from discord.ext.commands import Cog
 import json
 import re
-import config
 from datetime import datetime
 from datetime import timezone
 from helpers.sv_config import get_config

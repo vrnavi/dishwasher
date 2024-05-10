@@ -3,7 +3,6 @@ from discord.ext.commands import Cog
 from discord.ext import commands, tasks
 import json
 import re
-import config
 import datetime
 import asyncio
 from unidecode import unidecode

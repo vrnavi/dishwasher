@@ -1,4 +1,3 @@
-import config
 import datetime
 import discord
 import json

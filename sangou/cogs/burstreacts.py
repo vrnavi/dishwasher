@@ -1,7 +1,6 @@
 import json
 from typing import Dict
 import discord
-import config
 from discord.ext import commands
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed

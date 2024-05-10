@@ -3,7 +3,6 @@ from discord.ext.commands import Cog
 from discord.ext import commands, tasks
 import json
 import re
-import config
 import datetime
 import asyncio
 from helpers.datafiles import get_guildfile, get_userfile

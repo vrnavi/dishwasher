@@ -1,4 +1,3 @@
-import config
 import time
 import discord
 import traceback
@@ -63,7 +62,7 @@ class Timer(Cog):
         await ctx.send(f"{ctx.author.mention}: Deleted!")
 
     async def do_jobs(self, ctab, jobtype, timestamp):
-        log_channel = self.bot.get_channel(config.logchannel)
+        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         for job_name in ctab[jobtype][timestamp]:
             try:
                 job_details = ctab[jobtype][timestamp][job_name]
@@ -103,7 +102,7 @@ class Timer(Cog):
     @tasks.loop(minutes=1)
     async def minutely(self):
         await self.bot.wait_until_ready()
-        log_channel = self.bot.get_channel(config.logchannel)
+        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         try:
             ctab = get_botfile("timers")
             timestamp = time.time()
@@ -120,7 +119,7 @@ class Timer(Cog):
     @tasks.loop(hours=1)
     async def hourly(self):
         await self.bot.wait_until_ready()
-        log_channel = self.bot.get_channel(config.logchannel)
+        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         try:
             # Change playing status.
             activity = discord.Activity(name=random.choice(game_names), type=game_type)
@@ -134,10 +133,10 @@ class Timer(Cog):
     @tasks.loop(hours=24)
     async def daily(self):
         await self.bot.wait_until_ready()
-        log_channel = self.bot.get_channel(config.logchannel)
+        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         try:
             shutil.make_archive("data_backup", "zip", "data")
-            for m in config.managers:
+            for m in self.bot.config.managers:
                 await self.bot.get_user(m).send(
                     content="Daily backups:",
                     file=discord.File("data_backup.zip"),

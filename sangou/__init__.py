@@ -84,16 +84,12 @@ bot.version = "0.4.0"
 @bot.event
 async def on_ready():
     bot.app_info = await bot.application_info()
-
-    log.info(
-        f"\nLogged in as: {bot.user.name} - {bot.user.id}"
-        f"\ndpy version: {discord.__version__}"
-        f"\nbot version: {bot.version}"
-        "\n"
-    )
-
     bot.session = aiohttp.ClientSession()
     bot.start_timestamp = int(datetime.datetime.now().timestamp())
+
+    log.info(
+        f"\nSangou version {bot.version} is logged in as {bot.user} ({bot.user.id}) running discord.py version {discord.__version__}.\n"
+    )
 
 
 @bot.event

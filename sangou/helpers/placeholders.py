@@ -1,5 +1,4 @@
 import random
-import config
 import discord
 import datetime
 import yaml

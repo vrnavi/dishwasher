@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-import config
 import datetime
 import asyncio
 import typing
@@ -965,7 +964,7 @@ class Mod(Cog):
         - `text`
         The text to repeat."""
         output = await channel.send(text)
-        if ctx.author.id in config.managers:
+        if ctx.author.id in self.bot.config.managers:
             output.author = ctx.author
             newctx = await self.bot.get_context(output)
             newctx.message.author = ctx.guild.me
@@ -991,7 +990,7 @@ class Mod(Cog):
         - `text`
         The text to repeat."""
         output = await message.reply(content=f"{text}", mention_author=False)
-        if ctx.author.id in config.managers:
+        if ctx.author.id in self.bot.config.managers:
             output.author = ctx.author
             newctx = await self.bot.get_context(output)
             newctx.message.author = ctx.guild.me

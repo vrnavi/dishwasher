@@ -1,7 +1,6 @@
 # This cog handles errors.
 
 # Imports.
-import config
 import discord
 import sys
 import traceback
@@ -33,7 +32,7 @@ class errors(Cog):
 
         slice_embed(embed, err_tb, "🔍 Traceback", "```", "```")
 
-        for m in config.managers:
+        for m in self.bot.config.managers:
             await self.bot.get_user(m).send(embed=embed)
 
     # Testing command.

@@ -1,6 +1,5 @@
 import json
 import discord
-import config
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.datafiles import get_userfile, fill_profile, set_userfile
@@ -30,7 +29,9 @@ class Shortcuts(Cog):
         author_embed(embed, ctx.author)
         profile = fill_profile(ctx.author.id)
         userprefixes = profile["prefixes"]
-        maxprefixes = config.maxprefixes if config.maxprefixes <= 25 else 25
+        maxprefixes = (
+            self.bot.config.maxprefixes if self.bot.config.maxprefixes <= 25 else 25
+        )
 
         for i in range(
             max(maxprefixes, len(userprefixes))
@@ -52,14 +53,16 @@ class Shortcuts(Cog):
         - `arg`
         The prefix to add."""
         profile = fill_profile(ctx.author.id)
-        maxprefixes = config.maxprefixes if config.maxprefixes <= 25 else 25
+        maxprefixes = (
+            self.bot.config.maxprefixes if self.bot.config.maxprefixes <= 25 else 25
+        )
         if not len(profile["prefixes"]) >= maxprefixes:
             profile["prefixes"].append(f"{arg} ")
             set_userfile(ctx.author.id, "profile", json.dumps(profile))
             await ctx.reply(content="Prefix added.", mention_author=False)
         else:
             await ctx.reply(
-                content=f"You have reached your limit of `{config.maxprefixes}` prefixes.",
+                content=f"You have reached your limit of `{self.bot.config.maxprefixes}` prefixes.",
                 mention_author=False,
             )
 
@@ -96,7 +99,9 @@ class Shortcuts(Cog):
         author_embed(embed, ctx.author)
         profile = fill_profile(ctx.author.id)
         useraliases = profile["aliases"]
-        maxaliases = config.maxaliases if config.maxaliases <= 25 else 25
+        maxaliases = (
+            self.bot.config.maxaliases if self.bot.config.maxaliases <= 25 else 25
+        )
 
         for i in range(
             max(maxaliases, len(useraliases))
@@ -135,10 +140,12 @@ class Shortcuts(Cog):
                 content=f"`{alias}` is already a command.",
                 mention_author=False,
             )
-        maxaliases = config.maxaliases if config.maxaliases <= 25 else 25
+        maxaliases = (
+            self.bot.config.maxaliases if self.bot.config.maxaliases <= 25 else 25
+        )
         if len(profile["aliases"]) >= maxaliases:
             return await ctx.reply(
-                content=f"You have reached your limit of `{config.maxaliases}` aliases.",
+                content=f"You have reached your limit of `{self.bot.config.maxaliases}` aliases.",
                 mention_author=False,
             )
 
