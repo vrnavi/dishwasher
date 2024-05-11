@@ -124,7 +124,7 @@ class errors(Cog):
                     ctx = await self.bot.get_context(arg)
 
         self.bot.errors.append((err, ctx, (args, kwargs)))
-        await self.throw_error(error, ctx, 0)
+        await self.throw_error(err, ctx, 0)
 
 
 async def setup(bot):
