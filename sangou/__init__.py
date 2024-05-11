@@ -83,27 +83,23 @@ bot.version = "0.4.0"
 # Bot listeners.
 @bot.event
 async def on_ready():
-    bot.app_info = await bot.application_info()
     bot.session = aiohttp.ClientSession()
     bot.start_timestamp = int(datetime.datetime.now().timestamp())
-
     log.info(
-        f"\nSangou version {bot.version} is logged in as {bot.user} ({bot.user.id}) running discord.py version {discord.__version__}.\n"
+        f"Sangou version {bot.version} is logged in as {bot.user} ({bot.user.id}) running discord.py version {discord.__version__}"
     )
 
 
 @bot.event
 async def on_command(ctx):
     log_text = (
-        f"{ctx.message.author} ({ctx.message.author.id}): " f'"{ctx.message.content}" '
-    )
-    if ctx.guild:  # was too long for tertiary if
-        log_text += (
-            f'in "{ctx.channel.name}" ({ctx.channel.id}) '
-            f'on "{ctx.guild.name}" ({ctx.guild.id})'
+        f'{ctx.message.author} ({ctx.message.author.id}) used "{ctx.message.content}"'
+        + (
+            f'in "#{ctx.channel.name}" ({ctx.channel.id}) on "{ctx.guild.name}" ({ctx.guild.id})'
+            if ctx.guild
+            else f"in DMs ({ctx.channel.id})"
         )
-    else:
-        log_text += f"in DMs ({ctx.channel.id})"
+    )
     log.info(log_text)
 
 
