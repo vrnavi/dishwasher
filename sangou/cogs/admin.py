@@ -500,7 +500,6 @@ class Admin(Cog):
                 "guild": ctx.guild,
                 "channel": ctx.message.channel,
                 "author": ctx.message.author,
-                "config": config,
                 # modules
                 "discord": discord,
                 "commands": commands,
@@ -565,7 +564,6 @@ class Admin(Cog):
                 "guild": ctx.guild,
                 "channel": ctx.message.channel,
                 "author": ctx.message.author,
-                "config": config,
                 # modules
                 "discord": discord,
                 "commands": commands,
