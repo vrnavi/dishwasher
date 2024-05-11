@@ -15,20 +15,20 @@ class errors(Cog):
         self.bot = bot
 
     # Responsible for actually DMing the errors.
-    async def throw_error(self, err, ctx, err_type):
+    async def throw_error(self, err, func, err_type):
         embed = stock_embed(self.bot)
         err_tb = "\n".join(traceback.format_exception(*err))
 
         if err_type == 0:
             embed.color = discord.Color.from_str("#FF0000")
             embed.title = "🔥 Code Error"
-            embed.description = f"In `{event_method}`!"
-            self.bot.log.error(f"Code error in {event_method}!\n{err_tb}")
+            embed.description = f"In `{func}`!"
+            self.bot.log.error(f"Code error in {func}!\n{err_tb}")
         elif err_type == 1:
             embed.color = discord.Color.from_str("#FFFF00")
             embed.title = "⚠️ Code Error"
-            embed.description = f"In command `{ctx.command}`!"
-            self.bot.log.error(f"Code error in command {ctx.command}!\n{err_tb}")
+            embed.description = f"In command `{func}`!"
+            self.bot.log.error(f"Code error in command {func}!\n{err_tb}")
 
         slice_embed(embed, err_tb, "🔍 Traceback", "```", "```")
 
@@ -56,7 +56,7 @@ class errors(Cog):
                 error.__cause__.__traceback__,
             )
             self.bot.errors.append((err, ctx, ()))
-            await self.throw_error(err, ctx, 1)
+            await self.throw_error(err, ctx.command, 1)
             return await ctx.send(random_msg("err_generic"))
 
         self.bot.log.error(
@@ -124,7 +124,7 @@ class errors(Cog):
                     ctx = await self.bot.get_context(arg)
 
         self.bot.errors.append((err, ctx, (args, kwargs)))
-        await self.throw_error(err, ctx, 0)
+        await self.throw_error(err, ctx if ctx else event_method, 0)
 
 
 async def setup(bot):
