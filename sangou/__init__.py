@@ -93,7 +93,7 @@ async def on_ready():
 @bot.event
 async def on_command(ctx):
     log_text = (
-        f'{ctx.message.author} ({ctx.message.author.id}) used "{ctx.message.content}"'
+        f'{ctx.message.author} ({ctx.message.author.id}) used "{ctx.message.content}" '
         + (
             f'in "#{ctx.channel.name}" ({ctx.channel.id}) on "{ctx.guild.name}" ({ctx.guild.id})'
             if ctx.guild
