@@ -13,6 +13,7 @@ import datetime
 import itertools
 from discord.ext import commands
 from helpers.datafiles import fill_profile, get_botfile
+from helpers.errors import handle_code_error, handle_command_error
 
 
 # Logging setup to file and stdout.
@@ -147,6 +148,16 @@ async def on_message(message):
                 if ctx.valid:
                     break
     await bot.invoke(ctx)
+
+
+@bot.event
+async def on_error(event_method, *args, **kwargs):
+    handle_code_error(bot, event_method, args, kwargs)
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    handle_command_error(bot, ctx, error)
 
 
 # Bot startup.
