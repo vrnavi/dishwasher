@@ -152,12 +152,12 @@ async def on_message(message):
 
 @bot.event
 async def on_error(event_method, *args, **kwargs):
-    handle_code_error(bot, event_method, args, kwargs)
+    await handle_code_error(bot, event_method, args, kwargs)
 
 
 @bot.event
 async def on_command_error(ctx, error):
-    handle_command_error(bot, ctx, error)
+    await handle_command_error(bot, ctx, error)
 
 
 # Bot startup.
