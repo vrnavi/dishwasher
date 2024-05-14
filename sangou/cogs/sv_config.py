@@ -88,10 +88,14 @@ class sv_config(Cog):
         try:
             conffile = await attachment.read()
             config = yaml.safe_load(conffile.decode("utf-8"))
-        except:
-            return await ctx.reply(
-                content="Malformed config.yml error.", mention_author=False
-            )
+        except yaml.YAMLError as exc:
+            error = "Your config is bad!\n```"
+            if hasattr(exc, "problem_mark"):
+                error += str(exc.problem_mark) + "\n  " + str(exc.problem)
+                if exc.context != None:
+                    error += " " + str(exc.context)
+                error += "```"
+            return await ctx.reply(content=error, mention_author=False)
         try:
             validate_config(config)
         except Exception as e:
