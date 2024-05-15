@@ -142,8 +142,11 @@ class Common(Cog):
 
     async def get_used_invites(self, member: discord.Member):
         """Handles the invite correlation stuff"""
+        try:
+            real_invites = await member.guild.invites()
+        except:
+            return "Unable: Missing Permissions."
         invites = get_guildfile(member.guild.id, "invites")
-        real_invites = await member.guild.invites()
 
         # Add unknown active invites. Can happen if invite was manually created
         for invite in real_invites:
