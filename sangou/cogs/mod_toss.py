@@ -550,11 +550,15 @@ class ModToss(Cog):
                     self.bot, ctx.channel, zip_files=True
                 )
 
-            users = [
-                await self.bot.fetch_user(uid)
-                for uid in tosses[ctx.channel.name]["untossed"]
-                + tosses[ctx.channel.name]["left"]
-            ]
+            users = []
+            for uid in (
+                tosses[ctx.channel.name]["untossed"] + tosses[ctx.channel.name]["left"]
+            ):
+                if self.bot.get_user(uid):
+                    users.append(self.bot.get_user(uid))
+                else:
+                    user = await self.bot.fetch_user(uid)
+                    users.append(user)
             user = f""
 
             filename = (
