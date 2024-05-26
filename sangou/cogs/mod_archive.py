@@ -10,7 +10,7 @@ import zipfile
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import ismod, isadmin
-from helpers.archive import log_whole_channel
+from helpers.archive import log_channel
 from helpers.sv_config import get_config
 from helpers.datafiles import get_guildfile, set_guildfile, get_tossfile, set_tossfile
 from helpers.embeds import stock_embed, author_embed
@@ -336,9 +336,7 @@ class ModArchives(Cog):
                 continue
 
             async with ctx.channel.typing():
-                dotraw, dotzip = await log_whole_channel(
-                    self.bot, channel, zip_files=True
-                )
+                dotraw, dotzip = await log_channel(self.bot, channel, zip_files=True)
                 dottxt = BytesIO()
                 dottxt.write(dotraw.encode("utf-8"))
                 dottxt.seek(0)

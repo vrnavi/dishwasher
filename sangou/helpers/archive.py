@@ -13,7 +13,7 @@ import zipfile
 from io import BytesIO
 
 
-async def log_whole_channel(bot, channel, zip_files=False):
+async def log_channel(bot, channel, zip_files=False, start_ts=None, end_ts=None):
     st = ""
 
     if zip_files:
@@ -21,13 +21,20 @@ async def log_whole_channel(bot, channel, zip_files=False):
         z = zipfile.ZipFile(b, "w", zipfile.ZIP_DEFLATED)
         zipped_count = 0
 
-    async for m in channel.history(limit=None, oldest_first=True):
+    async for m in channel.history(
+        limit=None, before=end_ts, after=start_ts, oldest_first=True
+    ):
         blank_content = True
 
         header = (
             m.author.name
             + (" [BOT] " if m.author.bot else " ")
             + m.created_at.astimezone().strftime("%Y/%m/%d %H:%M")
+            + (
+                " (edited " + m.edited_at.astimezone().strftime("%Y/%m/%d %H:%M") + ")"
+                if m.edited_at
+                else ""
+            )
             + "\n"
         )
         if m.type == discord.MessageType.reply:

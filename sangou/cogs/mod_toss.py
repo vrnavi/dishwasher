@@ -12,7 +12,7 @@ from io import BytesIO
 from helpers.checks import ismod
 from helpers.datafiles import add_userlog, toss_userlog, get_tossfile, set_tossfile
 from helpers.placeholders import random_msg
-from helpers.archive import log_whole_channel, get_members
+from helpers.archive import log_channel, get_members
 from helpers.embeds import (
     stock_embed,
     username_system,
@@ -546,7 +546,7 @@ class ModToss(Cog):
 
         if archive:
             async with ctx.channel.typing():
-                dotraw, dotzip = await log_whole_channel(
+                dotraw, dotzip = await log_channel(
                     self.bot, ctx.channel, zip_files=True
                 )
 
