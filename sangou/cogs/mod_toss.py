@@ -534,7 +534,7 @@ class ModToss(Cog):
             notify_channel = self.bot.pull_channel(
                 ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
             )
-        log_channel = self.bot.pull_channel(
+        logging_channel = self.bot.pull_channel(
             ctx.guild, get_config(ctx.guild.id, "logging", "modlog")
         )
         tosses = get_tossfile(ctx.guild.id, "tosses")
@@ -614,7 +614,7 @@ class ModToss(Cog):
                     inline=True,
                 )
 
-            channel = notify_channel if notify_channel else log_channel
+            channel = notify_channel if notify_channel else logging_channel
             if channel:
                 await channel.send(embed=embed)
             else:
