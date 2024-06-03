@@ -364,7 +364,7 @@ class ModToss(Cog):
             toss_pings = ", ".join([us.mention for us in users])
             await toss_channel.send(
                 f"{toss_pings}\nYou were tossed by {self.pacify_name(ctx.author.global_name) if ctx.author.global_name else self.pacify_name(ctx.author.name)}.\n"
-                '> *For your reference, a "toss" is where a Staff member wishes to speak with you, one on one.*'
+                '> *For your reference, a "toss" is where a Staff member wishes to speak with you, one on one. This session will be archived for Staff only once completed.*'
             )
 
             def check(m):
