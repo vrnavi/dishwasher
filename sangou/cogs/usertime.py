@@ -25,7 +25,7 @@ class usertime(Cog):
             await ctx.reply(
                 content=f"Your timezone is `{'not set' if not userdata['timezone'] else userdata['timezone']}`.\n"
                 "To change this, enter a timezone. You can find your specific timezone with this tool.\n"
-                "If you want to remove your timezone, use `remove` where you'd normally put a timezone."
+                "If you want to remove your timezone, use `remove` where you'd normally put a timezone.\n"
                 "<https://xske.github.io/tz/>",
                 mention_author=False,
             )
