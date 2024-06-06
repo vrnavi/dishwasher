@@ -25,10 +25,15 @@ class usertime(Cog):
             await ctx.reply(
                 content=f"Your timezone is `{'not set' if not userdata['timezone'] else userdata['timezone']}`.\n"
                 "To change this, enter a timezone. You can find your specific timezone with this tool.\n"
+                "If you want to remove your timezone, use `remove` where you'd normally put a timezone."
                 "<https://xske.github.io/tz/>",
                 mention_author=False,
             )
             return
+        elif timezone == "remove":
+            userdata["timezone"] = None
+            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
+            await ctx.reply(f"Your timezone has been removed.", mention_author=False)
         elif timezone not in available_timezones():
             await ctx.reply(
                 content="Invalid timezone provided. For help, run `timezone` by itself.",
