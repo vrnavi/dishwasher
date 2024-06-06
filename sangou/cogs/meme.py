@@ -235,6 +235,19 @@ class Meme(Cog):
         ]
         await ctx.reply(content="`" + random.choice(egg) + "`", mention_author=False)
 
+    @commands.guild_only()
+    @commands.command(hidden=True)
+    async def ululu(self, ctx):
+        """ululu
+
+        ulululululululululululululululululululu
+
+        No arguments."""
+
+        await ctx.reply(
+            content="ululu" + ("lu" * random.randrange(0, 300)), mention_author=False
+        )
+
 
 async def setup(bot):
     await bot.add_cog(Meme(bot))
