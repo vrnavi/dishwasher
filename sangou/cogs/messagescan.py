@@ -272,6 +272,9 @@ class Messagescan(Cog):
                 except:
                     break
 
+                if rcvchannel.nsfw and not message.channel.nsfw:
+                    continue
+
                 # Prepare embed msg
                 embed = discord.Embed(
                     color=rcvmessage.author.color,
