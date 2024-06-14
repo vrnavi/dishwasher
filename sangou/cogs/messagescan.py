@@ -272,7 +272,7 @@ class Messagescan(Cog):
                 except:
                     break
 
-                if rcvchannel.nsfw and not message.channel.nsfw:
+                if rcvchannel.is_nsfw() and not message.channel.is_nsfw():
                     continue
 
                 # Prepare embed msg
