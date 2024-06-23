@@ -311,7 +311,7 @@ class Messagescan(Cog):
                     and rcvmessage.attachments[0].content_type[:6] == "image/"
                 ):
                     if rcvmessage.attachments[0].is_spoiler():
-                        embed.set_image(url="https://files.catbox.moe/tpgdvl.png")
+                        embed.set_image(url="https://files.catbox.moe/ja0foc.png")
                     else:
                         embed.set_image(url=rcvmessage.attachments[0].url)
                     if len(rcvmessage.attachments) > 1:
