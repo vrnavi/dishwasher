@@ -74,13 +74,12 @@ class Surveyr(Cog):
         return user, reason
 
     def username_system(self, user):
-        def pacify_name(name):
-            return escape_markdown(name.replace("@", "@ "))
 
         part = (
-            pacify_name(user.global_name) + f" [{pacify_name(str(user))}]"
+            self.bot.pacify_name(user.global_name)
+            + f" [{self.bot.pacify_name(str(user))}]"
             if user.global_name
-            else f"{pacify_name(str(user))}"
+            else f"{self.bot.pacify_name(str(user))}"
         )
         return part + " (" + str(user.id) + ")"
 

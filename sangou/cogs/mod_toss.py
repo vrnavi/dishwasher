@@ -40,16 +40,13 @@ class ModToss(Cog):
             )
         )
 
-    def pacify_name(self, name):
-        return discord.utils.escape_markdown(name.replace("@", "@ "))
-
     def username_system(self, user):
         return (
             "**"
-            + self.pacify_name(user.global_name)
-            + f"** [{self.pacify_name(str(user))}]"
+            + self.bot.pacify_name(user.global_name)
+            + f"** [{self.bot.pacify_name(str(user))}]"
             if user.global_name
-            else f"**{self.pacify_name(str(user))}**"
+            else f"**{self.bot.pacify_name(str(user))}**"
         )
 
     # Thank you to https://stackoverflow.com/a/29489919 for this function.
@@ -363,7 +360,7 @@ class ModToss(Cog):
         if not addition:
             toss_pings = ", ".join([us.mention for us in users])
             await toss_channel.send(
-                f"{toss_pings}\nYou were tossed by {self.pacify_name(ctx.author.global_name) if ctx.author.global_name else self.pacify_name(ctx.author.name)}.\n"
+                f"{toss_pings}\nYou were tossed by {self.bot.pacify_name(ctx.author.display_name)}.\n"
                 '> *For your reference, a "toss" is where a Staff member wishes to speak with you, one on one. This session will be archived for Staff only once completed.*'
             )
 

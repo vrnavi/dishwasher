@@ -36,6 +36,7 @@ class Common(Cog):
         self.bot.pull_role = self.pull_role
         self.bot.pull_channel = self.pull_channel
         self.bot.pull_category = self.pull_category
+        self.bot.pacify_name = self.pacify_name
 
     def pull_role(self, guild, role):
         if isinstance(role, str):
@@ -64,6 +65,9 @@ class Common(Cog):
             if category and type(category) != discord.CategoryChannel:
                 category = None
         return category
+
+    def pacify_name(self, name):
+        return discord.utils.escape_markdown(name.replace("@", "@ "))
 
     def c_to_f(self, c):
         return 9.0 / 5.0 * c + 32
