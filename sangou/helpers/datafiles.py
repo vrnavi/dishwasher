@@ -137,11 +137,11 @@ def fill_userlog(serverid, userid):
     uid = str(userid)
     if uid not in userlogs:
         userlogs[uid] = {
-            "warns": [],
-            "tosses": [],
-            "kicks": [],
-            "bans": [],
-            "notes": [],
+            "warns": {},
+            "tosses": {},
+            "kicks": {},
+            "bans": {},
+            "notes": {},
             "watch": {"state": False, "thread": None, "message": None},
         }
 
@@ -179,35 +179,18 @@ def fill_profile(userid):
 # Userlog Features
 
 
-def add_userlog(sid, uid, issuer, reason, event_type):
+def add_userlog(sid, uid, issuer, reason, timestamp, eventtype):
     userlogs, uid = fill_userlog(sid, uid)
 
-    log_data = {
+    if eventtype not in userlogs[uid]:
+        userlogs[uid][eventtype] = {}
+
+    userlogs[uid][eventtype][str(timestamp)] = {
         "issuer_id": issuer.id,
         "reason": reason,
-        "timestamp": int(datetime.datetime.now().timestamp()),
     }
-    if event_type not in userlogs[uid]:
-        userlogs[uid][event_type] = []
-    userlogs[uid][event_type].append(log_data)
     set_guildfile(sid, "userlog", json.dumps(userlogs))
-    return len(userlogs[uid][event_type])
-
-
-def toss_userlog(sid, uid, issuer, mlink, cid):
-    userlogs, uid = fill_userlog(sid, uid)
-
-    toss_data = {
-        "issuer_id": issuer.id,
-        "session_id": cid,
-        "post_link": mlink,
-        "timestamp": int(datetime.datetime.now().timestamp()),
-    }
-    if "tosses" not in userlogs[uid]:
-        userlogs[uid]["tosses"] = []
-    userlogs[uid]["tosses"].append(toss_data)
-    set_guildfile(sid, "userlog", json.dumps(userlogs))
-    return len(userlogs[uid]["tosses"])
+    return len(userlogs[uid][eventtype])
 
 
 def watch_userlog(sid, uid, issuer, watch_state, tracker_thread=None, tracker_msg=None):
