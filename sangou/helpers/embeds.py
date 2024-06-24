@@ -54,7 +54,7 @@ def author_embed(embed, obj, thumbnail=False):
 def mod_embed(embed, target, staff, reason=None):
     def username_system(user):
         def pacify_name(name):
-            return escape_markdown(name.replace("@", "@ "))
+            return discord.utils.escape_markdown(name.replace("@", "@ "))
 
         formatted = (
             pacify_name(user.global_name) + f" [{pacify_name(str(user))}]"
