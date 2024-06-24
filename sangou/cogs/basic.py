@@ -208,7 +208,7 @@ class Basic(Cog):
         The thing you want to search YouTube for."""
         try:
             html = await self.bot.aioget(
-                f"https://www.youtube.com/results?search_query={query}"
+                f"https://www.youtube.com/results?search_query={query}&sp=8AEB"
             )
         except:
             return await ctx.reply(content="HTML error.", mention_author=False)
