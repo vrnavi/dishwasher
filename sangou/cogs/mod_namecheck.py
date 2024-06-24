@@ -10,7 +10,7 @@ from helpers.checks import ismod
 from helpers.sv_config import get_config
 
 
-class NameCheck(Cog):
+class ModNamecheck(Cog):
     """
     Keeping names readable.
     """
@@ -105,4 +105,4 @@ class NameCheck(Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(NameCheck(bot))
+    await bot.add_cog(ModNamecheck(bot))
