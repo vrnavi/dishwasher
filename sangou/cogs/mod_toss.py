@@ -15,7 +15,6 @@ from helpers.placeholders import random_msg
 from helpers.archive import log_channel, get_members
 from helpers.embeds import (
     stock_embed,
-    username_system,
     mod_embed,
     author_embed,
     createdat_embed,

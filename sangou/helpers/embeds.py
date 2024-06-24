@@ -3,15 +3,6 @@ import discord
 import datetime
 
 
-def username_system(user):
-    part1 = (
-        "**" + user.global_name + f"** [{user}]" if user.global_name else f"**{user}**"
-    )
-    part2 = "\n" + user.mention
-    part3 = " (" + str(user.id) + ")"
-    return part1 + part2 + part3
-
-
 def slice_embed(embed, text, name, prefix="", suffix=""):
     fragment_list = []
     size_wo_fix = 1020 - len(prefix) - len(suffix)
@@ -61,6 +52,18 @@ def author_embed(embed, obj, thumbnail=False):
 
 
 def mod_embed(embed, target, staff, reason=None):
+    def username_system(user):
+        def pacify_name(name):
+            return escape_markdown(name.replace("@", "@ "))
+
+        formatted = (
+            pacify_name(user.global_name) + f" [{pacify_name(str(user))}]"
+            if user.global_name
+            else pacify_name(str(user))
+        ) + f" ({str(user.id)})"
+
+        return formatted
+
     embed.set_author(
         name=target,
         icon_url=target.display_avatar.url,
