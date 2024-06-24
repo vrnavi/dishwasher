@@ -154,9 +154,15 @@ class Admin(Cog):
                     self.loaded_exception = tuple([errctx] + list(page[2]))
                     await ctx.reply(content="Loaded.", mention_author=False)
                 try:
-                    await holder.remove_reaction("⏺️", ctx.author)
+                    await holder.clear_reactions()
                 except:
                     pass
+                finally:
+                    embed.color = discord.Color.default()
+                    return await holder.edit(
+                        embed=embed,
+                        allowed_mentions=allowed_mentions,
+                    )
 
     @commands.bot_has_permissions(attach_files=True)
     @commands.check(ismanager)
@@ -638,7 +644,7 @@ class Admin(Cog):
                 try:
                     await self.bot.unload_extension(cog_name)
                     await self.bot.load_extension(cog_name)
-                    self.bot.log.info(f"Reloaded ext {cog}")
+                    self.bot.log.info(f"Reloaded cog {cog}")
                     await ctx.message.reply(
                         content=f":white_check_mark: `{cog}` successfully reloaded.",
                         mention_author=False,
@@ -676,7 +682,7 @@ class Admin(Cog):
                     mention_author=False,
                 )
             return
-        self.bot.log.info(f"Loaded ext {ext}")
+        self.bot.log.info(f"Loaded cog {ext}")
         await ctx.message.reply(
             content=f":white_check_mark: `{ext}` successfully loaded.",
             mention_author=False,
@@ -692,7 +698,7 @@ class Admin(Cog):
         - `ext`
         The cog to unload."""
         await self.bot.unload_extension(ext)
-        self.bot.log.info(f"Unloaded ext {ext}")
+        self.bot.log.info(f"Unloaded cog {ext}")
         await ctx.message.reply(
             content=f":white_check_mark: `{ext}` successfully unloaded.",
             mention_author=False,
@@ -722,7 +728,7 @@ class Admin(Cog):
                 mention_author=False,
             )
             return
-        self.bot.log.info(f"Reloaded ext {ext}")
+        self.bot.log.info(f"Reloaded cog {ext}")
         await ctx.message.reply(
             content=f":white_check_mark: `{ext}` successfully reloaded.",
             mention_author=False,
