@@ -74,7 +74,6 @@ class Surveyr(Cog):
         return user, reason
 
     def username_system(self, user):
-
         part = (
             self.bot.pacify_name(user.global_name)
             + f" [{self.bot.pacify_name(str(user))}]"
