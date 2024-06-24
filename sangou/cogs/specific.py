@@ -157,16 +157,43 @@ class specific(Cog):
     @Cog.listener()
     async def on_message(self, message):
         await self.bot.wait_until_ready()
+
+        # R/UTDR's announcement handling.
         if (
-            not message.guild
-            or message.guild.id != 1236369655212412968
-            or message.channel.id != 1236417696741199873
+            message.guild
+            and message.guild.id == 1236369655212412968
+            and message.channel.id == 1236417696741199873
         ):
-            return
-        general = await message.guild.fetch_channel(1236370991857532990)
-        return await general.send(
-            f"<:sangouspeak:1182927625161809931> {message.author.display_name} posted a new announcement in <#1236417696741199873>.\n<:sangoueat:1182927631977558086> Just letting you know."
-        )
+            general = await message.guild.fetch_channel(1236370991857532990)
+            return await general.send(
+                f"<:sangouspeak:1182927625161809931> {message.author.display_name} posted a new announcement in <#1236417696741199873>.\n<:sangoueat:1182927631977558086> Just letting you know."
+            )
+
+        # OSDS's Ban Appeal system.
+        if (
+            message.guild
+            and message.channel.id == 402019542345449472
+            and message.author.id == 402016472878284801
+            and message.embeds[0].fields[1].value is not None
+        ):
+            await message.add_reaction("✅")
+            await message.add_reaction("❎")
+            await message.add_reaction("✳️")
+            appealthread = await message.create_thread(
+                name=f"{message.embeds[0].fields[2].value}'s Appeal",
+                reason="Automatic Appeal Thread Generating by Sangou.",
+            )
+            staff_role = self.bot.pull_role(
+                message.guild,
+                (
+                    get_config(message.guild.id, "staff", "modrole")
+                    if get_config(message.guild.id, "staff", "modrole")
+                    else get_config(message.guild.id, "staff", "adminrole")
+                ),
+            )
+            await appealthread.send(
+                content=f"Vote using reactions. Use this thread for discussion.\n`✅ = Yes`\n`❎ = No`\n`✳️ = Abstain`\n\nUntil it can be coded to automatically appear here, use `pws logs {message.embeds[0].fields[2].value}`.\nRemember to post ban context if available (ban record, modmail logs, etc.).\n\nThere are currently `{int(len(staff_role.members))}` Staff members at this time.\nVoting should end once one option reaches `{int(len(staff_role.members)/2//1+1)}` votes.\n\nThis appeal will turn stale on <t:{int(datetime.now(timezone.utc).timestamp())+604800}:f>, or <t:{int(datetime.now(timezone.utc).timestamp())+604800}:R>."
+            )
 
 
 async def setup(bot):
