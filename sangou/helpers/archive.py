@@ -41,6 +41,8 @@ async def log_channel(bot, channel, zip_files=False, start_ts=None, end_ts=None)
             rep = m.reference.resolved
             if isinstance(rep, discord.DeletedReferencedMessage):
                 preheader = "Original message was deleted"
+            elif not rep:
+                preheader = "Message could not be loaded"
             else:
                 preheader = (
                     "↗️ "
