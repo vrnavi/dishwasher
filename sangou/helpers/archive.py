@@ -39,16 +39,19 @@ async def log_channel(bot, channel, zip_files=False, start_ts=None, end_ts=None)
         )
         if m.type == discord.MessageType.reply:
             rep = m.reference.resolved
-            preheader = (
-                "↗️ "
-                + ("[BOT] " if rep.author.bot else "")
-                + ("@" if rep.author in m.mentions else "")
-                + rep.author.name
-                + " "
-                + rep.clean_content[:50]
-                + ("..." if len(rep.clean_content) > 50 else "")
-                + "\n"
-            )
+            if isinstance(rep, discord.DeletedReferencedMessage):
+                preheader = "Original message was deleted"
+            else:
+                preheader = (
+                    "↗️ "
+                    + ("[BOT] " if rep.author.bot else "")
+                    + ("@" if rep.author in m.mentions else "")
+                    + rep.author.name
+                    + " "
+                    + rep.clean_content[:50]
+                    + ("..." if len(rep.clean_content) > 50 else "")
+                    + "\n"
+                )
         else:
             preheader = ""
         add = preheader + header
