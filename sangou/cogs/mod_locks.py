@@ -101,14 +101,14 @@ class ModLocks(Cog):
         if not channel.permissions_for(ctx.guild.default_role).read_messages:
             for role, overwrite in list(channel.overwrites.items()):
                 if channel.permissions_for(role).read_messages:
-                    roles.append(r.id)
+                    roles.append(role.id)
         elif not channel.permissions_for(ctx.guild.default_role).send_messages:
             for role, overwrite in list(channel.overwrites.items()):
                 if (
                     channel.permissions_for(role).send_messages
                     and channel.permissions_for(role).read_messages
                 ):
-                    roles.append(r.id)
+                    roles.append(role.id)
         else:
             roles.append(ctx.guild.default_role.id)
             for r in channel.changed_roles:
