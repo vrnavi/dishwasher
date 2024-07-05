@@ -179,10 +179,6 @@ properties:
         type: 
           - boolean
           - "null"
-      paidforprofileeffectsenable:
-        type: 
-          - boolean
-          - "null"
   roles:
     type: 
       - array
@@ -241,5 +237,5 @@ properties:
     type: object
     properties:
       version:
-        const: 8
+        const: 9
         

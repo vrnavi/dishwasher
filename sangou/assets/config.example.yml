@@ -88,9 +88,6 @@ reaction:
   burstreactsenable:
   # If the bot may automatically adjust names to be readable.
   autoreadableenable:
-  # If the bot may randomly laugh at users who have profile effects.
-  # Some people get mad at this feature's existence for some reason.
-  paidforprofileeffectsenable:
   
 roles:
   # Any potential roles to be used with "pls role" should be put here.
@@ -115,4 +112,4 @@ overrides:
   #   restrict: false          # Whether to allow (false) or restrict this command to (true) these roles.
 
 metadata:
-  version: 8
+  version: 9
