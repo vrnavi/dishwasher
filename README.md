@@ -26,4 +26,4 @@ In hosting the bot yourself, you accept that you are on your own. To do so, foll
 - Enter `pipenv shell`, `cd sangou`, then `python __init__.py`.
 - Congratulations.
 
-I will not help you if you wish to use something other than pipenv..
+I will not help you if you wish to use something other than pipenv.
