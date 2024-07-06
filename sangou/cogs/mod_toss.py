@@ -29,7 +29,7 @@ class ModToss(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.busy = False
+        self.busy = {}
         self.spamcounter = {}
         self.nocfgmsg = "Tossing isn't enabled for this server."
 
@@ -455,8 +455,7 @@ class ModToss(Cog):
 
         # Actually untoss.
         for us in users:
-            self.busy = True
-            roles = tosses[ctx.channel.name]["tossed"][str(us.id)]
+            self.busy[ctx.guild.id] = us.id
             if us.id not in tosses[ctx.channel.name]["untossed"]:
                 tosses[ctx.channel.name]["untossed"].append(us.id)
             del tosses[ctx.channel.name]["tossed"][str(us.id)]
@@ -503,7 +502,7 @@ class ModToss(Cog):
                 await notifychannel.send(embed=embed)
 
         set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
-        self.busy = False
+        del self.busy[ctx.guild.id]
 
         if not tosses[ctx.channel.name]:
             errors += "\n\n" + "There is nobody left in this session."
@@ -868,8 +867,8 @@ class ModToss(Cog):
         await self.bot.wait_until_ready()
         if not self.enabled(after.guild):
             return
-        while self.busy:
-            await asyncio.sleep(1)
+        elif after.guild.id in self.busy and self.busy[after.guild.id] == after.id:
+            return
         if self.is_rolebanned(before) and not self.is_rolebanned(after):
             session = self.get_session(after)
             if not session:
