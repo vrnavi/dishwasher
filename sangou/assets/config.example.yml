@@ -59,6 +59,10 @@ toss:
 
   # The topic for each toss channel.
   tosstopic:
+  # For the anti-spam subfeature, how long (in seconds) should the window be?
+  antispamwindow:
+  # For the anti-spam subfeature, how many of the same message is needed to trigger a toss?
+  antispamlimit:
 
 surveyr:
   # The channel ID that the bot will post moderation actions to.
@@ -112,4 +116,4 @@ overrides:
   #   restrict: false          # Whether to allow (false) or restrict this command to (true) these roles.
 
 metadata:
-  version: 9
+  version: 10

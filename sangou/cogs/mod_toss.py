@@ -630,8 +630,16 @@ class ModToss(Cog):
             or message.author.bot
             or not self.enabled(message.guild)
             or self.is_rolebanned(message.author)
-            or self.get_session(message.author)
-            or self.bot.pull_role(
+        ):
+            return
+
+        antispamwindow = get_config(message.guild.id, "toss", "antispamwindow")
+        antispamlimit = get_config(message.guild.id, "toss", "antispamlimit")
+        if not antispamwindow or not antispamlimit:
+            return
+
+        if (
+            self.bot.pull_role(
                 message.guild, get_config(message.guild.id, "staff", "modrole")
             )
             in message.author.roles
@@ -673,7 +681,7 @@ class ModToss(Cog):
 
         cutoff_ts = self.spamcounter[message.author.id][
             "original_message"
-        ].created_at + timedelta(seconds=10)
+        ].created_at + timedelta(seconds=antispamwindow)
 
         if (
             any(
@@ -690,11 +698,13 @@ class ModToss(Cog):
                 self.spamcounter[message.author.id]["spamcounter"] = 1
             else:
                 self.spamcounter[message.author.id]["spamcounter"] += 1
-            if self.spamcounter[message.author.id]["spamcounter"] >= 5:
+            if self.spamcounter[message.author.id]["spamcounter"] >= antispamlimit:
                 self.spamcounter[message.author.id]["spamcounter"] = 0
                 toss_channel = await self.new_session(message.guild)
                 if not toss_channel:
-                    self.spamcounter[message.author.id]["spamcounter"] += 5 + 1
+                    self.spamcounter[message.author.id]["spamcounter"] += (
+                        antispamlimit + 1
+                    )
                     return
                 failed_roles, previous_roles = await self.perform_toss(
                     message.author, message.guild.me, toss_channel
@@ -716,7 +726,7 @@ class ModToss(Cog):
                     author_embed(embed, message.author, True)
                     embed.color = message.author.color
                     embed.title = "🚷 Toss"
-                    embed.description = f"{self.username_system(message.author)} has been tossed for hitting 5 spam messages. {message.jump_url}\n> This toss takes place in {toss_channel.mention}..."
+                    embed.description = f"{self.username_system(message.author)} has been tossed for hitting {antispamlimit} spam messages. {message.jump_url}\n> This toss takes place in {toss_channel.mention}..."
                     createdat_embed(embed, message.author)
                     joinedat_embed(embed, message.author)
                     prevlist = []

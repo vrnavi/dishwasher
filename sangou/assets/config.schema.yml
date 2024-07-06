@@ -112,6 +112,14 @@ properties:
         type: 
           - string
           - "null"
+      antispamwindow:
+        type: 
+          - integer
+          - "null"
+      antispamlimit:
+        type: 
+          - integer
+          - "null"
   surveyr:
     type: object
     properties:
@@ -237,5 +245,5 @@ properties:
     type: object
     properties:
       version:
-        const: 9
+        const: 10
         

@@ -90,6 +90,15 @@ def fill_config(sid):
         if config["metadata"]["version"] < 9:
             del config["reaction"]["paidforprofileeffectsenable"]
 
+        # * to 10.
+        if config["metadata"]["version"] < 10:
+            if sid = 256926147827335170:
+                config["toss"]["antispamlimit"] = 5
+                config["toss"]["antispamwindow"] = 10
+            else:
+                config["toss"]["antispamlimit"] = None
+                config["toss"]["antispamwindow"] = None
+
         set_raw_config(sid, config)
 
     return config
