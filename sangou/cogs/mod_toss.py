@@ -456,6 +456,7 @@ class ModToss(Cog):
         # Actually untoss.
         for us in users:
             self.busy[ctx.guild.id] = us.id
+            roles = tosses[ctx.channel.name]["tossed"][str(us.id)]
             if us.id not in tosses[ctx.channel.name]["untossed"]:
                 tosses[ctx.channel.name]["untossed"].append(us.id)
             del tosses[ctx.channel.name]["tossed"][str(us.id)]
