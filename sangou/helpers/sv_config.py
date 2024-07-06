@@ -92,7 +92,7 @@ def fill_config(sid):
 
         # * to 10.
         if config["metadata"]["version"] < 10:
-            if sid = 256926147827335170:
+            if sid == 256926147827335170:
                 config["toss"]["antispamlimit"] = 5
                 config["toss"]["antispamwindow"] = 10
             else:
