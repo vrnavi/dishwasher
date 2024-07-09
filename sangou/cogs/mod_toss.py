@@ -427,7 +427,9 @@ class ModToss(Cog):
         # User validation.
         errors = ""
         for us in users:
-            if us.id == ctx.author.id:
+            if not us:
+                continue
+            elif us.id == ctx.author.id:
                 errors += (
                     f"\n- {self.username_system(us)}\n> You cannot untoss yourself."
                 )
