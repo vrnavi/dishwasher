@@ -4,9 +4,6 @@ token = "token-goes-here"
 prefixes = ["pls ", "san "]
 # The IDs of the user(s) managing the bot.
 managers = [120698901236809728]
-# The ID of the channel the bot will log things to.
-# This will be removed soonTM.
-logchannel = 1006820351134683186
 
 # If you forked Sangou, put your repo here.
 source_url = "https://github.com/vrnavi/sangou"

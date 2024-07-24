@@ -62,7 +62,6 @@ class Timer(Cog):
         await ctx.send(f"{ctx.author.mention}: Deleted!")
 
     async def do_jobs(self, ctab, jobtype, timestamp):
-        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         for job_name in ctab[jobtype][timestamp]:
             try:
                 job_details = ctab[jobtype][timestamp][job_name]
@@ -92,17 +91,16 @@ class Timer(Cog):
                         await target.send(embed=embed)
                     delete_job(timestamp, jobtype, job_name)
             except:
-                # Don't kill cronjobs if something goes wrong.
+                # Keeps the timer from halting in the event of an error.
                 delete_job(timestamp, jobtype, job_name)
-                await log_channel.send(
-                    "Crondo has errored, job deleted: ```"
-                    f"{traceback.format_exc()}```"
-                )
+                for manager in self.bot.config.managers:
+                    await self.bot.get_user(manager).send(
+                        f"Crondo has errored, job deleted: ```{traceback.format_exc()}```"
+                    )
 
     @tasks.loop(minutes=1)
     async def minutely(self):
         await self.bot.wait_until_ready()
-        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         try:
             ctab = get_botfile("timers")
             timestamp = time.time()
@@ -111,29 +109,29 @@ class Timer(Cog):
                     if timestamp > int(jobtimestamp):
                         await self.do_jobs(ctab, jobtype, jobtimestamp)
         except:
-            # Don't kill cronjobs if something goes wrong.
-            await log_channel.send(
-                f"Cron-minutely has errored: ```{traceback.format_exc()}```"
-            )
+            # Keeps the timer from halting in the event of an error.
+            for manager in self.bot.config.managers:
+                await self.bot.get_user(manager).send(
+                    f"Cron-minutely has errored: ```{traceback.format_exc()}```"
+                )
 
     @tasks.loop(hours=1)
     async def hourly(self):
         await self.bot.wait_until_ready()
-        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         try:
             # Change playing status.
             activity = discord.Activity(name=random.choice(game_names), type=game_type)
             await self.bot.change_presence(activity=activity)
         except:
-            # Don't kill cronjobs if something goes wrong.
-            await log_channel.send(
-                f"Cron-hourly has errored: ```{traceback.format_exc()}```"
-            )
+            # Keeps the timer from halting in the event of an error.
+            for manager in self.bot.config.managers:
+                await self.bot.get_user(manager).send(
+                    f"Cron-hourly has errored: ```{traceback.format_exc()}```"
+                )
 
     @tasks.loop(hours=24)
     async def daily(self):
         await self.bot.wait_until_ready()
-        log_channel = self.bot.get_channel(self.bot.config.logchannel)
         try:
             shutil.make_archive("data_backup", "zip", "data")
             for m in self.bot.config.managers:
@@ -143,10 +141,11 @@ class Timer(Cog):
                 )
             os.remove("data_backup.zip")
         except:
-            # Don't kill cronjobs if something goes wrong.
-            await log_channel.send(
-                f"Cron-daily has errored: ```{traceback.format_exc()}```"
-            )
+            # Keeps the timer from halting in the event of an error.
+            for manager in self.bot.config.managers:
+                await self.bot.get_user(manager).send(
+                    f"Cron-daily has errored: ```{traceback.format_exc()}```"
+                )
 
 
 async def setup(bot):
