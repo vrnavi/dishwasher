@@ -19,7 +19,7 @@ class ModLogs(Cog):
         events = ["notes", "tosses", "warns", "kicks", "bans"]
 
         if uid not in userlog:
-            # Nonexist
+            # Doesn't exist.
             embed = stock_embed(self.bot)
             embed.title = "📇 About that log..."
             embed.description = (
@@ -29,7 +29,7 @@ class ModLogs(Cog):
             )
             return [embed]
         elif not userlog[uid]:
-            # Empty
+            # Empty log.
             embed = stock_embed(self.bot)
             embed.title = "📇 About that log..."
             embed.description = (

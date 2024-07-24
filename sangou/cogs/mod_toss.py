@@ -160,7 +160,9 @@ class ModToss(Cog):
         ]
 
         tosses = get_tossfile(user.guild.id, "tosses")
-        tosses[tosschannel.name]["tossed"][str(user.id)] = [role.id for role in prevroles]
+        tosses[tosschannel.name]["tossed"][str(user.id)] = [
+            role.id for role in prevroles
+        ]
         set_tossfile(user.guild.id, "tosses", json.dumps(tosses))
 
         if prevroles:
@@ -360,6 +362,7 @@ class ModToss(Cog):
                 + errors
                 + "\n```\n"
             )
+            await ctx.message.add_reaction("⚠️")
 
         # Start of session notification and timer.
         if not addition:
@@ -798,7 +801,9 @@ class ModToss(Cog):
             member, member.guild.me, tosschannel
         )
         tosses = get_tossfile(member.guild.id, "tosses")
-        tosses[tosschannel.name]["tossed"][str(member.id)] = tosses["LEFTGUILD"][str(member.id)]
+        tosses[tosschannel.name]["tossed"][str(member.id)] = tosses["LEFTGUILD"][
+            str(member.id)
+        ]
 
         del tosses["LEFTGUILD"][str(member.id)]
         if not tosses["LEFTGUILD"]:
@@ -876,11 +881,40 @@ class ModToss(Cog):
             session = self.get_session(after)
             if not session:
                 return
+            tosschannel = self.bot.pull_channel(after.guild, session)
+            tossrole = self.bot.pull_role(
+                after.guild, get_config(after.guild.id, "toss", "tossrole")
+            )
 
+            self.busy[after.guild.id] = after.id
             tosses = get_tossfile(after.guild.id, "tosses")
+            roles = tosses[session]["tossed"][str(after.id)]
             tosses[session]["untossed"].append(after.id)
             del tosses[session]["tossed"][str(after.id)]
             set_tossfile(after.guild.id, "tosses", json.dumps(tosses))
+
+            if roles:
+                roles = [
+                    after.guild.get_role(r)
+                    for r in roles
+                    if after.guild.get_role(r)
+                    and after.guild.get_role(r).is_assignable()
+                ]
+                await after.add_roles(
+                    *roles,
+                    reason=f"Untossed manually.",
+                    atomic=False,
+                )
+            await after.remove_roles(
+                tossrole,
+                reason=f"Untossed manually.",
+            )
+            await tosschannel.set_permissions(after, overwrite=None)
+            tossmsg = await tosschannel.send(
+                f"🚶 {self.username_system(after)} was untossed via role removal."
+            )
+
+            del self.busy[after.guild.id]
 
     # Remove toss data on manual delete.
     @Cog.listener()

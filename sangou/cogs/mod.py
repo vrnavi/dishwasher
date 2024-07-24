@@ -3,7 +3,6 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 import datetime
 import asyncio
-import typing
 import random
 import emoji
 from helpers.checks import ismod, isadmin, ismanager
@@ -58,7 +57,13 @@ class Mod(Cog):
         elif self.check_if_target_is_staff(target):
             return await ctx.send("I cannot kick Staff members.")
 
-        add_userlog(ctx.guild.id, target.id, ctx.author, reason, "kicks")
+        add_userlog(
+            ctx.guild.id,
+            target.id,
+            ctx.author,
+            reason if reason else f"No reason provided. ({ctx.message.jump_url})",
+            "kicks",
+        )
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -134,16 +139,13 @@ class Mod(Cog):
             if self.check_if_target_is_staff(target):
                 return await ctx.send("I cannot ban Staff members.")
 
-        if reason:
-            add_userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
-        else:
-            add_userlog(
-                ctx.guild.id,
-                target.id,
-                ctx.author,
-                f"No reason provided. ({ctx.message.jump_url})",
-                "bans",
-            )
+        add_userlog(
+            ctx.guild.id,
+            target.id,
+            ctx.author,
+            reason if reason else f"No reason provided. ({ctx.message.jump_url})",
+            "bans",
+        )
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -235,16 +237,13 @@ class Mod(Cog):
                 "Message delete day count must be between 0 and 7 days."
             )
 
-        if reason:
-            add_userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
-        else:
-            add_userlog(
-                ctx.guild.id,
-                target.id,
-                ctx.author,
-                f"No reason provided. ({ctx.message.jump_url})",
-                "bans",
-            )
+        add_userlog(
+            ctx.guild.id,
+            target.id,
+            ctx.author,
+            reason if reason else f"No reason provided. ({ctx.message.jump_url})",
+            "bans",
+        )
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -431,16 +430,13 @@ class Mod(Cog):
             if self.check_if_target_is_staff(target):
                 return await ctx.send("I cannot ban Staff members.")
 
-        if reason:
-            add_userlog(ctx.guild.id, target.id, ctx.author, reason, "bans")
-        else:
-            add_userlog(
-                ctx.guild.id,
-                target.id,
-                ctx.author,
-                f"No reason provided. ({ctx.message.jump_url})",
-                "bans",
-            )
+        add_userlog(
+            ctx.guild.id,
+            target.id,
+            ctx.author,
+            reason if reason else f"No reason provided. ({ctx.message.jump_url})",
+            "bans",
+        )
 
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
@@ -501,7 +497,7 @@ class Mod(Cog):
         self,
         ctx,
         member: discord.Member,
-        channel: typing.Union[discord.abc.GuildChannel, discord.Thread] = None,
+        channel: discord.abc.GuildChannel | discord.Thread | None,
     ):
         """This alerts you when a user says a message.
 
@@ -849,18 +845,13 @@ class Mod(Cog):
             if self.check_if_target_is_staff(target):
                 return await ctx.send("I cannot warn Staff members.")
 
-        if reason:
-            warn_count = add_userlog(
-                ctx.guild.id, target.id, ctx.author, reason, "warns"
-            )
-        else:
-            warn_count = add_userlog(
-                ctx.guild.id,
-                target.id,
-                ctx.author,
-                f"No reason provided. ({ctx.message.jump_url})",
-                "warns",
-            )
+        warn_count = add_userlog(
+            ctx.guild.id,
+            target.id,
+            ctx.author,
+            reason if reason else f"No reason provided. ({ctx.message.jump_url})",
+            "warns",
+        )
 
         failmsg = ""
         if ctx.guild.get_member(target.id) is not None:
@@ -951,7 +942,7 @@ class Mod(Cog):
     async def speak(
         self,
         ctx,
-        channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
+        channel: discord.abc.GuildChannel | discord.Thread,
         *,
         text: str,
     ):
@@ -1024,7 +1015,7 @@ class Mod(Cog):
     async def typing(
         self,
         ctx,
-        channel: typing.Union[discord.abc.GuildChannel, discord.Thread],
+        channel: discord.abc.GuildChannel | discord.Thread,
         duration: int,
     ):
         """This makes the bot type in a channel for some time.

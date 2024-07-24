@@ -20,7 +20,7 @@ To use the publicly available Sangou bot, please ask in the support server, find
 In hosting the bot yourself, you accept that you are on your own. To do so, follow these simple instructions.
 
 - Download the bot from this repository. Stick to the release versions unless you have encountered a bug.
-- Install [pipenv](https://pipenv.pypa.io/en/latest/).
+- Install [python 3.10](https://python.org) or later, as well as [pipenv](https://pipenv.pypa.io/en/latest/).
 - Use `pipenv install` in the root folder, where `Pipfile` is.
 - Copy `config.example.py` to `config.py`, and fill it out with your bot information.
 - Enter `pipenv shell`, `cd sangou`, then `python __init__.py`.
