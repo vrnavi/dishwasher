@@ -563,7 +563,7 @@ class ModToss(Cog):
                 if self.bot.get_user(uid):
                     users.append(self.bot.get_user(uid))
                 else:
-                    users.append(user)
+                    users.append(uid)
 
             filename = (
                 ctx.message.created_at.astimezone().strftime("%Y-%m-%d")
