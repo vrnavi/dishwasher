@@ -59,6 +59,8 @@ class ModToss(Cog):
         )
 
     def username_system(self, user):
+        if isinstance(user, int):
+            return user
         return (
             f"**{self.bot.pacify_name(user.global_name)}**"
             + f" [{self.bot.pacify_name(str(user))}]"
