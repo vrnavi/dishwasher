@@ -562,13 +562,10 @@ class ModToss(Cog):
             for uid in (
                 tosses[ctx.channel.name]["untossed"] + tosses[ctx.channel.name]["left"]
             ):
-                try:
+                user = self.bot.get_user(uid)
+                if not user:
                     user = await self.bot.fetch_user(uid)
-                    users.append(user)
-                except:
-                    return await ctx.send(
-                        f"??? user doesn't exist??? placeholder error {uid}"
-                    )
+                users.append(user)
 
             filename = (
                 ctx.message.created_at.astimezone().strftime("%Y-%m-%d")
