@@ -50,9 +50,9 @@ class ModLogs(Cog):
         embed.title = "📇 Log summary..."
 
         for index, event in enumerate(events):
-            if index < 2 and own:
+            if index < 1 and own:
                 continue
-            days = dayrange([instance["timestamp"] for instance in userlog[uid][event]])
+            days = dayrange([int(instance) for instance in userlog[uid][event]])
             embed.add_field(
                 name=["📝 Notes", "🚷 Tosses", "⚠️ Warnings", "👢 Kicks", "⛔ Bans"][
                     index
@@ -70,9 +70,10 @@ class ModLogs(Cog):
                 + " under watch."
             )
             timestamps = []
-            for event in events:
-                for instance in userlog[uid][event]:
-                    timestamps.append(instance["timestamp"])
+            map(
+                timestamps.extend,
+                list([userlog[uid][event].keys() for event in events]),
+            )
             days = dayrange(timestamps)
             embed.add_field(
                 name="🗃️ Total",
@@ -97,15 +98,13 @@ class ModLogs(Cog):
                 embed.description = "> This section is empty!"
                 embeds.append(embed)
                 continue
-            for idx, evn in enumerate(userlog[uid][event]):
-                if event == "tosses":
-                    lastline = f"__Incident:__ {evn['post_link']}"
-                else:
-                    lastline = f"__Reason:__ {evn['reason']}"
+            for idx, instance in enumerate(userlog[uid][event]):
+                evn = userlog[uid][event][instance]
+                lastline = f"__Reason:__ {evn['reason']}"
                 embed.add_field(
                     name=["Note", "Toss", "Warning", "Kick", "Ban"][index]
                     + f" {idx+1}",
-                    value=f"<t:{evn['timestamp']}:R> on <t:{evn['timestamp']}:f>\n"
+                    value=f"<t:{instance}:R> on <t:{instance}:f>\n"
                     + f"__Issuer:__ <@{evn['issuer_id']}> ({evn['issuer_id']})\n"
                     + lastline,
                     inline=False,
@@ -154,53 +153,76 @@ class ModLogs(Cog):
         else:
             await ctx.send(embed=embeds[1])
 
-    @commands.guild_only()
     @commands.command()
-    async def mylogs(self, ctx, eventtype=None):
+    async def mylogs(self, ctx, eventtype: str = None, *, guild: discord.Guild = None):
         """This shows your logs.
 
         For privacy reasons, it won't show Notes, Tosses,
         or total events done on you. By default, shows a summary.
 
         - `eventtype`
-        Whether you want warns, kicks, or bans. Optional."""
-        embeds = self.get_log_embeds(ctx.guild.id, ctx.author, True)
+        Whether you want tosses, warns, kicks, or bans. Optional."""
+        if ctx.guild:
+            guild = ctx.guild
+        elif not ctx.guild and not guild:
+            return await ctx.reply("You need to specify a server! Use its name or ID!")
+
+        embeds = self.get_log_embeds(guild.id, ctx.author, True)
         if len(embeds) == 1:
-            return await ctx.author.send(embed=embeds[0])
+            author_embed(embeds[0], guild)
+            return await ctx.reply(embed=embeds[0])
         if not eventtype:
             embeds[0].color = ctx.author.color
+            author_embed(embeds[0], guild)
             await ctx.author.send(
-                content=f"You can use `{ctx.prefix}mylogs warns/kicks/bans` to see specific logs.",
+                content=f"You can use `{ctx.prefix}mylogs tosses/warns/kicks/bans` to see specific logs.",
                 embed=embeds[0],
             )
             await ctx.message.add_reaction("📨")
-            await ctx.reply(
-                content="I've DMed your log summary for privacy.", mention_author=False
-            )
+            if ctx.guild:
+                await ctx.reply(
+                    content="I've DMed your log summary for privacy.",
+                    mention_author=False,
+                )
+        elif eventtype == "tosses":
+            embeds[2].color = ctx.author.color
+            author_embed(embeds[2], guild)
+            await ctx.author.send(embed=embeds[2])
+            await ctx.message.add_reaction("📨")
+            if ctx.guild:
+                await ctx.reply(
+                    content="I've DMed your tosses for privacy.", mention_author=False
+                )
         elif eventtype == "warns":
             embeds[3].color = ctx.author.color
+            author_embed(embeds[3], guild)
             await ctx.author.send(embed=embeds[3])
             await ctx.message.add_reaction("📨")
-            await ctx.reply(
-                content="I've DMed your warnings for privacy.", mention_author=False
-            )
+            if ctx.guild:
+                await ctx.reply(
+                    content="I've DMed your warnings for privacy.", mention_author=False
+                )
         elif eventtype == "kicks":
             embeds[4].color = ctx.author.color
+            author_embed(embeds[4], guild)
             await ctx.author.send(embed=embeds[4])
             await ctx.message.add_reaction("📨")
-            await ctx.reply(
-                content="I've DMed your kicks for privacy.", mention_author=False
-            )
+            if ctx.guild:
+                await ctx.reply(
+                    content="I've DMed your kicks for privacy.", mention_author=False
+                )
         elif eventtype == "bans":
             embeds[5].color = ctx.author.color
+            author_embed(embeds[5], guild)
             await ctx.author.send(embed=embeds[5])
             await ctx.message.add_reaction("📨")
-            await ctx.reply(
-                content="I've DMed your bans for privacy.", mention_author=False
-            )
+            if ctx.guild:
+                await ctx.reply(
+                    content="I've DMed your bans for privacy.", mention_author=False
+                )
         else:
             await ctx.reply(
-                content="You need to specify either `warns`, `kicks`, or `bans`, not something else!",
+                content="You need to specify either `tosses`, `warns`, `kicks`, or `bans`, not something else!",
                 mention_author=False,
             )
 
@@ -233,7 +255,7 @@ class ModLogs(Cog):
                 content=f"{target.mention} has no {eventtype}!", mention_author=False
             )
 
-        userlog[str(target.id)][eventtype] = []
+        userlog[str(target.id)][eventtype] = {}
         set_guildfile(ctx.guild.id, "userlog", json.dumps(userlog))
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)

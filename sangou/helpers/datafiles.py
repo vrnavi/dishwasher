@@ -137,11 +137,11 @@ def fill_userlog(serverid, userid):
     uid = str(userid)
     if uid not in userlogs:
         userlogs[uid] = {
-            "warns": [],
-            "tosses": [],
-            "kicks": [],
-            "bans": [],
-            "notes": [],
+            "warns": {},
+            "tosses": {},
+            "kicks": {},
+            "bans": {},
+            "notes": {},
             "watch": {"state": False, "thread": None, "message": None},
         }
 
@@ -179,33 +179,35 @@ def fill_profile(userid):
 # Userlog Features
 
 
-def add_userlog(sid, uid, issuer, reason, event_type):
+def add_userlog(sid, uid, issuer, reason, event_type, timestamp=None):
     userlogs, uid = fill_userlog(sid, uid)
+    if not timestamp:
+        timestamp = int(datetime.datetime.now().timestamp())
 
     log_data = {
         "issuer_id": issuer.id,
         "reason": reason,
-        "timestamp": int(datetime.datetime.now().timestamp()),
     }
     if event_type not in userlogs[uid]:
-        userlogs[uid][event_type] = []
-    userlogs[uid][event_type].append(log_data)
+        userlogs[uid][event_type] = {}
+    userlogs[uid][event_type][str(timestamp)] = log_data
     set_guildfile(sid, "userlog", json.dumps(userlogs))
     return len(userlogs[uid][event_type])
 
 
-def toss_userlog(sid, uid, issuer, mlink, cid):
+def toss_userlog(sid, uid, issuer, mlink, cid, timestamp=None):
     userlogs, uid = fill_userlog(sid, uid)
+    if not timestamp:
+        timestamp = int(datetime.datetime.now().timestamp())
 
     toss_data = {
         "issuer_id": issuer.id,
+        "reason": mlink,
         "session_id": cid,
-        "post_link": mlink,
-        "timestamp": int(datetime.datetime.now().timestamp()),
     }
     if "tosses" not in userlogs[uid]:
-        userlogs[uid]["tosses"] = []
-    userlogs[uid]["tosses"].append(toss_data)
+        userlogs[uid]["tosses"] = {}
+    userlogs[uid]["tosses"][str(timestamp)] = toss_data
     set_guildfile(sid, "userlog", json.dumps(userlogs))
     return len(userlogs[uid]["tosses"])
 
