@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timezone
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
-from helpers.datafiles import get_botfile, delete_job
+from helpers.datafiles import get_file, delete_job
 from helpers.checks import ismanager
 from helpers.placeholders import game_type, game_names
 
@@ -32,7 +32,7 @@ class Timer(Cog):
         I really need to revamp this system.
 
         No arguments."""
-        ctab = get_botfile("timers")
+        ctab = get_file("timers")
         embed = discord.Embed(title=f"Active jobs")
         for jobtype in ctab:
             for jobtimestamp in ctab[jobtype]:
@@ -102,7 +102,7 @@ class Timer(Cog):
     async def minutely(self):
         await self.bot.wait_until_ready()
         try:
-            ctab = get_botfile("timers")
+            ctab = get_file("timers")
             timestamp = time.time()
             for jobtype in ctab:
                 for jobtimestamp in ctab[jobtype]:

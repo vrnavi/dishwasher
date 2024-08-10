@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timezone
 from discord.ext import commands
 from discord.ext.commands import Cog
-from helpers.datafiles import add_job, get_botfile, delete_job
+from helpers.datafiles import add_job, get_file, delete_job
 from helpers.embeds import stock_embed, author_embed
 
 
@@ -20,7 +20,7 @@ class Remind(Cog):
         There's not much more to it.
 
         No arguments."""
-        ctab = get_botfile("timers")
+        ctab = get_file("timers")
         uid = str(ctx.author.id)
         embed = stock_embed(self.bot)
         embed.title = "⏳ Your current reminders..."
@@ -50,7 +50,7 @@ class Remind(Cog):
 
         - `number`
         The index of the reminder to remove."""
-        ctab = get_botfile("timers")
+        ctab = get_file("timers")
         uid = str(ctx.author.id)
         idx = 0
         for jobtimestamp in ctab["remind"]:
