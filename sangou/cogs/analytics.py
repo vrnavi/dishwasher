@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 import json
 import shutil
 import os
-from helpers.datafiles import get_botfile, set_botfile, get_userfile, set_userfile
+from helpers.datafiles import get_file, set_file
 
 
 class Analytics(Cog):
@@ -23,7 +23,7 @@ class Analytics(Cog):
         since I'm currently too lazy to code a page system.
 
         No arguments."""
-        useranalytics = get_userfile(ctx.author.id, "analytics")
+        useranalytics = get_file("analytics", f"users/{ctx.author.id}")
         if not useranalytics:
             return await ctx.reply(
                 content="There are no analytics to show.", mention_author=False
@@ -67,7 +67,7 @@ class Analytics(Cog):
         Please see the [privacy notice](https://3gou.0ccu.lt/introduction/privacy-notice/).
 
         No arguments."""
-        userdata = get_botfile("botusers")
+        userdata = get_file("botusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
         if ctx.author.id not in userdata["nostats"]:
@@ -75,7 +75,7 @@ class Analytics(Cog):
                 content="You already have analytics toggled on.", mention_author=False
             )
         userdata["nostats"].remove(ctx.author.id)
-        set_botfile("botusers", json.dumps(userdata))
+        set_file("botusers", json.dumps(userdata))
         return await ctx.reply(
             content="**Analytics for you have been toggled on.**",
             mention_author=False,
@@ -89,7 +89,7 @@ class Analytics(Cog):
         It will delete your analytics data as well.
 
         No arguments."""
-        userdata = get_botfile("botusers")
+        userdata = get_file("botusers")
         if "nostats" not in userdata:
             userdata["nostats"] = []
         if ctx.author.id in userdata["nostats"]:
@@ -97,14 +97,14 @@ class Analytics(Cog):
                 content="You already have analytics toggled off.", mention_author=False
             )
         userdata["nostats"].append(ctx.author.id)
-        set_botfile("botusers", json.dumps(userdata))
-        useranalytics = get_userfile(ctx.author.id, "analytics")
+        set_file("botusers", json.dumps(userdata))
+        useranalytics = get_file("analytics", f"users/{ctx.author.id}")
         if not useranalytics:
             return await ctx.reply(
                 content="**Analytics for you have been toggled off.**\nAnalytics were not deleted as there is nothing to delete.",
                 mention_author=False,
             )
-        set_userfile(ctx.author.id, "analytics", json.dumps({}))
+        set_file("analytics", json.dumps({}), f"users/{ctx.author.id}")
         await ctx.reply(
             content="**Analytics for you have been toggled off.**",
             mention_author=False,
@@ -113,14 +113,14 @@ class Analytics(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx, error):
         await self.bot.wait_until_ready()
-        userdata = get_botfile("botusers")
+        userdata = get_file("botusers")
         if (
             ctx.author.bot
             or "nostats" in userdata
             and ctx.author.id in userdata["nostats"]
         ):
             return
-        useranalytics = get_userfile(ctx.author.id, "analytics")
+        useranalytics = get_file("analytics", f"users/{ctx.author.id}")
 
         if not useranalytics:
             try:
@@ -138,19 +138,19 @@ class Analytics(Cog):
             }
 
         useranalytics[str(ctx.command)]["failure"] += 1
-        set_userfile(ctx.author.id, "analytics", json.dumps(useranalytics))
+        set_file("analytics", json.dumps(useranalytics), f"users/{ctx.author.id}")
 
     @Cog.listener()
     async def on_command_completion(self, ctx):
         await self.bot.wait_until_ready()
-        userdata = get_botfile("botusers")
+        userdata = get_file("botusers")
         if (
             ctx.author.bot
             or "nostats" in userdata
             and ctx.author.id in userdata["nostats"]
         ):
             return
-        useranalytics = get_userfile(ctx.author.id, "analytics")
+        useranalytics = get_file("analytics", f"users/{ctx.author.id}")
 
         if not useranalytics:
             try:
@@ -168,7 +168,7 @@ class Analytics(Cog):
             }
 
         useranalytics[str(ctx.command)]["success"] += 1
-        set_userfile(ctx.author.id, "analytics", json.dumps(useranalytics))
+        set_file("analytics", json.dumps(useranalytics), f"users/{ctx.author.id}")
 
 
 async def setup(bot):

@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 import datetime
 import json
 import asyncio
-from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.datafiles import get_file, set_file
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed
 from helpers.placeholders import random_msg
@@ -191,9 +191,9 @@ class ModReport(Cog):
                 delete_after=5,
                 allowed_mentions=discord.AllowedMentions(replied_user=False),
             )
-        reportlog = get_guildfile(guild.id, "reportlog")
+        reportlog = get_file("reportlog", f"servers/{guild.id}")
         reportlog[int(datetime.datetime.now().timestamp())] = ctx.author.id
-        set_guildfile(guild.id, "reportlog", json.dumps(reportlog))
+        set_file("reportlog", json.dumps(reportlog), f"servers/{ctx.guild.id}")
         await channel.send(content=staff_role.mention if ping else "", embed=embed)
         await message.delete()
         return await ctx.send(
@@ -211,12 +211,12 @@ class ModReport(Cog):
     async def cleaner(self):
         # water go down the hole x2
         for g in self.bot.guilds:
-            reportlog = get_guildfile(g.id, "reportlog")
+            reportlog = get_file("reportlog", f"servers/{g.id}")
             cleanlog = {}
             for instance, user in reportlog.items():
                 if int(datetime.datetime.now().timestamp()) - 259200 > int(instance):
                     cleanlog[instance] = user
-        set_guildfile(g.id, "reportlog", json.dumps(cleanlog))
+            set_file("reportlog", json.dumps(cleanlog), f"servers/{g.id}")
 
 
 async def setup(bot):

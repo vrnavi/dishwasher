@@ -3,7 +3,7 @@ import discord
 import json
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
-from helpers.datafiles import get_guildfile, fill_usertrack, set_guildfile
+from helpers.datafiles import get_file, fill_usertrack, set_file
 
 
 class usertrack(Cog):
@@ -23,7 +23,7 @@ class usertrack(Cog):
         usertracks, uid = fill_usertrack(member.guild.id, member.id)
         if "jointime" not in usertracks[uid] or not usertracks[uid]["jointime"]:
             usertracks[uid]["jointime"] = int(member.joined_at.timestamp())
-        set_guildfile(member.guild.id, "usertrack", json.dumps(usertracks))
+        set_file("usertrack", json.dumps(usertracks), f"servers/{member.guild.id}")
 
     @commands.guild_only()
     @commands.command()
@@ -34,7 +34,7 @@ class usertrack(Cog):
 
         - `target`
         The user to view time spent for."""
-        usertracks = get_guildfile(ctx.guild.id, "usertrack")
+        usertracks = get_file("usertrack", f"servers/{ctx.guild.id}")
         if not target:
             target = ctx.author
         if str(target.id) not in usertracks:
@@ -76,7 +76,7 @@ class usertrack(Cog):
     async def toilet(self):
         # water go down the hole
         for g in self.interactivecache:
-            usertracks = get_guildfile(g, "usertrack")
+            usertracks = get_file("usertrack", f"servers/{g}")
             for u in self.interactivecache[g]:
                 usertracks, uid = fill_usertrack(g, u, usertracks)
                 if not usertracks[uid]["jointime"]:
@@ -84,7 +84,7 @@ class usertrack(Cog):
                         self.bot.get_guild(g).get_member(u).joined_at.timestamp()
                     )
                 usertracks[uid]["truedays"] += 1
-            set_guildfile(g, "usertrack", json.dumps(usertracks))
+            set_file("usertrack", json.dumps(usertracks), f"servers/{g}")
 
 
 async def setup(bot):

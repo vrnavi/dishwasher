@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import isadmin
 from helpers.embeds import stock_embed
-from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.datafiles import get_file, set_file
 
 
 class Snippets(Cog):
@@ -26,7 +26,7 @@ class Snippets(Cog):
 
         - `name`
         The name of the snippet to post. Optional."""
-        snippets = get_guildfile(ctx.guild.id, "snippets")
+        snippets = get_file("snippets", f"servers/{ctx.guild.id}")
         if not name:
             embed = stock_embed(self.bot)
             embed.title = "✂️ Configured Snippets"
@@ -82,7 +82,7 @@ class Snippets(Cog):
         The name of the snippet to create.
         - `contents`
         The contents of the snippet."""
-        snippets = get_guildfile(ctx.guild.id, "snippets")
+        snippets = get_file("snippets", f"servers/{ctx.guild.id}")
         if name.lower() in snippets:
             return await ctx.reply(
                 content=f"`{name}` is already a snippet.",
@@ -95,14 +95,14 @@ class Snippets(Cog):
                     mention_author=False,
                 )
             snippets[name.lower()] = contents
-            set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+            set_file("snippets", json.dumps(snippets), f"servers/{ctx.guild.id}")
             await ctx.reply(
                 content=f"`{name.lower()}` has been saved as an alias.",
                 mention_author=False,
             )
         else:
             snippets[name.lower()] = contents
-            set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+            set_file("snippets", json.dumps(snippets), f"servers/{ctx.guild.id}")
             await ctx.reply(
                 content=f"`{name.lower()}` has been saved.",
                 mention_author=False,
@@ -118,14 +118,14 @@ class Snippets(Cog):
 
         - `name`
         The name of the snippet to delete."""
-        snippets = get_guildfile(ctx.guild.id, "snippets")
+        snippets = get_file("snippets", f"servers/{ctx.guild.id}")
         if name.lower() not in snippets:
             return await ctx.reply(
                 content=f"`{name.lower()}` is not a snippet.",
                 mention_author=False,
             )
         del snippets[name.lower()]
-        set_guildfile(ctx.guild.id, "snippets", json.dumps(snippets))
+        set_file("snippets", json.dumps(snippets), f"servers/{ctx.guild.id}")
         await ctx.reply(
             content=f"`{name.lower()}` has been deleted.",
             mention_author=False,

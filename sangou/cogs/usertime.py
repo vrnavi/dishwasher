@@ -4,7 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo, available_timezones
 from discord.ext.commands import Cog, Context, Bot
 from discord.ext import commands
-from helpers.datafiles import fill_profile, set_userfile
+from helpers.datafiles import fill_profile, set_file
 
 
 class usertime(Cog):
@@ -32,7 +32,7 @@ class usertime(Cog):
             return
         elif timezone == "remove":
             userdata["timezone"] = None
-            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
+            set_file("profile", json.dumps(userdata), f"users/{ctx.author.id}")
             await ctx.reply(f"Your timezone has been removed.", mention_author=False)
         elif timezone not in available_timezones():
             await ctx.reply(
@@ -42,7 +42,7 @@ class usertime(Cog):
             return
         else:
             userdata["timezone"] = timezone
-            set_userfile(ctx.author.id, "profile", json.dumps(userdata))
+            set_file("profile", json.dumps(userdata), f"users/{ctx.author.id}")
             await ctx.reply(
                 f"Your timezone has been set to `{timezone}`.", mention_author=False
             )

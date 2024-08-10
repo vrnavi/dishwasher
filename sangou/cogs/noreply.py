@@ -5,10 +5,9 @@ import json
 import re
 import datetime
 import asyncio
-from helpers.datafiles import get_guildfile, get_userfile
 from helpers.checks import ismod
 from helpers.sv_config import get_config
-from helpers.datafiles import get_userfile, fill_profile, set_userfile
+from helpers.datafiles import get_file, fill_profile, set_file
 from helpers.embeds import stock_embed, author_embed
 
 
@@ -74,7 +73,7 @@ class Reply(Cog):
             self.violations[message.guild.id] = {}
         if message.author.id not in self.violations[message.guild.id]:
             self.violations[message.guild.id][message.author.id] = 0
-            usertracks = get_guildfile(message.guild.id, "usertrack")
+            usertracks = get_file("usertrack", f"servers/{message.guild.id}")
             if (
                 str(message.author.id) not in usertracks
                 or usertracks[str(message.author.id)]["truedays"] < 14
@@ -257,7 +256,7 @@ class Reply(Cog):
                 profile["replypref"] = "waitbeforereplyping"
             elif str(reaction) == reacts[3]:
                 profile["replypref"] = "noreplyping"
-            set_userfile(ctx.author.id, "profile", json.dumps(profile))
+            set_file("profile", json.dumps(profile), f"users/{ctx.author.id}")
             embed.clear_fields()
             fieldadd()
             embed.color = discord.Color.gold()

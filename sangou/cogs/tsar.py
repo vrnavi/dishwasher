@@ -5,7 +5,7 @@ import asyncio
 from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 from helpers.checks import isadmin
-from helpers.datafiles import get_guildfile
+from helpers.datafiles import get_file
 from helpers.embeds import stock_embed
 from helpers.sv_config import get_raw_config
 from helpers.placeholders import random_msg
@@ -44,7 +44,7 @@ class TSAR(Cog):
             )
 
         if foundrole["days"]:
-            usertracks = get_guildfile(ctx.guild.id, "usertrack")
+            usertracks = get_file("usertrack", f"servers/{ctx.guild.id}")
             if str(ctx.author.id) not in usertracks and foundrole["days"] != 0:
                 return await ctx.reply(
                     content=f"You cannot get this role, as you must wait `{foundrole['days'] - 0}` days.",

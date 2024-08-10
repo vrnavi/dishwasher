@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 import json
 from datetime import datetime, timezone
 from helpers.checks import ismod, isadmin
-from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.datafiles import get_file, set_file
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, author_embed, sympage
 
@@ -15,7 +15,7 @@ class ModLogs(Cog):
 
     def get_log_embeds(self, sid: int, user, own: bool = False):
         uid = str(user.id)
-        userlog = get_guildfile(sid, "userlog")
+        userlog = get_file("userlog", f"servers/{sid}")
         events = ["notes", "tosses", "warns", "kicks", "bans"]
 
         if uid not in userlog:
@@ -245,7 +245,7 @@ class ModLogs(Cog):
             return await ctx.reply(
                 content=f"{eventtype} is not a valid event type.", mention_author=False
             )
-        userlog = get_guildfile(ctx.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{ctx.guild.id}")
         if str(target.id) not in userlog:
             return await ctx.reply(
                 content=f"{target.mention} has no logs!", mention_author=False
@@ -256,7 +256,7 @@ class ModLogs(Cog):
             )
 
         userlog[str(target.id)][eventtype] = {}
-        set_guildfile(ctx.guild.id, "userlog", json.dumps(userlog))
+        set_file("userlog", json.dumps(userlog), f"servers/{ctx.guild.id}")
         safe_name = await commands.clean_content(escape_markdown=True).convert(
             ctx, str(target)
         )
@@ -299,7 +299,7 @@ class ModLogs(Cog):
             return await ctx.reply(
                 content=f"{eventtype} is not a valid event type.", mention_author=False
             )
-        userlog = get_guildfile(ctx.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{ctx.guild.id}")
         if str(target.id) not in userlog:
             return await ctx.reply(
                 content=f"{target.mention} has no logs!", mention_author=False
@@ -314,7 +314,7 @@ class ModLogs(Cog):
             )
 
         del userlog[str(target.id)][eventtype][index - 1]
-        set_guildfile(ctx.guild.id, "userlog", json.dumps(userlog))
+        set_file("userlog", json.dumps(userlog), f"servers/{ctx.guild.id}")
         await ctx.reply(content=f"I've deleted that event.", mention_author=False)
 
         mlog = self.bot.pull_channel(

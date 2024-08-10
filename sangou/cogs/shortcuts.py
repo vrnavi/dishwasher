@@ -2,7 +2,7 @@ import json
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-from helpers.datafiles import get_userfile, fill_profile, set_userfile
+from helpers.datafiles import fill_profile, set_file
 from helpers.embeds import stock_embed, author_embed
 
 
@@ -58,7 +58,7 @@ class Shortcuts(Cog):
         )
         if not len(profile["prefixes"]) >= maxprefixes:
             profile["prefixes"].append(f"{arg} ")
-            set_userfile(ctx.author.id, "profile", json.dumps(profile))
+            set_file("profile", json.dumps(profile), f"users/{ctx.author.id}")
             await ctx.reply(content="Prefix added.", mention_author=False)
         else:
             await ctx.reply(
@@ -77,7 +77,7 @@ class Shortcuts(Cog):
         profile = fill_profile(ctx.author.id)
         try:
             profile["prefixes"].pop(number - 1)
-            set_userfile(ctx.author.id, "profile", json.dumps(profile))
+            set_file("profile", json.dumps(profile), f"users/{ctx.author.id}")
             await ctx.reply(content="Prefix removed.", mention_author=False)
         except IndexError:
             await ctx.reply(content="This prefix does not exist.", mention_author=False)
@@ -150,7 +150,7 @@ class Shortcuts(Cog):
             )
 
         profile["aliases"].append({botcommand.qualified_name: alias})
-        set_userfile(ctx.author.id, "profile", json.dumps(profile))
+        set_file("profile", json.dumps(profile), f"users/{ctx.author.id}")
         return await ctx.reply(content="Alias added.", mention_author=False)
 
     @aliases.command(name="remove")
@@ -164,7 +164,7 @@ class Shortcuts(Cog):
         profile = fill_profile(ctx.author.id)
         try:
             profile["aliases"].pop(number - 1)
-            set_userfile(ctx.author.id, "profile", json.dumps(profile))
+            set_file("profile", json.dumps(profile), f"users/{ctx.author.id}")
             await ctx.reply(content="Alias removed.", mention_author=False)
         except IndexError:
             await ctx.reply(content="This alias does not exist.", mention_author=False)

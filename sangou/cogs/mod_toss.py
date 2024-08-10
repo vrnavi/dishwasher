@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from io import BytesIO
 from helpers.checks import ismod
-from helpers.datafiles import add_userlog, toss_userlog, get_tossfile, set_tossfile
+from helpers.datafiles import add_userlog, toss_userlog, get_file, set_file
 from helpers.placeholders import random_msg
 from helpers.archive import log_channel
 from helpers.embeds import (
@@ -89,7 +89,7 @@ class ModToss(Cog):
                 return True
 
     def get_session(self, member):
-        tosses = get_tossfile(member.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{member.guild.id}/toss")
         if not tosses:
             return None
         session = None
@@ -109,7 +109,7 @@ class ModToss(Cog):
         )
         modrole = self.bot.pull_role(guild, get_config(guild.id, "staff", "modrole"))
         botrole = self.bot.pull_role(guild, get_config(guild.id, "staff", "botrole"))
-        tosses = get_tossfile(guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{guild.id}/toss")
 
         if all(
             [
@@ -123,7 +123,7 @@ class ModToss(Cog):
             if c not in [g.name for g in guild.channels]:
                 if c not in tosses:
                     tosses[c] = {"tossed": {}, "untossed": [], "left": []}
-                    set_tossfile(guild.id, "tosses", json.dumps(tosses))
+                    set_file("tosses", json.dumps(tosses), f"servers/{guild.id}/toss")
 
                 overwrites = {
                     guild.default_role: discord.PermissionOverwrite(read_messages=False)
@@ -161,11 +161,11 @@ class ModToss(Cog):
             and not rx.is_assignable()
         ]
 
-        tosses = get_tossfile(user.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{user.guild.id}/toss")
         tosses[tosschannel.name]["tossed"][str(user.id)] = [
             role.id for role in prevroles
         ]
-        set_tossfile(user.guild.id, "tosses", json.dumps(tosses))
+        set_file("tosses", json.dumps(tosses), f"servers/{user.guild.id}/toss")
 
         if prevroles:
             await user.remove_roles(
@@ -192,7 +192,7 @@ class ModToss(Cog):
         embed = stock_embed(self.bot)
         embed.title = "👁‍🗨 Toss Channel Sessions..."
         embed.color = ctx.author.color
-        tosses = get_tossfile(ctx.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{ctx.guild.id}/toss")
 
         if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
             channels = [ctx.channel.name]
@@ -412,7 +412,7 @@ class ModToss(Cog):
             )
 
         # Get roles, channels, and configs.
-        tosses = get_tossfile(ctx.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{ctx.guild.id}/toss")
         if not users:
             users = [
                 ctx.guild.get_member(int(u))
@@ -509,7 +509,7 @@ class ModToss(Cog):
                 )
                 await notifychannel.send(embed=embed)
 
-        set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
+        set_file("tosses", json.dumps(tosses), f"servers/{ctx.guild.id}/toss")
         del self.busy[ctx.guild.id]
 
         if not tosses[ctx.channel.name]:
@@ -545,7 +545,7 @@ class ModToss(Cog):
             notify_channel = self.bot.pull_channel(
                 ctx.guild, get_config(ctx.guild.id, "staff", "staffchannel")
             )
-        tosses = get_tossfile(ctx.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{ctx.guild.id}/toss")
 
         if tosses[ctx.channel.name]["tossed"]:
             return await ctx.reply(
@@ -623,7 +623,7 @@ class ModToss(Cog):
             await notify_channel.send(embed=embed)
 
         del tosses[ctx.channel.name]
-        set_tossfile(ctx.guild.id, "tosses", json.dumps(tosses))
+        set_file("tosses", json.dumps(tosses), f"servers/{ctx.guild.id}/toss")
 
         await ctx.channel.delete(reason="Sangou Toss")
         return
@@ -787,7 +787,7 @@ class ModToss(Cog):
                 member.guild, get_config(member.guild.id, "staff", "staffchannel")
             )
 
-        tosses = get_tossfile(member.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{member.guild.id}/toss")
         tosschannel = None
 
         if "LEFTGUILD" not in tosses or str(member.id) not in tosses["LEFTGUILD"]:
@@ -802,7 +802,7 @@ class ModToss(Cog):
         failroles, prevroles = await self.perform_toss(
             member, member.guild.me, tosschannel
         )
-        tosses = get_tossfile(member.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{member.guild.id}/toss")
         tosses[tosschannel.name]["tossed"][str(member.id)] = tosses["LEFTGUILD"][
             str(member.id)
         ]
@@ -815,7 +815,7 @@ class ModToss(Cog):
             and member.id in tosses[tosschannel.name]["left"]
         ):
             tosses[tosschannel.name]["left"].remove(member.id)
-        set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
+        set_file("tosses", json.dumps(tosses), f"servers/{member.guild.id}/toss")
 
         await tosschannel.set_permissions(member, read_messages=True)
         tossmsg = await tosschannel.send(
@@ -846,13 +846,13 @@ class ModToss(Cog):
             return
         tosschannel = self.bot.pull_channel(member.guild, session)
 
-        tosses = get_tossfile(member.guild.id, "tosses")
+        tosses = get_file("tosses", f"servers/{member.guild.id}/toss")
         if "LEFTGUILD" not in tosses:
             tosses["LEFTGUILD"] = {}
         tosses["LEFTGUILD"][str(member.id)] = tosses[session]["tossed"][str(member.id)]
         tosses[session]["left"].append(member.id)
         del tosses[session]["tossed"][str(member.id)]
-        set_tossfile(member.guild.id, "tosses", json.dumps(tosses))
+        set_file("tosses", json.dumps(tosses), f"servers/{member.guild.id}/toss")
 
         notifychannel = self.bot.pull_channel(
             member.guild, get_config(member.guild.id, "toss", "notificationchannel")
@@ -889,11 +889,11 @@ class ModToss(Cog):
             )
 
             self.busy[after.guild.id] = after.id
-            tosses = get_tossfile(after.guild.id, "tosses")
+            tosses = get_file("tosses", f"servers/{after.guild.id}/toss")
             roles = tosses[session]["tossed"][str(after.id)]
             tosses[session]["untossed"].append(after.id)
             del tosses[session]["tossed"][str(after.id)]
-            set_tossfile(after.guild.id, "tosses", json.dumps(tosses))
+            set_file("tosses", json.dumps(tosses), f"servers/{after.guild.id}/toss")
 
             if roles:
                 roles = [
@@ -925,11 +925,11 @@ class ModToss(Cog):
         if self.enabled(channel.guild) and channel.name in get_config(
             channel.guild.id, "toss", "tosschannels"
         ):
-            tosses = get_tossfile(channel.guild.id, "tosses")
+            tosses = get_file("tosses", f"servers/{channel.guild.id}/toss")
             if channel.name not in tosses:
                 return
             del tosses[channel.name]
-            set_tossfile(channel.guild.id, "tosses", json.dumps(tosses))
+            set_file("tosses", json.dumps(tosses), f"servers/{channel.guild.id}/toss")
 
 
 async def setup(bot):

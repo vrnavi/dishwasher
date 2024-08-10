@@ -4,7 +4,7 @@ import json
 import re
 import datetime
 import os
-from helpers.datafiles import add_userlog, get_guildfile
+from helpers.datafiles import add_userlog, get_file
 from helpers.sv_config import get_config
 from helpers.embeds import (
     stock_embed,
@@ -47,7 +47,7 @@ class Logs2(Cog):
 
         embeds.append(embed)
 
-        warns = get_guildfile(member.guild.id, "userlog")
+        warns = get_file("userlog", f"servers/{member.guild.id}")
         try:
             if warns[str(member.id)]["warns"]:
                 embed = stock_embed(self.bot)

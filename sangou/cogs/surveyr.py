@@ -12,8 +12,8 @@ from helpers.datafiles import (
     surveyr_event_types,
     new_survey,
     edit_survey,
-    get_guildfile,
-    set_guildfile,
+    get_file,
+    set_file,
 )
 
 
@@ -93,7 +93,7 @@ class Surveyr(Cog):
         No arguments."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        surveys = get_guildfile(ctx.guild.id, "surveys")
+        surveys = get_file("surveys", f"servers/{ctx.guild.id}")
         if not surveys:
             await ctx.reply(content="There are no surveys yet.", mention_author=False)
         msg = []
@@ -135,7 +135,7 @@ class Surveyr(Cog):
         The reason for the action."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        surveys = get_guildfile(ctx.guild.id, "surveys")
+        surveys = get_file("surveys", f"servers/{ctx.guild.id}")
         survey_channel = self.bot.pull_channel(
             ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
         )
@@ -168,7 +168,9 @@ class Surveyr(Cog):
         The reason to apply to the cases."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
+        cases = self.case_handler(
+            caseids, get_file("surveys", f"servers/{ctx.guild.id}")
+        )
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
         if len(cases) > 20:
@@ -189,7 +191,7 @@ class Surveyr(Cog):
         msg = []
         for case in cases:
             try:
-                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+                survey = get_file("surveys", f"servers/{ctx.guild.id}")[str(case)]
                 msg = await self.bot.pull_channel(
                     ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
                 ).fetch_message(survey["post_id"])
@@ -226,7 +228,9 @@ class Surveyr(Cog):
         The IDs to censor. Can be single (`15`) or multiple (`15..18`)."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
+        cases = self.case_handler(
+            caseids, get_file("surveys", f"servers/{ctx.guild.id}")
+        )
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
         if len(cases) > 20:
@@ -247,7 +251,7 @@ class Surveyr(Cog):
 
         for case in cases:
             try:
-                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+                survey = get_file("surveys", f"servers/{ctx.guild.id}")[str(case)]
                 member = await self.bot.fetch_user(survey["target_id"])
                 censored_username = "`" + " " * len(member.name) + "`"
                 censored_globalname = (
@@ -287,7 +291,9 @@ class Surveyr(Cog):
         The IDs to uncensor. Can be single (`15`) or multiple (`15..18`)."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
+        cases = self.case_handler(
+            caseids, get_file("surveys", f"servers/{ctx.guild.id}")
+        )
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
         if len(cases) > 20:
@@ -308,7 +314,7 @@ class Surveyr(Cog):
 
         for case in cases:
             try:
-                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+                survey = get_file("surveys", f"servers/{ctx.guild.id}")[str(case)]
                 member = await self.bot.fetch_user(survey["target_id"])
                 msg = await self.bot.pull_channel(
                     ctx.guild, get_config(ctx.guild.id, "surveyr", "surveychannel")
@@ -338,7 +344,7 @@ class Surveyr(Cog):
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
         cases = self.case_handler(
-            caseid + "..l", get_guildfile(ctx.guild.id, "surveys")
+            caseid + "..l", get_file("surveys", f"servers/{ctx.guild.id}")
         )
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
@@ -364,7 +370,7 @@ class Surveyr(Cog):
 
         for case in cases:
             try:
-                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+                survey = get_file("surveys", f"servers/{ctx.guild.id}")[str(case)]
             except KeyError:
                 await ctx.reply(
                     content="You sent cases that exceed the actual case list.\nThese cases have been ignored.",
@@ -387,9 +393,9 @@ class Surveyr(Cog):
                     f"**Reason:** {survey['reason']}"
                 )
             )
-            surveys = get_guildfile(ctx.guild.id, "surveys")
+            surveys = get_file("surveys", f"servers/{ctx.guild.id}")
             surveys[str(case)]["post_id"] = msg.id
-            set_guildfile(ctx.guild.id, "surveys", json.dumps(surveys))
+            set_file("surveys", json.dumps(surveys), f"servers/{ctx.guild.id}")
 
         reposted = int(cases[0]) if len(cases) == 1 else f"{cases[0]}-{cases[-1]}"
         await ctx.reply(content=f"Reposted `{reposted}`.", mention_author=False)
@@ -405,14 +411,16 @@ class Surveyr(Cog):
         The IDs to dump. Can be single (`15`) or multiple (`15..18`)."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(content=self.nocfgmsg, mention_author=False)
-        cases = self.case_handler(caseids, get_guildfile(ctx.guild.id, "surveys"))
+        cases = self.case_handler(
+            caseids, get_file("surveys", f"servers/{ctx.guild.id}")
+        )
         if not cases:
             return await ctx.reply(content="Malformed cases.", mention_author=False)
 
         userids = []
         for case in cases:
             try:
-                survey = get_guildfile(ctx.guild.id, "surveys")[str(case)]
+                survey = get_file("surveys", f"servers/{ctx.guild.id}")[str(case)]
                 if survey["type"] == "bans":
                     userids.append(str(survey["target_id"]))
             except KeyError:
@@ -529,7 +537,7 @@ class Surveyr(Cog):
             await guild.fetch_ban(member)
             self.bancooldown[guild.id].remove(member.id)
         except discord.NotFound:
-            reason = get_guildfile(guild.id, "surveys")[str(caseid)]["reason"]
+            reason = get_file("surveys", f"servers/{guild.id}")[str(caseid)]["reason"]
             edit_survey(guild.id, caseid, entry.user.id, reason, "softbans")
             msg = await guild.get_channel(survey_channel).fetch_message(msg.id)
             content = msg.content.split("\n")

@@ -16,7 +16,7 @@ from contextlib import redirect_stdout
 from helpers.embeds import stock_embed
 from helpers.checks import ismanager
 from helpers.sv_config import get_config
-from helpers.datafiles import get_botfile, set_botfile, get_guildfile
+from helpers.datafiles import get_file, set_file
 from helpers.placeholders import random_msg
 
 
@@ -415,7 +415,7 @@ class Admin(Cog):
 
         - `user`
         The user to bar."""
-        botusers = get_botfile("botusers")
+        botusers = get_file("botusers")
         if "botban" not in botusers:
             botusers["botban"] = []
         if user.id in botusers["botban"]:
@@ -423,7 +423,7 @@ class Admin(Cog):
                 content="This user is already botbanned.", mention_author=False
             )
         botusers["botban"].append(user.id)
-        set_botfile("botusers", json.dumps(botusers))
+        set_file("botusers", json.dumps(botusers))
         return await ctx.reply(
             content="This user is now botbanned.", mention_author=False
         )
@@ -437,7 +437,7 @@ class Admin(Cog):
 
         - `user`
         The user to unbar."""
-        botusers = get_botfile("botusers")
+        botusers = get_file("botusers")
         if "botban" not in botusers:
             botusers["botban"] = []
         if user.id not in botusers["botban"]:
@@ -445,7 +445,7 @@ class Admin(Cog):
                 content="This user is not already botbanned.", mention_author=False
             )
         botusers["botban"].remove(user.id)
-        set_botfile("botusers", json.dumps(botusers))
+        set_file("botusers", json.dumps(botusers))
         return await ctx.reply(
             content="This user is now unbotbanned.", mention_author=False
         )

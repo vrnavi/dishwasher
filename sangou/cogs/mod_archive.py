@@ -12,7 +12,7 @@ from discord.ext.commands import Cog
 from helpers.checks import ismod, isadmin
 from helpers.archive import log_channel
 from helpers.sv_config import get_config
-from helpers.datafiles import get_guildfile, set_guildfile, get_tossfile, set_tossfile
+from helpers.datafiles import get_file, set_file
 from helpers.embeds import stock_embed, author_embed
 
 
@@ -35,7 +35,7 @@ class ModArchives(Cog):
         if ctx.guild.get_member(user.id):
             user = ctx.guild.get_member(user.id)
         uid = str(user.id)
-        userlog = get_guildfile(ctx.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{ctx.guild.id}")
         embed = stock_embed(self.bot)
         author_embed(embed, user)
         embed.title = f"📁 {user.name}'s archives..."
@@ -117,10 +117,10 @@ class ModArchives(Cog):
         if ctx.guild.get_member(user.id):
             user = ctx.guild.get_member(user.id)
         uid = str(user.id)
-        userlog = get_guildfile(ctx.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{ctx.guild.id}")
         embed = stock_embed(self.bot)
 
-        traces = get_tossfile(ctx.guild.id, "traces")
+        traces = get_file("traces", f"servers/{ctx.guild.id}/toss")
         if "sessions" not in traces:
             traces["sessions"] = {}
         if "users" not in traces:
@@ -217,7 +217,7 @@ class ModArchives(Cog):
                 files=filelist,
             )
             await ctx.reply(content="I DMed it to you!", mention_author=False)
-            set_tossfile(ctx.guild.id, "traces", json.dumps(traces))
+            set_file("traces", json.dumps(traces), f"servers/{ctx.guild.id}/toss")
         except:
             return await ctx.reply(content="I can't DM you!", mention_author=False)
 
@@ -238,7 +238,7 @@ class ModArchives(Cog):
         if ctx.guild.get_member(user.id):
             user = ctx.guild.get_member(user.id)
         uid = str(user.id)
-        userlog = get_guildfile(ctx.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{ctx.guild.id}")
         embed = stock_embed(self.bot)
         if uid not in userlog:
             embed.title = "📂 About that archive..."
@@ -251,7 +251,7 @@ class ModArchives(Cog):
         author_embed(embed, user)
         embed.title = "🔍 Archive traces..."
 
-        traces = get_tossfile(ctx.guild.id, "traces")
+        traces = get_file("traces", f"servers/{ctx.guild.id}/toss")
         if type(archive) == str:
             path = f"data/servers/{ctx.guild.id}/toss/archives/users/{uid}"
             if not os.path.exists(path) and [f for f in os.listdir(path)]:

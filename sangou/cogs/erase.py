@@ -9,7 +9,7 @@ import zipfile
 import os
 import aiohttp
 from helpers.sv_config import get_config
-from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.datafiles import get_file, set_file
 from helpers.placeholders import random_msg
 
 
@@ -24,13 +24,13 @@ class Erase(Cog):
         self.bot.loop.create_task(self.process_erased())
 
     def add_erased(self, guild, user, keywords, channels):
-        erasequeue = get_guildfile(guild.id, "erasures")
+        erasequeue = get_file("erasures", f"servers/{guild.id}")
         erasequeue[user.id] = {
             "keywords": keywords,
             "channels": channels,
             "completed": [],
         }
-        set_guildfile(guild.id, "erasures", json.dumps(erasequeue))
+        set_file("erasures", json.dumps(erasequeue), f"servers/{guild.id}")
 
     async def process_erased(self):
         await self.bot.wait_until_ready()
@@ -39,7 +39,7 @@ class Erase(Cog):
         while True:
             # Guild loop.
             for g in self.bot.guilds:
-                erasequeue = get_guildfile(g.id, "erasures")
+                erasequeue = get_file("erasures", f"servers/{g.id}")
                 if not erasequeue:
                     continue
                 # User loop.
@@ -56,7 +56,11 @@ class Erase(Cog):
                             except:
                                 # Assume channel already deleted.
                                 erasequeue[userid]["channels"].append(channel)
-                                set_guildfile(g.id, "erasures", json.dumps(erasequeue))
+                                set_file(
+                                    "erasures",
+                                    json.dumps(erasequeue),
+                                    f"servers/{g.id}",
+                                )
                                 continue
                     else:
                         channels = g.text_channels + g.voice_channels
@@ -137,7 +141,7 @@ class Erase(Cog):
                             except:
                                 continue
                         erasequeue[userid]["completed"].append(channel.id)
-                        set_guildfile(g.id, "erasures", json.dumps(erasequeue))
+                        set_file("erasures", json.dumps(erasequeue), f"servers/{g.id}")
                     if os.path.exists("data/erasedbatch.zip"):
                         with open("data/erasedbatch.zip", "rb") as batchfile:
                             formdata = aiohttp.FormData()
@@ -156,7 +160,7 @@ class Erase(Cog):
                         "All messages that could be deleted have been deleted."
                     )
                     del erasequeue[userid]
-                    set_guildfile(g.id, "erasures", json.dumps(erasequeue))
+                    set_file("erasures", json.dumps(erasequeue), f"servers/{g.id}")
             await asyncio.sleep(60)
 
     @commands.bot_has_permissions(manage_messages=True)
@@ -171,7 +175,7 @@ class Erase(Cog):
 
         - `verify`
         The code required to activate this command. Optional."""
-        erasequeue = get_guildfile(ctx.guild.id, "erasures")
+        erasequeue = get_file("erasures", f"servers/{ctx.guild.id}")
         if str(ctx.author.id) in erasequeue:
             return await ctx.reply(
                 content=f"You have already requested to delete your messages from `{ctx.guild.name}`.",

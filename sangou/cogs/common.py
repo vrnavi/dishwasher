@@ -6,7 +6,7 @@ import time
 import json
 import math
 import parsedatetime
-from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.datafiles import get_file, set_file
 from helpers.sv_config import get_config
 from helpers.placeholders import random_msg
 from discord.ext.commands import Cog
@@ -150,7 +150,7 @@ class Common(Cog):
             real_invites = await member.guild.invites()
         except:
             return "Unable: Missing Permissions."
-        invites = get_guildfile(member.guild.id, "invites")
+        invites = get_file("invites", f"servers/{member.guild.id}")
 
         # Add unknown active invites. Can happen if invite was manually created
         for invite in real_invites:
@@ -182,7 +182,7 @@ class Common(Cog):
             del invites[id]
 
         # Save invites data.
-        set_guildfile(member.guild.id, "invites", json.dumps(invites))
+        set_file("invites", json.dumps(invites), f"servers/{member.guild.id}")
 
         # Prepare the invite correlation message
         if len(probable_invites_used) == 1:

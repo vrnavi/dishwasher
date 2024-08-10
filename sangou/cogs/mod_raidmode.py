@@ -7,7 +7,7 @@ import json
 from helpers.checks import ismod
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, createdat_embed, author_embed
-from helpers.datafiles import get_guildfile, set_guildfile
+from helpers.datafiles import get_file, set_file
 
 
 class ModRaidmode(Cog):
@@ -29,7 +29,7 @@ class ModRaidmode(Cog):
         Medium requires `raidrole` to be configured.
 
         No arguments."""
-        raidmode = get_guildfile(ctx.guild.id, "raidmode")
+        raidmode = get_file("raidmode", f"servers/{ctx.guild.id}")
         if "setting" not in raidmode:
             raidmode["setting"] = 0
         embed = stock_embed(self.bot)
@@ -113,7 +113,7 @@ class ModRaidmode(Cog):
                 raidmode["setting"] = 2
             elif str(reaction) == "🟥":
                 raidmode["setting"] = 3
-            set_guildfile(ctx.guild.id, "raidmode", json.dumps(raidmode))
+            set_file("raidmode", json.dumps(raidmode), f"servers/{ctx.guild.id}")
             embed.clear_fields()
             fieldadd()
             embed.color = discord.Color.gold()
@@ -129,7 +129,7 @@ class ModRaidmode(Cog):
         )
         if not staffchannel:
             return
-        raidmode = get_guildfile(member.guild.id, "raidmode")
+        raidmode = get_file("raidmode", f"servers/{member.guild.id}")
         if "setting" not in raidmode:
             return
 

@@ -12,7 +12,7 @@ import discord
 import datetime
 import itertools
 from discord.ext import commands
-from helpers.datafiles import fill_profile, get_botfile
+from helpers.datafiles import fill_profile, get_file
 from helpers.errors import handle_code_error, handle_command_error
 
 
@@ -111,8 +111,8 @@ async def on_message(message):
     if message.author.bot:
         return
     if (
-        "botban" in get_botfile("botusers")
-        and message.author.id in get_botfile("botusers")["botban"]
+        "botban" in get_file("botusers")
+        and message.author.id in get_file("botusers")["botban"]
     ):
         return
 

@@ -3,7 +3,7 @@ import datetime
 from discord.ext import commands
 from discord.ext.commands import Cog
 from helpers.checks import ismod
-from helpers.datafiles import watch_userlog, get_guildfile
+from helpers.datafiles import watch_userlog, get_file
 from helpers.placeholders import random_msg, create_log_embed
 from helpers.sv_config import get_config
 from helpers.embeds import stock_embed, createdat_embed, joinedat_embed
@@ -90,7 +90,7 @@ class ModWatch(Cog):
             if self.bot.check_if_target_is_staff(target):
                 return await ctx.send("I cannot unwatch Staff members.")
 
-        userlog = get_guildfile(ctx.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{ctx.guild.id}")
         if userlog[str(target.id)]["watch"]["state"]:
             trackerthread = await self.bot.fetch_channel(
                 userlog[str(target.id)]["watch"]["thread"]
@@ -115,7 +115,7 @@ class ModWatch(Cog):
         await self.bot.wait_until_ready()
         if not message.content or not message.guild or not self.enabled(message.guild):
             return
-        userlog = get_guildfile(message.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{message.guild.id}")
         try:
             if userlog[str(message.author.id)]["watch"]["state"]:
                 trackerthread = await self.bot.fetch_channel(
@@ -155,7 +155,7 @@ class ModWatch(Cog):
         await self.bot.wait_until_ready()
         if not self.enabled(member.guild):
             return
-        userlog = get_guildfile(member.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{member.guild.id}")
         try:
             if userlog[str(member.id)]["watch"]["state"]:
                 trackerthread = await self.bot.fetch_channel(
@@ -200,7 +200,7 @@ class ModWatch(Cog):
         await self.bot.wait_until_ready()
         if not self.enabled(member.guild):
             return
-        userlog = get_guildfile(member.guild.id, "userlog")
+        userlog = get_file("userlog", f"servers/{member.guild.id}")
         try:
             if userlog[str(member.id)]["watch"]["state"]:
                 trackerthread = await self.bot.fetch_channel(
