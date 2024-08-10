@@ -5,25 +5,6 @@ import datetime
 import math
 from helpers.sv_config import get_config
 
-# Definitions
-
-userlog_event_types = {
-    "warns": "Warn",
-    "bans": "Ban",
-    "kicks": "Kick",
-    "tosses": "Toss",
-    "notes": "Note",
-}
-surveyr_event_types = {
-    "bans": "Ban",
-    "unbans": "Unban",
-    "kicks": "Kick",
-    "softbans": "Softban",
-    "timeouts": "Timeout",
-    "promotes": "Promotion",
-    "demotes": "Demotion",
-}
-
 # Files
 
 

@@ -9,7 +9,6 @@ import os
 from helpers.checks import ismod
 from helpers.sv_config import get_config
 from helpers.datafiles import (
-    surveyr_event_types,
     new_survey,
     edit_survey,
     get_file,
@@ -26,6 +25,15 @@ class Surveyr(Cog):
         self.bot = bot
         self.nocfgmsg = "Surveyr isn't set up for this server."
         self.bancooldown = {}
+        self.event_types = {
+            "bans": "Ban",
+            "unbans": "Unban",
+            "kicks": "Kick",
+            "softbans": "Softban",
+            "timeouts": "Timeout",
+            "promotes": "Promotion",
+            "demotes": "Demotion",
+        }
 
     def enabled(self, g):
         return all(
@@ -100,7 +108,7 @@ class Surveyr(Cog):
         for i, k in enumerate(reversed(surveys)):
             if i == 5:
                 break
-            event_type = surveyr_event_types[surveys[k]["type"]]
+            event_type = self.event_types[surveys[k]["type"]]
             target = await self.bot.fetch_user(surveys[k]["target_id"])
             issuer = await self.bot.fetch_user(surveys[k]["issuer_id"])
             msg.append(f"`#{k}` **{event_type.upper()}** of {target} by {issuer}")
@@ -146,7 +154,7 @@ class Surveyr(Cog):
 
         await msg.edit(
             content=(
-                f"`#{caseid}` **{surveyr_event_types[survey_type].upper()}** on <t:{timestamp}:f>\n"
+                f"`#{caseid}` **{self.event_types[survey_type].upper()}** on <t:{timestamp}:f>\n"
                 f"**User:** " + self.username_system(member) + "\n"
                 f"**Staff:** " + self.username_system(user) + "\n"
                 f"**Reason:** {reason}"
@@ -387,7 +395,7 @@ class Surveyr(Cog):
                 await msg.delete()
             msg = await surveychannel.send(
                 content=(
-                    f"`#{case}` **{surveyr_event_types[survey['type']].upper()}** on <t:{survey['timestamp']}:f>\n"
+                    f"`#{case}` **{self.event_types[survey['type']].upper()}** on <t:{survey['timestamp']}:f>\n"
                     f"**User:** " + self.username_system(user) + "\n"
                     f"**Staff:** " + self.username_system(staff) + "\n"
                     f"**Reason:** {survey['reason']}"
