@@ -193,7 +193,7 @@ class ModReport(Cog):
             )
         reportlog = get_file("reportlog", f"servers/{guild.id}")
         reportlog[int(datetime.datetime.now().timestamp())] = ctx.author.id
-        set_file("reportlog", json.dumps(reportlog), f"servers/{ctx.guild.id}")
+        set_file("reportlog", json.dumps(reportlog), f"servers/{guild.id}")
         await channel.send(content=staff_role.mention if ping else "", embed=embed)
         await message.delete()
         return await ctx.send(
