@@ -66,7 +66,8 @@ class ModArchives(Cog):
         )
 
         if uid in userlog and userlog[uid]:
-            for index, event in enumerate(userlog[uid]["tosses"]):
+            for index, timestamp in enumerate(userlog[uid]["tosses"]):
+                event = userlog[uid]["tosses"][timestamp]
                 path = f"data/servers/{ctx.guild.id}/toss/archives/sessions/{event['session_id']}"
                 if "session_id" not in event or not os.path.exists(path):
                     archivelist = "There are no archives for this session."
