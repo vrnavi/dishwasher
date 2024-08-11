@@ -89,7 +89,7 @@ class ModArchives(Cog):
 
                 embed.add_field(
                     name="Toss Archive " + str(index + 1),
-                    value=f"<t:{event['timestamp']}:R> on <t:{event['timestamp']}:f>\n"
+                    value=f"<t:{timestamp}:R> on <t:{timestamp}:f>\n"
                     + f"__Issuer:__ <@{event['issuer_id']}> ({event['issuer_id']})\n"
                     + archivelist,
                     inline=False,
