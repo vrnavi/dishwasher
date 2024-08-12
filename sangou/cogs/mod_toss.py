@@ -830,7 +830,7 @@ class ModToss(Cog):
             member.id,
             member.guild.me,
             tossmsg.jump_url,
-            toss_channel.id,
+            tosschannel.id,
         )
         return
 

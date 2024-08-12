@@ -47,18 +47,18 @@ class Logs2(Cog):
 
         embeds.append(embed)
 
-        warns = get_file("userlog", f"servers/{member.guild.id}")
+        userlog = get_file("userlog", f"servers/{member.guild.id}")
         try:
-            if warns[str(member.id)]["warns"]:
+            if userlog[str(member.id)]["warns"]:
                 embed = stock_embed(self.bot)
                 embed.color = discord.Color.red()
                 embed.title = "⚠️ This user has warnings!"
-                for idx, warn in enumerate(warns[str(member.id)]["warns"]):
-                    timestamp = warn["timestamp"]
+                for idx, timestamp in enumerate(userlog[str(member.id)]["warns"]):
+                    event = userlog[str(member.id)]["warns"][timestamp]
                     embed.add_field(
                         name=f"Warn {idx + 1}: <t:{timestamp}:f> (<t:{timestamp}:R>)",
-                        value=f"__Issuer:__ <@{warn['issuer_id']}> ({warn['issuer_id']})\n"
-                        f"\n__Reason:__ {warn['reason']}",
+                        value=f"__Issuer:__ <@{event['issuer_id']}> ({event['issuer_id']})\n"
+                        f"\n__Reason:__ {event['reason']}",
                         inline=False,
                     )
                 embeds.append(embed)
