@@ -157,7 +157,7 @@ class ModArchives(Cog):
                 embed.title = "📂 About that archive..."
                 embed.description = "> This user's logs are empty!"
                 return await ctx.reply(embed=embed, mention_author=False)
-            caseid = userlog[uid]["tosses"].values()[archive - 1]["session_id"]
+            caseid = list(userlog[uid]["tosses"].values())[archive - 1]["session_id"]
             if not os.path.exists(
                 f"data/servers/{ctx.guild.id}/toss/archives/sessions/{caseid}"
             ):
