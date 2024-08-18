@@ -762,15 +762,14 @@ class Basic(Cog):
             )
 
             try:
-                await botcommand.can_run(ctx)
-            except BotMissingPermissions as e:
+                can = await botcommand.can_run(ctx)
+                when = "**Yes.**" if can else "**No.**"
+            except commands.BotMissingPermissions as e:
                 when = (
                     "**No.** Missing:\n```diff\n+ "
                     + "\n+ ".join(e.missing_permissions)
                     + "```"
                 )
-            else:
-                when = "**Yes.**"
 
             embed.add_field(name="Executable", value=when, inline=True)
 
