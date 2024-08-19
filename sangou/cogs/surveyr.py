@@ -214,12 +214,8 @@ class Surveyr(Cog):
                 content = msg.content.split("\n")
                 content[2] = f"**Staff:** " + self.username_system(ctx.author)
                 for index, reasonline in enumerate(reason.split("\n")):
-                    contentindex = index + 3
-                    if contentindex == 3:
-                        content[contentindex] = f"**Reason:** {reasonline}"
-                    else:
-                        content[contentindex] = reasonline
-                del content[contentindex + 1 :]
+                    content[index+3] = f"**Reason:** {reasonline}" if not index else reasonline
+                del content[index + 4 :]
                 await msg.edit(content="\n".join(content))
             except KeyError:
                 await ctx.reply(
