@@ -215,7 +215,7 @@ class Surveyr(Cog):
                 content[2] = f"**Staff:** " + self.username_system(ctx.author)
                 for index, reasonline in enumerate(reason.split("\n")):
                     contentindex = index + 3
-                    if index == 3:
+                    if contentindex == 3:
                         content[contentindex] = f"**Reason:** {reasonline}"
                     else:
                         content[contentindex] = reasonline
