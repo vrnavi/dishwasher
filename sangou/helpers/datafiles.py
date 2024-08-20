@@ -86,7 +86,7 @@ def fill_profile(userid):
             updated = True
 
     if updated:
-        set_userfile(userid, "profile", json.dumps(profile))
+        set_file("profile", json.dumps(profile), f"users/{userid}")
 
     return profile
 
