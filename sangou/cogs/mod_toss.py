@@ -575,7 +575,7 @@ class ModToss(Cog):
                 f"📕 I've archived that as: `{filename}.txt`\nThis toss session had the following users:\n- "
                 + "\n- ".join([f"{self.username_system(u)} ({u.id})" for u in users])
             )
-            dotraw += f"\n{ctx.message.created_at.astimezone().strftime('%Y/%m/%d %H:%M')} {self.bot.user} [BOT]\n{reply}"
+            dotraw += f"{self.bot.user} [BOT] {ctx.message.created_at.astimezone().strftime('%Y/%m/%d %H:%M')}\n{reply}"
 
             if not os.path.exists(
                 f"data/servers/{ctx.guild.id}/toss/archives/sessions/{ctx.channel.id}"
