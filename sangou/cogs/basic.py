@@ -687,6 +687,8 @@ class Basic(Cog):
             content = await file.read()
             content = content.decode("utf-8")
         elif url:
+            if url.split("/")[2] == "pastebin.com" and url.split("/")[3] != "raw":
+                url = "https://pastebin.com/raw/" + url.split("/")[3]
             try:
                 content = await self.bot.aioget(url)
             except:
