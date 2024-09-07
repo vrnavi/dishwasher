@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://3gou.0ccu.lt"><picture><img width="150px" src="https://raw.githubusercontent.com/vrnavi/sangou/master/sangou/assets/kiwi.png"></picture></a>
+    <a href="https://3gou.0ccu.lt"><picture><img width="150px" src="https://files.catbox.moe/l0835l.png"></picture></a>
 </p>
 <p align="center"><i>KIWI</i></p>
 
