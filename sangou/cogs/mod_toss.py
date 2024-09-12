@@ -113,13 +113,14 @@ class ModToss(Cog):
 
         if all(
             [
-                c in [g.name for g in guild.text_channels]
+                c.lower() in [g.name for g in guild.text_channels]
                 for c in get_config(guild.id, "toss", "tosschannels")
             ]
         ):
             return None
 
         for c in get_config(guild.id, "toss", "tosschannels"):
+            c = c.lower()
             if c not in [g.name for g in guild.channels]:
                 if c not in tosses:
                     tosses[c] = {"tossed": {}, "untossed": [], "left": []}
@@ -194,10 +195,14 @@ class ModToss(Cog):
         embed.color = ctx.author.color
         tosses = get_file("tosses", f"servers/{ctx.guild.id}/toss")
 
-        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
+        if ctx.channel.name in [
+            c.lower() for c in get_config(ctx.guild.id, "toss", "tosschannels")
+        ]:
             channels = [ctx.channel.name]
         else:
-            channels = get_config(ctx.guild.id, "toss", "tosschannels")
+            channels = [
+                c.lower() for c in get_config(ctx.guild.id, "toss", "tosschannels")
+            ]
 
         for c in channels:
             if c in [g.name for g in ctx.guild.channels]:
@@ -285,7 +290,9 @@ class ModToss(Cog):
             )
 
         # Channel validation.
-        if ctx.channel.name in get_config(ctx.guild.id, "toss", "tosschannels"):
+        if ctx.channel.name in [
+            c.lower() for c in get_config(ctx.guild.id, "toss", "tosschannels")
+        ]:
             addition = True
             tosschannel = ctx.channel
         else:
@@ -405,7 +412,9 @@ class ModToss(Cog):
         The users to untoss. Optional."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
-        if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):
+        if ctx.channel.name not in [
+            c.lower() for c in get_config(ctx.guild.id, "toss", "tosschannels")
+        ]:
             return await ctx.reply(
                 content="This command must be run inside of a toss channel.",
                 mention_author=False,
@@ -532,7 +541,9 @@ class ModToss(Cog):
         Whether to archive the session or not. Optional."""
         if not self.enabled(ctx.guild):
             return await ctx.reply(self.nocfgmsg, mention_author=False)
-        if ctx.channel.name not in get_config(ctx.guild.id, "toss", "tosschannels"):
+        if ctx.channel.name not in [
+            c.lower() for c in get_config(ctx.guild.id, "toss", "tosschannels")
+        ]:
             return await ctx.reply(
                 content="This command must be run inside of a toss channel.",
                 mention_author=False,
@@ -922,9 +933,9 @@ class ModToss(Cog):
     @Cog.listener()
     async def on_guild_channel_delete(self, channel):
         await self.bot.wait_until_ready()
-        if self.enabled(channel.guild) and channel.name in get_config(
-            channel.guild.id, "toss", "tosschannels"
-        ):
+        if self.enabled(channel.guild) and channel.name in [
+            c.lower() for c in get_config(channel.guild.id, "toss", "tosschannels")
+        ]:
             tosses = get_file("tosses", f"servers/{channel.guild.id}/toss")
             if channel.name not in tosses:
                 return
