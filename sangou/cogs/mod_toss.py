@@ -113,7 +113,7 @@ class ModToss(Cog):
 
         if all(
             [
-                c in [g.name for g in guild.channels]
+                c in [g.name for g in guild.text_channels]
                 for c in get_config(guild.id, "toss", "tosschannels")
             ]
         ):
