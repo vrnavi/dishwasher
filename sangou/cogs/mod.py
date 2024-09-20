@@ -699,7 +699,7 @@ class Mod(Cog):
     @commands.bot_has_permissions(manage_messages=True)
     @commands.check(ismod)
     @commands.guild_only()
-    @purge.command(aliases=["emoji"])
+    @purge.command(aliases=["emoji", "emojis", "emote"])
     async def emotes(self, ctx, limit=50, channel: discord.abc.GuildChannel = None):
         """This clears a given number of emotes.
 
