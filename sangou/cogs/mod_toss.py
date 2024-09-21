@@ -68,25 +68,26 @@ class ModToss(Cog):
             else f"**{self.bot.pacify_name(str(user))}**"
         )
 
-    def is_rolebanned(self, member, hard=True):
-        roleban = [
-            r
-            for r in member.guild.roles
-            if r
-            == self.bot.pull_role(
+    def is_rolebanned(self, member):
+        return (
+            self.bot.pull_role(
                 member.guild, get_config(member.guild.id, "toss", "tossrole")
             )
-        ]
-        if roleban:
-            if (
-                self.bot.pull_role(
-                    member.guild, get_config(member.guild.id, "toss", "tossrole")
-                )
-                in member.roles
-            ):
-                if hard:
-                    return len([r for r in member.roles if not (r.managed)]) == 2
-                return True
+            in member.roles
+        )
+        # this code temporarily disabled since it was interfering with users having multiple roles that the bot can't control
+        # note to self: add feature later to try and remove roles on role change if it can, for server guide roles
+        # if (
+        #     self.bot.pull_role(
+        #         member.guild, get_config(member.guild.id, "toss", "tossrole")
+        #     )
+        #     in member.roles
+        # ):
+        #     if hard:
+        #         return len([r for r in member.roles if not (r.managed)]) == 2
+        #     return True
+        # else:
+        #     return False
 
     def get_session(self, member):
         tosses = get_file("tosses", f"servers/{member.guild.id}/toss")
