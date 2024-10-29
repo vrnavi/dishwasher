@@ -314,7 +314,9 @@ class ModLogs(Cog):
                 content=f"Your index is out of bounds!", mention_author=False
             )
 
-        del userlog[str(target.id)][eventtype][next(islice(userlog, index - 1, None))]
+        del userlog[str(target.id)][eventtype][
+            next(islice(userlog[str(target.id)][eventtype], index - 1, None))
+        ]
         set_file("userlog", json.dumps(userlog), f"servers/{ctx.guild.id}")
         await ctx.reply(content=f"I've deleted that event.", mention_author=False)
 
