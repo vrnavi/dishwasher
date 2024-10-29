@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 import json
 from datetime import datetime, timezone
+from itertools import islice
 from helpers.checks import ismod, isadmin
 from helpers.datafiles import get_file, set_file
 from helpers.sv_config import get_config
@@ -313,7 +314,7 @@ class ModLogs(Cog):
                 content=f"Your index is out of bounds!", mention_author=False
             )
 
-        del userlog[str(target.id)][eventtype][index - 1]
+        del userlog[str(target.id)][eventtype][next(islice(userlog, index - 1, None))]
         set_file("userlog", json.dumps(userlog), f"servers/{ctx.guild.id}")
         await ctx.reply(content=f"I've deleted that event.", mention_author=False)
 
