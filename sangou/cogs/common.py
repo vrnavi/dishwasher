@@ -152,11 +152,12 @@ class Common(Cog):
             return "Unable: Missing Permissions."
         invites = get_file("invites", f"servers/{member.guild.id}")
 
-        # Add unknown active invites. Can happen if invite was manually created
+        # Add missing active invites.
+        # This might happen if the invite was manually created.
         for invite in real_invites:
-            if invite.id not in invites:
+            if invite.id not in invites and invite.uses:
                 invites[invite.id] = {
-                    "uses": 0,
+                    "uses": invite.uses,
                     "url": invite.url,
                     "max_uses": invite.max_uses,
                     "code": invite.code,
@@ -166,16 +167,18 @@ class Common(Cog):
         items_to_delete = []
         # Look for invites whose usage increased since last lookup
         for id, invite in invites.items():
+            # Search for if a real invite exists.
             real_invite = next((x for x in real_invites if x.id == id), None)
 
             if not real_invite:
-                # Invite does not exist anymore. Was either revoked manually
-                # or the final use was used up
-                probable_invites_used.append(invite)
+                # Invite does not exist anymore.
                 items_to_delete.append(id)
             elif invite["uses"] < real_invite.uses:
-                probable_invites_used.append(invite)
                 invite["uses"] = real_invite.uses
+            else:
+                continue
+
+            probable_invites_used.append(invite)
 
         # Delete used up invites
         for id in items_to_delete:
@@ -185,10 +188,10 @@ class Common(Cog):
         set_file("invites", json.dumps(invites), f"servers/{member.guild.id}")
 
         # Prepare the invite correlation message
-        if len(probable_invites_used) == 1:
-            invite_used = probable_invites_used[0]["code"]
-        elif len(probable_invites_used) == 0:
+        if not probable_invites_used:
             invite_used = "Unknown"
+        elif len(probable_invites_used) == 1:
+            invite_used = probable_invites_used[0]["code"]
         else:
             invite_used = "One of: "
             invite_used += ", ".join([x["code"] for x in probable_invites_used])
