@@ -33,6 +33,7 @@ def isoverride(ctx):
                         role = role.id
                 if ctx.author.get_role(role):
                     return (override["restrict"], True)
+            break
     if hasoverride:
         return (override["restrict"], False)
     else:
