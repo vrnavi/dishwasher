@@ -22,8 +22,10 @@ def isoverride(ctx):
     if not config["overrides"]:
         return (False, False)
     role = None
+    hasoverride = False
     for override in config["overrides"]:
         if ctx.bot.get_command(override["command"]) == ctx.command:
+            hasoverride = True
             for role in override["roles"]:
                 if isinstance(role, str):
                     role = discord.utils.get(ctx.guild.roles, name=role)
@@ -31,7 +33,10 @@ def isoverride(ctx):
                         role = role.id
                 if ctx.author.get_role(role):
                     return (override["restrict"], True)
-    return (override["restrict"], False)
+    if hasoverride:
+        return (override["restrict"], False)
+    else:
+        return (False, False)
 
 
 async def isowner(ctx, layered=False):
